@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as signalR from "@microsoft/signalr";
+import LiverpoolService from '../services/LiverpoolHubService'
 
 export class Liverpool extends Component {
     static displayName = Liverpool.name;
@@ -9,37 +9,36 @@ export class Liverpool extends Component {
       this.state = { userName: '', userNames: [] };
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleChange = this.handleChange.bind(this);
-  }
+
+      LiverpoolService.registerUserConnected((usernames) => {
+          this.setState({ userNames: usernames });
+      });
+
+      LiverpoolService.registerUserDisconnected((disconnectedUser, users) => {
+          console.log(disconnectedUser);
+          this.setState({ userNames: users });
+      });
+
+      LiverpoolService.registerUserSetName((usernames) => {
+          this.setState({ userNames: usernames });
+      });
+
+      LiverpoolService.registerGetAllUsers((usernames) => {
+          this.setState({ userNames: usernames });
+      });
+    }
 
   componentDidMount() {
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/liverpoolHub")
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
-
-      connection.start();
-      connection.on("UserConnected", message => {
-          this.setState({ userNames: message, userName: this.state.userName });
-      });
-
-      connection.on("UserDisconnected", (disconnectedUser, users) => {
-          console.log(disconnectedUser);
-          this.setState({ userNames: users, userName: this.state.userName });
-      });
-
-      connection.on("UserSetName", message => {
-          this.setState({ userNames: message, userName: this.state.userName });
-      });
-    this.connection = connection;
+    LiverpoolService.getAllUsers();
   }
 
   handleChange(event) {
-     this.setState({ userNames: this.state.userNames, userName: event.target.value });
+     this.setState({ userName: event.target.value });
   }
 
   handleSubmit(event) {
-     event.preventDefault();
-     this.connection.invoke("SetUserName", this.state.userName);
+      event.preventDefault();
+      LiverpoolService.setUserName(this.state.userName);
    }
 
   render() {

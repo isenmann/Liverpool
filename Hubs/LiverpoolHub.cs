@@ -50,5 +50,11 @@ namespace Liverpool.Hubs
                 await Clients.All.SendAsync("UserSetName", users.Select(u => u.Name)); 
             }
         }
+
+        public async Task GetAllUsers()
+        {
+            var users = _liverpoolGameService.GetAllUsers();
+            await Clients.Client(Context.ConnectionId).SendAsync("AllUsers", users.Select(u => u.Name));
+        }
     }
 }
