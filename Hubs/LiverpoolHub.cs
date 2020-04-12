@@ -1,4 +1,5 @@
 ﻿using Liverpool.Interfaces;
+using Liverpool.Models.Dtos;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,50 @@ namespace Liverpool.Hubs
         {
             var users = _liverpoolGameService.GetAllUsers();
             await Clients.Client(Context.ConnectionId).SendAsync("AllUsers", users.Select(u => u.Name));
+        }
+
+        public async Task CreateGame(string gameName)
+        {
+            var created = _liverpoolGameService.CreateGame(gameName, Context.ConnectionId);
+            if (created)
+            {
+                var games = _liverpoolGameService.GetAllNotStartedGames();
+                var response = games.Select(g => new GameDto
+                {
+                    GameStarted = g.GameStarted,
+                    Name = g.Name,
+                    Players = g.Players.Select(p => p.User.Name).ToList()
+                });
+                await Clients.All.SendAsync("GameCreated", response);
+            }
+        }
+
+        public async Task JoinGame(string gameName)
+        {
+            var joined = _liverpoolGameService.JoinGame(gameName, Context.ConnectionId);
+            if (joined)
+            {
+                var games = _liverpoolGameService.GetAllNotStartedGames();
+                var response = games.Select(g => new GameDto
+                {
+                    GameStarted = g.GameStarted,
+                    Name = g.Name,
+                    Players = g.Players.Select(p => p.User.Name).ToList()
+                });
+                await Clients.All.SendAsync("UserJoinedGame", response);
+            }
+        }
+
+        public async Task GetAllNotStartedGames()
+        {
+            var games = _liverpoolGameService.GetAllNotStartedGames();
+            var response = games.Select(g => new GameDto
+            {
+                GameStarted = g.GameStarted,
+                Name = g.Name,
+                Players = g.Players.Select(p => p.User.Name).ToList()
+            });
+            await Clients.Client(Context.ConnectionId).SendAsync("AllNotStartedGames", response);
         }
     }
 }

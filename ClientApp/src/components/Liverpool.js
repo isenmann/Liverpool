@@ -6,9 +6,12 @@ export class Liverpool extends Component {
 
   constructor(props) {
       super(props);
-      this.state = { userName: '', userNames: [] };
+      this.state = { userName: '', userNames: [], gameNameToCreateOrJoin: '', notStartedGames: [] };
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleChange = this.handleChange.bind(this);
+      this.handleGameCreateOrJoinChange = this.handleGameCreateOrJoinChange.bind(this);
+      this.handleGameCreate = this.handleGameCreate.bind(this);
+      this.handleGameJoin = this.handleGameJoin.bind(this);
 
       LiverpoolService.registerUserConnected((usernames) => {
           this.setState({ userNames: usernames });
@@ -26,20 +29,48 @@ export class Liverpool extends Component {
       LiverpoolService.registerGetAllUsers((usernames) => {
           this.setState({ userNames: usernames });
       });
+
+      LiverpoolService.registerGameCreated((games) => {
+          this.setState({ notStartedGames: games });
+      });
+
+      LiverpoolService.registerGameJoined((games) => {
+          this.setState({ notStartedGames: games });
+      });
+
+      LiverpoolService.registerAllNotStartedGames((games) => {
+          this.setState({ notStartedGames: games });
+      });
     }
 
   componentDidMount() {
-    LiverpoolService.getAllUsers();
+      LiverpoolService.getAllUsers();
+      LiverpoolService.getAllNotStartedGames();
   }
 
   handleChange(event) {
      this.setState({ userName: event.target.value });
-  }
+    }
 
   handleSubmit(event) {
-      event.preventDefault();
-      LiverpoolService.setUserName(this.state.userName);
-   }
+        event.preventDefault();
+        LiverpoolService.setUserName(this.state.userName);
+  }
+
+  handleGameCreateOrJoinChange(event) {
+      this.setState({ gameNameToCreateOrJoin: event.target.value });
+  }
+
+handleGameCreate(event) {
+    event.preventDefault();
+    LiverpoolService.createGame(this.state.gameNameToCreateOrJoin);
+    }
+
+handleGameJoin(event) {
+    event.preventDefault();
+    LiverpoolService.joinGame(this.state.gameNameToCreateOrJoin);
+}
+  
 
   render() {
     return (
@@ -66,7 +97,35 @@ export class Liverpool extends Component {
                     )}
                 </tbody>
             </table>
-      </div>
+       
+            <form onSubmit={this.handleGameCreate}>
+                <label>
+                    Name:
+                    <input type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
+                </label>
+                <input type="submit" value="Create game" />
+            </form>
+
+            <form onSubmit={this.handleGameJoin}>
+                <input type="submit" value="Join game" />
+            </form>
+            <table className='table table-striped' aria-labelledby="tabelLabel">
+                <thead>
+                    <tr>
+                        <th>Not started games</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.state.notStartedGames.map(game =>
+                        <tr key={game.name}>
+                            <td>{game.name}</td>
+                            <td>{game.gameStarted}</td>
+                            <td>{game.players}</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
     );
   }
 }

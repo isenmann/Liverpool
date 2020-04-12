@@ -19,6 +19,18 @@ class LiverpoolHubService {
         this.connection.invoke("GetAllUsers");
     }
 
+    getAllNotStartedGames() {
+        this.connection.invoke("GetAllNotStartedGames");
+    }
+
+    createGame(gameName) {
+        this.connection.invoke("CreateGame", gameName);
+    }
+
+    joinGame(gameName) {
+        this.connection.invoke("JoinGame", gameName);
+    }
+
     registerGetAllUsers(allUsers) {
         this.connection.on('AllUsers', (userNames) => {
             allUsers(userNames);
@@ -40,6 +52,24 @@ class LiverpoolHubService {
     registerUserSetName(userSetName) {
         this.connection.on('UserSetName', (userNames) => {
             userSetName(userNames);
+        });
+    }
+
+    registerGameCreated(gameCreated) {
+        this.connection.on('GameCreated', (allNotStartedGames) => {
+            gameCreated(allNotStartedGames);
+        });
+    }
+
+    registerGameJoined(gameJoined) {
+        this.connection.on('UserJoinedGame', (allNotStartedGames) => {
+            gameJoined(allNotStartedGames);
+        });
+    }
+
+    registerAllNotStartedGames(notStartedGames) {
+        this.connection.on('AllNotStartedGames', (allNotStartedGames) => {
+            notStartedGames(allNotStartedGames);
         });
     }
 }

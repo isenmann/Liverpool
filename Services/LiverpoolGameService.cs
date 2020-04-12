@@ -11,8 +11,7 @@ namespace Liverpool.Services
     public class LiverpoolGameService : ILiverpoolGameService
     {
         private readonly List<User> _users = new List<User>();
-
-        //private static List<Game> _currentGames = new List<Game>();
+        private readonly List<Game> _currentGames = new List<Game>();
 
         public bool AddUser(string connectionId)
         {
@@ -59,6 +58,40 @@ namespace Liverpool.Services
             }
 
             return false;
-        } 
+        }
+
+        public IEnumerable<Game> GetAllNotStartedGames()
+        {
+            return _currentGames.Where(g => !g.GameStarted);
+        }
+
+        public bool CreateGame(string name, string connectionId)
+        {
+            var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
+
+            var game = new Game {
+                Name = name,
+                Players = new List<Player> { new Player(user) }, 
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards().ToList()
+            };
+
+            _currentGames.Add(game);
+
+            return true;
+        }
+
+        public bool JoinGame(string name, string connectionId)
+        {
+            var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
+            var game = _currentGames.FirstOrDefault(g => g.Name == name);
+            if (game != null && user != null)
+            {
+                game.Players.Add(new Player(user));
+                return true;
+            }
+
+            return false;
+        }
     }
 }
