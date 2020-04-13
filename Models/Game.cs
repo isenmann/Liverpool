@@ -11,9 +11,15 @@ namespace Liverpool.Models
         public List<Player> Players { get; set; }
         public List<Card> Deck { get; set; }
         public bool GameStarted { get; set; }
+        public Player Creator { get; set; }
 
         public bool StartGame()
         {
+            if (Players.Count < 3)
+            {
+                return false;
+            }
+
             GameStarted = true;
             return true;
         }

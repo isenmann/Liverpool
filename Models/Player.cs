@@ -7,7 +7,6 @@ namespace Liverpool
     {
         public User User { get; set; }
         public Queue<Card> Deck { get; set; }
-
         public Player(User user)
         {
             User = user;

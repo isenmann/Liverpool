@@ -31,6 +31,10 @@ class LiverpoolHubService {
         this.connection.invoke("JoinGame", gameName);
     }
 
+    startGame(gameName) {
+        this.connection.invoke("StartGame", gameName);
+    }
+
     registerGetAllUsers(allUsers) {
         this.connection.on('AllUsers', (userNames) => {
             allUsers(userNames);
@@ -64,6 +68,12 @@ class LiverpoolHubService {
     registerGameJoined(gameJoined) {
         this.connection.on('UserJoinedGame', (allNotStartedGames) => {
             gameJoined(allNotStartedGames);
+        });
+    }
+
+    registerGameStarted(gameStarted) {
+        this.connection.on('GameStarted', (gameName) => {
+            gameStarted(gameName);
         });
     }
 

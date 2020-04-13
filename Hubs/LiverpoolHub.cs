@@ -48,7 +48,7 @@ namespace Liverpool.Hubs
             if (success) 
             {
                 var users = _liverpoolGameService.GetAllUsers();
-                await Clients.All.SendAsync("UserSetName", users.Select(u => u.Name)); 
+                await Clients.All.SendAsync("UserSetName", users.Select(u => u.Name));
             }
         }
 
@@ -87,6 +87,16 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => p.User.Name).ToList()
                 });
                 await Clients.All.SendAsync("UserJoinedGame", response);
+            }
+        }
+
+        public async Task StartGame(string gameName)
+        {
+            var started = _liverpoolGameService.StartGame(gameName, Context.ConnectionId);
+            if (started)
+            {
+                var usersOfGame = _liverpoolGameService.GetAllUsersFromGame(gameName);
+                await Clients.Clients(usersOfGame.Select(u => u.ConnectionId).ToList()).SendAsync("GameStarted", gameName);
             }
         }
 

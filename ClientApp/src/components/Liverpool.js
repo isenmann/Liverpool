@@ -12,6 +12,7 @@ export class Liverpool extends Component {
       this.handleGameCreateOrJoinChange = this.handleGameCreateOrJoinChange.bind(this);
       this.handleGameCreate = this.handleGameCreate.bind(this);
       this.handleGameJoin = this.handleGameJoin.bind(this);
+      this.handleGameStart = this.handleGameStart.bind(this);
 
       LiverpoolService.registerUserConnected((usernames) => {
           this.setState({ userNames: usernames });
@@ -36,6 +37,10 @@ export class Liverpool extends Component {
 
       LiverpoolService.registerGameJoined((games) => {
           this.setState({ notStartedGames: games });
+      });
+
+      LiverpoolService.registerGameStarted((name) => {
+          this.props.history.push('/game/' + name);
       });
 
       LiverpoolService.registerAllNotStartedGames((games) => {
@@ -69,6 +74,11 @@ handleGameCreate(event) {
 handleGameJoin(event) {
     event.preventDefault();
     LiverpoolService.joinGame(this.state.gameNameToCreateOrJoin);
+}
+
+handleGameStart(event) {
+    event.preventDefault();
+    LiverpoolService.startGame(this.state.gameNameToCreateOrJoin);
 }
   
 
@@ -108,6 +118,9 @@ handleGameJoin(event) {
 
             <form onSubmit={this.handleGameJoin}>
                 <input type="submit" value="Join game" />
+            </form>
+            <form onSubmit={this.handleGameStart}>
+                <input type="submit" value="Start game" />
             </form>
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
