@@ -6,7 +6,7 @@ namespace Liverpool
     public class Player
     {
         public User User { get; set; }
-        public Queue<Card> Deck { get; set; }
+        public List<Card> Deck { get; set; }
         public Player(User user)
         {
             User = user;

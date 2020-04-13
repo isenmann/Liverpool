@@ -1,4 +1,5 @@
 ﻿using Liverpool.Interfaces;
+using Liverpool.Models;
 using Liverpool.Models.Dtos;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -98,6 +99,8 @@ namespace Liverpool.Hubs
                 var usersOfGame = _liverpoolGameService.GetAllUsersFromGame(gameName);
                 await Clients.Clients(usersOfGame.Select(u => u.ConnectionId).ToList()).SendAsync("GameStarted", gameName);
             }
+
+            await GameUpdated(gameName);
         }
 
         public async Task GetAllNotStartedGames()
@@ -110,6 +113,27 @@ namespace Liverpool.Hubs
                 Players = g.Players.Select(p => p.User.Name).ToList()
             });
             await Clients.Client(Context.ConnectionId).SendAsync("AllNotStartedGames", response);
+        }
+
+        private async Task GameUpdated(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
+            var gameDto = new GameDto 
+            {
+                GameStarted = game.GameStarted, 
+                Name = game.Name, 
+                Players = allPlayersInTheGame.Select(p => p.User.Name).ToList()
+            };
+
+            if (game.GameStarted)
+            {
+                foreach (var player in allPlayersInTheGame)
+                {
+                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
+                    await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
+                }
+            }
         }
     }
 }

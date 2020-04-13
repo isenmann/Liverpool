@@ -21,7 +21,18 @@ namespace Liverpool.Models
             }
 
             GameStarted = true;
+
+            InitializeNewGame();
+
             return true;
+        }
+
+        private void InitializeNewGame()
+        {
+            foreach (var player in Players)
+            {
+                player.Deck = Deck.GetAndRemove(0, 10);
+            }
         }
     }
 }

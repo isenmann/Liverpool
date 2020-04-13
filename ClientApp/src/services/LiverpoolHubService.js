@@ -82,6 +82,12 @@ class LiverpoolHubService {
             notStartedGames(allNotStartedGames);
         });
     }
+
+    registerGameUpdated(gameUpdated) {
+        this.connection.on('GameUpdate', (game) => {
+            gameUpdated(game);
+        });
+    }
 }
 
 const LiverpoolService = new LiverpoolHubService();

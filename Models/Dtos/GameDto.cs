@@ -10,5 +10,6 @@ namespace Liverpool.Models.Dtos
         public string Name { get; set; }
         public bool GameStarted { get; set; } = false;
         public List<string> Players { get; set; }
+        public List<Card> MyCards { get; internal set; }
     }
 }

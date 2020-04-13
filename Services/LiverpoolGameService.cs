@@ -25,6 +25,11 @@ namespace Liverpool.Services
             return false;
         }
 
+        public Game GetGame(string gameName)
+        {
+            return _currentGames.FirstOrDefault(g => g.Name == gameName);
+        }
+
         public IEnumerable<User> GetAllUsers()
         {
             return _users;
@@ -33,6 +38,11 @@ namespace Liverpool.Services
         public IEnumerable<User> GetAllUsersFromGame(string gameName)
         {
             return _currentGames.FirstOrDefault(g => g.Name == gameName).Players.Select(p => p.User);
+        }
+
+        public IEnumerable<Player> GetAllPlayersFromGame(string gameName)
+        {
+            return _currentGames.FirstOrDefault(g => g.Name == gameName).Players;
         }
 
         public string RemoveUser(string connectionId)
@@ -73,6 +83,13 @@ namespace Liverpool.Services
         public bool CreateGame(string name, string connectionId)
         {
             var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
+
+            while (_currentGames.Any(g => g.Name == name))
+            {
+                Random rnd = new Random();
+                name += rnd.Next(1, 100);
+            }
+
             var player = new Player(user);
 
             var game = new Game {
@@ -94,6 +111,11 @@ namespace Liverpool.Services
             var game = _currentGames.FirstOrDefault(g => g.Name == name);
             if (game != null && user != null)
             {
+                if (game.GameStarted)
+                {
+                    return false;
+                }
+
                 game.Players.Add(new Player(user));
                 return true;
             }
@@ -107,6 +129,11 @@ namespace Liverpool.Services
             var game = _currentGames.FirstOrDefault(g => g.Name == name);
             if (game != null && user != null)
             {
+                if (game.GameStarted)
+                {
+                    return false;
+                }
+
                 return game.StartGame();
             }
 
