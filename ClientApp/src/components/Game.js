@@ -30,6 +30,12 @@ export class Game extends Component {
             <div>
                 <h1>Game {this.gameName} started</h1>
                 <h2>{myCards}</h2>
+                {this.state != null && this.state.game != null &&
+                    this.state.game.myCards.map(cards => {
+                        return (<img src={process.env.PUBLIC_URL + '/images/' + cards.displayName + '.png'} />);
+                    }
+                    )
+                }
             </div>
         )
     }
