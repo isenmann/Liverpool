@@ -1,6 +1,8 @@
 ﻿import React from 'react'
 import { useDrop } from 'react-dnd'
 import ItemTypes from './ItemTypes'
+import LiverpoolService from '../services/LiverpoolHubService';
+
 const style = {
     height: '12rem',
     width: '12rem',
@@ -13,10 +15,16 @@ const style = {
     lineHeight: 'normal',
     float: 'left',
 }
-const Dustbin = () => {
+const DropArea = ({ gameName }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: ItemTypes.CARD,
-        drop: () => ({ name: 'Dustbin' }),
+        drop(item, monitor) {
+            const didDrop = monitor.didDrop()
+            if (didDrop) {
+                return
+            }
+            LiverpoolService.discardCard(gameName, item.name);
+        },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -31,8 +39,8 @@ const Dustbin = () => {
     }
     return (
         <div ref={drop} style={{ ...style, backgroundColor }}>
-            {isActive ? 'Release to drop' : 'Drag a box here'}
+            {isActive ? 'Release to drop' : 'Drag a card here'}
         </div>
     )
 }
-export default Dustbin
+export default DropArea

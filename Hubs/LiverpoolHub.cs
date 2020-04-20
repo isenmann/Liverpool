@@ -69,7 +69,13 @@ namespace Liverpool.Hubs
                 {
                     GameStarted = g.GameStarted,
                     Name = g.Name,
-                    Players = g.Players.Select(p => p.User.Name).ToList()
+                    Players = g.Players.Select(p => new PlayerDto
+                    {
+                        Name = p.User.Name,
+                        CountofCards = p.Deck != null ? p.Deck.Count : 0, 
+                        DroppedCards = p.DroppedCards,
+                        Points = p.Points
+                    }).ToList()
                 });
                 await Clients.All.SendAsync("GameCreated", response);
             }
@@ -85,7 +91,13 @@ namespace Liverpool.Hubs
                 {
                     GameStarted = g.GameStarted,
                     Name = g.Name,
-                    Players = g.Players.Select(p => p.User.Name).ToList()
+                    Players = g.Players.Select(p => new PlayerDto
+                    {
+                        Name = p.User.Name,
+                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                        DroppedCards = p.DroppedCards,
+                        Points = p.Points
+                    }).ToList()
                 });
                 await Clients.All.SendAsync("UserJoinedGame", response);
             }
@@ -110,7 +122,13 @@ namespace Liverpool.Hubs
             {
                 GameStarted = g.GameStarted,
                 Name = g.Name,
-                Players = g.Players.Select(p => p.User.Name).ToList()
+                Players = g.Players.Select(p => new PlayerDto
+                {
+                    Name = p.User.Name,
+                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                    DroppedCards = p.DroppedCards,
+                    Points = p.Points
+                }).ToList()
             });
             await Clients.Client(Context.ConnectionId).SendAsync("AllNotStartedGames", response);
         }
@@ -123,7 +141,14 @@ namespace Liverpool.Hubs
             {
                 GameStarted = game.GameStarted, 
                 Name = game.Name, 
-                Players = allPlayersInTheGame.Select(p => p.User.Name).ToList()
+                Players = allPlayersInTheGame.Select(p => new PlayerDto
+                {
+                    Name = p.User.Name,
+                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                    DroppedCards = p.DroppedCards,
+                    Points = p.Points
+                }).ToList(),
+                DiscardPile = game.DiscardPile.LastOrDefault()
             };
 
             if (game.GameStarted)
@@ -134,6 +159,38 @@ namespace Liverpool.Hubs
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }
+        }
+
+        public async Task DiscardCard(string gameName, string card)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+            game.DiscardPile.Add(new Card(card));
+            player.Deck.RemoveAll(c => c.DisplayName == card);
+
+            await GameUpdated(gameName);
+        }
+
+        public async Task DrawCardFromDrawPile(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+            
+            await GameUpdated(gameName);
+        }
+
+        public async Task DrawCardFromDiscardPile(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            var card = game.DiscardPile.Last();
+            player.Deck.Add(card);
+            game.DiscardPile.Remove(card);
+
+            await GameUpdated(gameName);
         }
     }
 }

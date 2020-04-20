@@ -133,7 +133,7 @@ handleGameStart(event) {
                         <tr key={game.name}>
                             <td>{game.name}</td>
                             <td>{game.gameStarted}</td>
-                            <td>{game.players}</td>
+                            <td>{game.players.map(p => p.name)}</td>
                         </tr>
                     )}
                 </tbody>

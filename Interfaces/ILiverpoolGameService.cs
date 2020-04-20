@@ -13,8 +13,9 @@ namespace Liverpool.Interfaces
         bool AddUser(string connectionId);
         bool SetUserName(string connectionId, string userName);
         IEnumerable<User> GetAllUsers();
-        IEnumerable<User> GetAllUsersFromGame(string gameName);
-        IEnumerable<Player> GetAllPlayersFromGame(string gameName);
+        IEnumerable<User> GetAllUsersFromGame(string name);
+        IEnumerable<Player> GetAllPlayersFromGame(string name);
+        Player GetPlayerFromGame(string name, string connectionId);
         IEnumerable<Game> GetAllNotStartedGames();
         bool CreateGame(string name, string connectionId);
         bool JoinGame(string name, string connectionId);

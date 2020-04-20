@@ -45,6 +45,11 @@ namespace Liverpool.Services
             return _currentGames.FirstOrDefault(g => g.Name == gameName).Players;
         }
 
+        public Player GetPlayerFromGame(string gameName, string connectionId)
+        {
+            return _currentGames.FirstOrDefault(g => g.Name == gameName).Players.FirstOrDefault(p => p.User.ConnectionId == connectionId);
+        }
+
         public string RemoveUser(string connectionId)
         {
             var user = _users.FirstOrDefault(p => p.ConnectionId == connectionId);

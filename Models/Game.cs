@@ -10,6 +10,7 @@ namespace Liverpool.Models
         public string Name { get; set; }
         public List<Player> Players { get; set; }
         public List<Card> Deck { get; set; }
+        public List<Card> DiscardPile { get; set; }
         public bool GameStarted { get; set; }
         public Player Creator { get; set; }
 
@@ -33,6 +34,8 @@ namespace Liverpool.Models
             {
                 player.Deck = Deck.GetAndRemove(0, 10);
             }
+
+            DiscardPile = new List<Card>();
         }
     }
 }

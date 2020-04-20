@@ -7,6 +7,8 @@ namespace Liverpool
     {
         public User User { get; set; }
         public List<Card> Deck { get; set; }
+        public List<Card> DroppedCards { get; set; }
+        public int Points { get; set; }
         public Player(User user)
         {
             User = user;
