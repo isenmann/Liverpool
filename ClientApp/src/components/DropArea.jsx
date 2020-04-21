@@ -15,7 +15,7 @@ const style = {
     lineHeight: 'normal',
     float: 'left',
 }
-const DropArea = ({ gameName, discard }) => {
+const DropArea = ({ gameName, discard, ownDrop }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: ItemTypes.CARD,
         drop(item, monitor) {
@@ -26,11 +26,15 @@ const DropArea = ({ gameName, discard }) => {
 
             if (discard) {
                 LiverpoolService.discardCard(gameName, item.name);
-            } else {
+            }
+            else if (ownDrop) {
+                LiverpoolService.dropCard(gameName, item.name);
+            }
+            else {
                 if (item.name === "back") {
                     LiverpoolService.drawCardFromDrawPile(gameName);
                 } else {
-                    LiverpoolService.drawCardFromDiscardPile(gameName);
+                    LiverpoolService.drawCardFromDiscardPile(gameName, item.name);
                 }
             }
         },
