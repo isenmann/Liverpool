@@ -33,6 +33,7 @@ namespace Liverpool.Models
             foreach (var player in Players)
             {
                 player.Deck = Deck.GetAndRemove(0, 10);
+                player.DroppedCards = new List<Card>();
             }
 
             DiscardPile = new List<Card>();
