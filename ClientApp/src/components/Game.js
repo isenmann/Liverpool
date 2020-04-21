@@ -35,14 +35,16 @@ export class Game extends Component {
                 <DndProvider backend={Backend}>
                     <h1>Game {this.gameName} started</h1>
                     <div style={{ overflow: 'hidden', clear: 'both' }}>
-                        <DropArea gameName={this.gameName} />
+                        <DropArea gameName={this.gameName} discard={true} />
                         {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
                             <Card name={this.state.game.discardPile.displayName } />                            
                         }
+                        <Card name="back" /> 
                     </div>
                    
-                    <div>
+                    <div style={{ overflow: 'hidden', clear: 'both' }}>
                         <h2>{myCards}</h2>
+                        <DropArea gameName={this.gameName} discard={false} />
                             {this.state != null && this.state.game != null &&
                                 this.state.game.myCards.map(cards => {
                                     return (<Card name={cards.displayName} />);
