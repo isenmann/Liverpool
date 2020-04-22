@@ -39,6 +39,18 @@ class LiverpoolHubService {
         this.connection.invoke("DiscardCard", gameName, cardName);
     }
 
+    drawCardFromDiscardPile(gameName, cardName) {
+        this.connection.invoke("DrawCardFromDiscardPile", gameName, cardName);
+    }
+
+    drawCardFromDrawPile(gameName) {
+        this.connection.invoke("DrawCardFromDrawPile", gameName);
+    }
+
+    dropCard(gameName, cardName) {
+        this.connection.invoke("DropCard", gameName, cardName);
+    }
+
     registerGetAllUsers(allUsers) {
         this.connection.on('AllUsers', (userNames) => {
             allUsers(userNames);
