@@ -156,6 +156,7 @@ namespace Liverpool.Hubs
                 foreach (var player in allPlayersInTheGame)
                 {
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
+                    gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }
@@ -165,6 +166,13 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            // if it's not player's turn, do nothing
+            if (!player.Turn)
+            {
+                return;
+            }
+            
             game.DiscardPile.Add(new Card(card));
             player.Deck.RemoveAll(c => c.DisplayName == card);
 
@@ -176,6 +184,12 @@ namespace Liverpool.Hubs
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
 
+            // if it's not player's turn, do nothing
+            if (!player.Turn)
+            {
+                return;
+            }
+
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
             
             await GameUpdated(gameName);
@@ -185,6 +199,12 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            // if it's not player's turn, do nothing
+            if (!player.Turn)
+            {
+                return;
+            }
 
             var card = game.DiscardPile.Last();
             if (card.DisplayName == cardName)
@@ -200,7 +220,13 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
-            
+
+            // if it's not player's turn, do nothing
+            if (!player.Turn)
+            {
+                return;
+            }
+
             player.Deck.RemoveAll(c => c.DisplayName == card);
             player.DroppedCards.Add(new Card(card));
 

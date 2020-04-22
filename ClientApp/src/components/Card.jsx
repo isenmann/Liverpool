@@ -1,6 +1,5 @@
 ﻿import React from 'react'
 import { useDrag } from 'react-dnd'
-import ItemTypes from './ItemTypes'
 
 const style = {
     padding: '0.5rem 1rem',
@@ -14,9 +13,9 @@ const imgStyle = {
     width: '35%',
     height: '35%'
 }
-const Card = ({ name }) => {
+const Card = ({ name, cardType }) => {
     const [{ isDragging }, drag] = useDrag({
-        item: { name, type: ItemTypes.CARD },
+        item: { name, type: cardType },
         //end: (item, monitor) => {
         //    const dropResult = monitor.getDropResult()
         //    if (item && dropResult) {

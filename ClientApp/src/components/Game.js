@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
 import DropArea from './DropArea';
 import Card from './Card';
+import ItemTypes from './ItemTypes'
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -38,11 +39,11 @@ export class Game extends Component {
                         <h3>Ablagestapel</h3>
                         <DropArea gameName={this.gameName} discard={true} ownDrop={false} />
                         {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
-                            <Card name={this.state.game.discardPile.displayName } />                            
+                            <Card name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
                         }
                         <p></p>
                         <h3>Aufnahmestapel</h3>
-                        <Card name="back" /> 
+                        <Card name="back" cardType={ItemTypes.CARD}/> 
                     </div>
                    
                     <div style={{ overflow: 'hidden', clear: 'both' }}>
@@ -51,12 +52,18 @@ export class Game extends Component {
                         <p></p>
                         <h3>Hier zum Ablegen</h3>
                         <DropArea gameName={this.gameName} discard={false} ownDrop={true} />
-                        
+                        {this.state != null && this.state.game != null &&
+                            this.state.game.player.droppedCards.map(cards => {
+                                return (<Card name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
+                            }
+                            )
+                        }
+
                         <p></p>
                         <h3>Eigene Karten</h3>
                             {this.state != null && this.state.game != null &&
-                                this.state.game.myCards.map(cards => {
-                                    return (<Card name={cards.displayName} />);
+                            this.state.game.myCards.map(cards => {
+                                return (<Card name={cards.displayName} cardType={ItemTypes.CARD} />);
                                 }
                                 )
                             }
