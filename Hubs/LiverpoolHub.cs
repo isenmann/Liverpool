@@ -137,26 +137,28 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
-            var gameDto = new GameDto 
-            {
-                GameStarted = game.GameStarted, 
-                Name = game.Name, 
-                Players = allPlayersInTheGame.Select(p => new PlayerDto
-                {
-                    Name = p.User.Name,
-                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
-                    DroppedCards = p.DroppedCards,
-                    Points = p.Points
-                }).ToList(),
-                DiscardPile = game.DiscardPile.LastOrDefault()
-            };
-
+            
             if (game.GameStarted)
             {
                 foreach (var player in allPlayersInTheGame)
                 {
+                    var gameDto = new GameDto
+                    {
+                        GameStarted = game.GameStarted,
+                        Name = game.Name,
+                        Players = allPlayersInTheGame.Select(p => new PlayerDto
+                        {
+                            Name = p.User.Name,
+                            CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                            DroppedCards = p.DroppedCards,
+                            Points = p.Points
+                        }).ToList(),
+                        DiscardPile = game.DiscardPile.LastOrDefault()
+                    };
+
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
+                    gameDto.Players.Remove(gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name));
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }
@@ -172,7 +174,14 @@ namespace Liverpool.Hubs
             {
                 return;
             }
-            
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            game.NextTurn();
+
             game.DiscardPile.Add(new Card(card));
             player.Deck.RemoveAll(c => c.DisplayName == card);
 
@@ -190,6 +199,13 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
+
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
             
             await GameUpdated(gameName);
@@ -205,6 +221,13 @@ namespace Liverpool.Hubs
             {
                 return;
             }
+
+            if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             var card = game.DiscardPile.Last();
             if (card.DisplayName == cardName)
@@ -223,6 +246,11 @@ namespace Liverpool.Hubs
 
             // if it's not player's turn, do nothing
             if (!player.Turn)
+            {
+                return;
+            }
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
             {
                 return;
             }

@@ -4,16 +4,8 @@ import ItemTypes from './ItemTypes'
 import LiverpoolService from '../services/LiverpoolHubService';
 
 const style = {
-    height: '12rem',
-    width: '12rem',
-    marginRight: '1.5rem',
-    marginBottom: '1.5rem',
-    color: 'white',
-    padding: '1rem',
-    textAlign: 'center',
-    fontSize: '1rem',
-    lineHeight: 'normal',
-    float: 'left',
+    height: '50px',
+    width: '50px'
 }
 const DropArea = ({ gameName, discard, ownDrop }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
@@ -52,7 +44,7 @@ const DropArea = ({ gameName, discard, ownDrop }) => {
     }
     return (
         <div ref={drop} style={{ ...style, backgroundColor }}>
-            {isActive ? 'Release to drop' : 'Drag a card here'}
+            
         </div>
     )
 }

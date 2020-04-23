@@ -2,18 +2,10 @@
 import { useDrag } from 'react-dnd'
 
 const style = {
-    padding: '0.5rem 1rem',
-    marginRight: '1.5rem',
-    marginBottom: '1.5rem',
-    cursor: 'move',
-    float: 'left'
+    cursor: 'move'
 }
 
-const imgStyle = {
-    width: '35%',
-    height: '35%'
-}
-const Card = ({ name, cardType }) => {
+const Card = ({ name, cardType, className }) => {
     const [{ isDragging }, drag] = useDrag({
         item: { name, type: cardType },
         //end: (item, monitor) => {
@@ -29,7 +21,7 @@ const Card = ({ name, cardType }) => {
     const opacity = isDragging ? 0.4 : 1
     return (
         <div ref={drag} style={{ ...style, opacity }}>
-                <img style={{ ...imgStyle }} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
+            <img className={className} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
          </div>
     )
 }
