@@ -81,7 +81,7 @@ export class Game extends Component {
                             <div class="row h-33">
                                 <div class="row w-100">
                                     <div class="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
-                                        <div class="d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center">                                           
                                             {this.state != null && this.state.game != null &&
                                                 this.getOpponentCards(this.state.game.players[1], true)
                                             }
@@ -133,6 +133,7 @@ export class Game extends Component {
                                                     }
                                                 )
                                             }
+                                           
                                         </div>
                                     </div>
                                 </div>
@@ -141,25 +142,26 @@ export class Game extends Component {
 
                         {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
                             <div class="col-3">
-                                <div class="row h-100">
-                                    <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
-                                        <div>
-                                        {this.state != null && this.state.game != null &&
-                                            this.state.game.players[2].droppedCards.map(cards => {
-                                                return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
-                                            }
-                                            )
+                            <div class="row h-100">
+                                <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
+                                    <div>
+                                    {this.state != null && this.state.game != null &&
+                                        this.state.game.players[2].droppedCards.map(cards => {
+                                            return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
                                         }
-                                        </div>
+                                        )
+                                    }
                                     </div>
-                                    <div class="col-6 my-auto">
-                                        <div> {/* <!-- Rechte Spieler verdeckte Karten  */}
-                                        {/* <!--<img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />*/}
-                                        {this.state != null && this.state.game != null &&
-                                            this.getOpponentCards(this.state.game.players[2], false)
-                                        }
-                                        </div>
+                                </div>
+                                <div class="col-6 my-auto">
+                                    <div> {/* <!-- Rechte Spieler verdeckte Karten  */}
+                                    {/* <!--<img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />*/}
+                                        
+                                    {this.state != null && this.state.game != null &&
+                                        this.getOpponentCards(this.state.game.players[2], false)
+                                    }
                                     </div>
+                                </div>
                                 </div>
                             </div>
                         }

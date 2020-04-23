@@ -174,7 +174,14 @@ namespace Liverpool.Hubs
             {
                 return;
             }
-            
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            game.NextTurn();
+
             game.DiscardPile.Add(new Card(card));
             player.Deck.RemoveAll(c => c.DisplayName == card);
 
@@ -192,6 +199,13 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
+
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
             
             await GameUpdated(gameName);
@@ -207,6 +221,13 @@ namespace Liverpool.Hubs
             {
                 return;
             }
+
+            if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             var card = game.DiscardPile.Last();
             if (card.DisplayName == cardName)
@@ -225,6 +246,11 @@ namespace Liverpool.Hubs
 
             // if it's not player's turn, do nothing
             if (!player.Turn)
+            {
+                return;
+            }
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
             {
                 return;
             }

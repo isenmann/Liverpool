@@ -10,6 +10,7 @@ namespace Liverpool
         public List<Card> DroppedCards { get; set; }
         public int Points { get; set; }
         public bool Turn { get; set; }
+        public MoveType CurrentAllowedMove { get; set; } = MoveType.DrawCard;
         public Player(User user)
         {
             User = user;
