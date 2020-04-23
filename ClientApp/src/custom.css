@@ -12,3 +12,29 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+html, body {
+  height : 100%;
+  color : white;
+}
+
+.card {
+  width: 100px;
+}
+
+.overlap-h-20 {
+  margin-left: 0px;
+}
+
+.overlap-v-20 {
+  margin-top: -80px;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.h-33 {
+  height: 33.33%;
+}
