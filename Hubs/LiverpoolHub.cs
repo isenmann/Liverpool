@@ -137,26 +137,28 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
-            var gameDto = new GameDto 
-            {
-                GameStarted = game.GameStarted, 
-                Name = game.Name, 
-                Players = allPlayersInTheGame.Select(p => new PlayerDto
-                {
-                    Name = p.User.Name,
-                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
-                    DroppedCards = p.DroppedCards,
-                    Points = p.Points
-                }).ToList(),
-                DiscardPile = game.DiscardPile.LastOrDefault()
-            };
-
+            
             if (game.GameStarted)
             {
                 foreach (var player in allPlayersInTheGame)
                 {
+                    var gameDto = new GameDto
+                    {
+                        GameStarted = game.GameStarted,
+                        Name = game.Name,
+                        Players = allPlayersInTheGame.Select(p => new PlayerDto
+                        {
+                            Name = p.User.Name,
+                            CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                            DroppedCards = p.DroppedCards,
+                            Points = p.Points
+                        }).ToList(),
+                        DiscardPile = game.DiscardPile.LastOrDefault()
+                    };
+
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
+                    gameDto.Players.Remove(gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name));
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }

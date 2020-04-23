@@ -19,6 +19,25 @@ export class Game extends Component {
         });
     }
 
+    getOpponentCards = (player, horizontal) => {
+        let content = [];
+        let className = "card d-block";
+        if (horizontal) {
+            className += " overlap-h-20";
+        } else {
+            className += " overlap-v-20";
+        }
+        for (let i = 0; i < player.countofCards; i++) {
+            if (i === 0) {
+                content.push(<Card className="card d-block" name="back" cardType={ItemTypes.DROPPEDCARD} />);
+            } else {
+                content.push(<Card className={className} name="back" cardType={ItemTypes.DROPPEDCARD} />);
+            }
+            
+        }
+        return content;
+    };
+
     render() {
 
         let myCards = "";
@@ -35,44 +54,47 @@ export class Game extends Component {
             <div class="container-fluid h-100">
                 <DndProvider backend={Backend}>
                     <div class="row h-100">
-                        <div class="col-3 bg-danger">
-                            <div class="row h-100 bg-success">
-                                <div class="col-6 bg-dark my-auto">
+                        <div class="col-3">
+                            <div class="row h-100">
+                                <div class="col-6 my-auto">
                                     <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
-                                        <img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
+                                        {this.state != null && this.state.game != null &&
+                                            this.getOpponentCards(this.state.game.players[0], false)
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-6 bg-danger my-auto">
                                     <div class=""> {/* <!-- Linker Spieler abgelegten Karten -->*/}
-                                        <img class="card d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
+                                        {this.state != null && this.state.game != null &&
+                                            this.state.game.players[0].droppedCards.map(cards => {
+                                                return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
+                                            }
+                                            )
+                                        }
+                                        {/* <img class="card d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" /> -->*/}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-6 bg-success">
-                            <div class="row h-33 bg-warning">
+                        <div class="col-6">
+                            <div class="row h-33">
                                 <div class="row w-100">
                                     <div class="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
                                         <div class="d-flex justify-content-center">
-                                            <img class="card overlap-h-20" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                            <img class="card overlap-h-20" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                            <img class="card overlap-h-20" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
+                                            {this.state != null && this.state.game != null &&
+                                                this.getOpponentCards(this.state.game.players[1], true)
+                                            }
                                         </div>
                                     </div>
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
-                                            <img class="card overlap-h-20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                            <img class="card overlap-h-20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                            <img class="card overlap-h-20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                            <img class="card overlap-h-20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                            <img class="card overlap-h-20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
+                                            {this.state != null && this.state.game != null &&
+                                                this.state.game.players[1].droppedCards.map(cards => {
+                                                    return (<Card className="card overlap-h-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
+                                                }
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -80,7 +102,7 @@ export class Game extends Component {
 
                             <div class="row h-33">
                                 <div class="col-12 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
-                                    <div class="d-flex justify-content-center bg-primary">
+                                    <div class="d-flex justify-content-center">
                                         <DropArea gameName={this.gameName} discard={true} ownDrop={false} />
                                         {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
                                             <Card className="m-3 card" name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
@@ -90,7 +112,7 @@ export class Game extends Component {
                                 </div>
                             </div>
 
-                            <div class="row h-33 bg-warning">
+                            <div class="row h-33">
                                 <div class="row w-100">
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
@@ -117,26 +139,30 @@ export class Game extends Component {
                             </div>
                         </div>
 
-                        <div class="col-3 bg-dark">
-                            <div class="row h-100 bg-success">
-                                <div class="col-6 bg-danger my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
-                                    <div>
-                                        <img class="card d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
-                                        <img class="card overlap-v-20 d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" />
+                        {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
+                            <div class="col-3">
+                                <div class="row h-100">
+                                    <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
+                                        <div>
+                                        {this.state != null && this.state.game != null &&
+                                            this.state.game.players[2].droppedCards.map(cards => {
+                                                return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
+                                            }
+                                            )
+                                        }
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-6 bg-dark my-auto">
-                                    <div> {/* <!-- Rechte Spieler verdeckte Karten  */}
-                                        <img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
-                                        <img class="card overlap-v-20 d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />
+                                    <div class="col-6 my-auto">
+                                        <div> {/* <!-- Rechte Spieler verdeckte Karten  */}
+                                        {/* <!--<img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />*/}
+                                        {this.state != null && this.state.game != null &&
+                                            this.getOpponentCards(this.state.game.players[2], false)
+                                        }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </DndProvider>
             </div>
