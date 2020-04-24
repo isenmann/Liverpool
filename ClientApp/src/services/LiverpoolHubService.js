@@ -47,8 +47,8 @@ class LiverpoolHubService {
         this.connection.invoke("DrawCardFromDrawPile", gameName);
     }
 
-    dropCard(gameName, cardName) {
-        this.connection.invoke("DropCard", gameName, cardName);
+    dropCards(gameName) {
+        this.connection.invoke("DropCards", gameName);
     }
 
     registerGetAllUsers(allUsers) {

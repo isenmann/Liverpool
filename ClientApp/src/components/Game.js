@@ -13,6 +13,7 @@ export class Game extends Component {
         super(props);
         const { params } = this.props.match;
         this.gameName = params.name;
+        this.handleDropCards = this.handleDropCards.bind(this);
 
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
@@ -37,6 +38,11 @@ export class Game extends Component {
         }
         return content;
     };
+
+    handleDropCards() {
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.dropCards(this.state.game.name);
+    }
 
     render() {
 
@@ -116,7 +122,10 @@ export class Game extends Component {
                                 <div class="row w-100">
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
-                                            <DropArea gameName={this.gameName} discard={false} ownDrop={true} />
+                                            
+                                            <button onClick={this.handleDropCards}> 
+                                                "Drop cards"
+                                            </button>
                                             {this.state != null && this.state.game != null &&
                                                 this.state.game.player.droppedCards.map(cards => {
                                                     return (<Card className="overlap-h-20 card" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);

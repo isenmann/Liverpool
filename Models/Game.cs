@@ -117,23 +117,23 @@ namespace Liverpool.Models
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
         }
 
-        public bool CheckDroppedCards(User user)
+        private bool DropCards(Player player)
         {
             // SETS: Books of 3 or more cards sharing the same rank, i.e., 8♥ 8♣ 8♠.
             // RUNS: 4 or more cards of the same suit in sequence, i.e., 3♥ 4♥ 5♥ 6♥.
-            var player = Players.Where(p => p.User.ConnectionId == user.ConnectionId).Single();
-            if (player == null)
-            {
-                return false;
-            }
-
             if (Round == 1)
             {
                 // First - 2 sets
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                return setsAvailable >= 2;
+                if (setsAvailable >= 2)
+                {
+                    return DropSets(player, 2);
+                }
+
+                return false;
             }
-            else if (Round == 2)
+
+            if (Round == 2)
             {
                 // Second - 1 set & 1 run
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
@@ -143,21 +143,40 @@ namespace Liverpool.Models
                 }
 
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 1;
+                if (runsAvailable >= 1)
+                {
+                    DropSets(player, 1);
+                    return DropRuns(player, 1);
+                }
+
+                return false;
             }
-            else if (Round == 3)
+
+            if (Round == 3)
             {
                 // Third - 2 runs
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 2;
+                if (runsAvailable >= 2)
+                {
+                    return DropRuns(player, 2);
+                }
+
+                return false;
             }
-            else if (Round == 4)
+
+            if (Round == 4)
             {
                 // Fourth - 3 sets
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                return setsAvailable >= 3;
+                if (setsAvailable >= 3)
+                {
+                    return DropSets(player, 3);
+                }
+
+                return false;
             }
-            else if (Round == 5)
+
+            if (Round == 5)
             {
                 // Fifth - 2 sets & 1 run
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
@@ -167,9 +186,16 @@ namespace Liverpool.Models
                 }
 
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 1;
+                if (runsAvailable >= 1)
+                {
+                    DropSets(player, 2);
+                    return DropRuns(player, 1);
+                }
+
+                return false;
             }
-            else if (Round == 6)
+
+            if (Round == 6)
             {
                 // Sixth - 1 set & 2 runs
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
@@ -179,15 +205,28 @@ namespace Liverpool.Models
                 }
 
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 2;
+                if (runsAvailable >= 2)
+                {
+                    DropSets(player, 1);
+                    return DropRuns(player, 2);
+                }
+
+                return false;
             }
-            else if (Round == 7)
+
+            if (Round == 7)
             {
                 // Seventh - 3 runs
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 3;
+                if (runsAvailable >= 3)
+                {
+                    return DropRuns(player, 3);
+                }
+
+                return false;
             }
-            else if (Round == 8)
+
+            if (Round == 8)
             {
                 // Eight - 3 sets & 1 run with no remaining cards in hand, no final discard
                 var setsAvailable = NumberOfSetsAvailable(player.Deck);
@@ -197,7 +236,66 @@ namespace Liverpool.Models
                 }
 
                 var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                return runsAvailable >= 1;
+                if (runsAvailable >= 1)
+                {
+                    DropSets(player, 3);
+                    return DropRuns(player, 1);
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        private bool DropRuns(Player player, int numberOfRunsToDrop)
+        {
+            var allPossibleRunsInDeck = player.Deck.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
+            var allRunsInDeck = new List<List<Card>>();
+
+            foreach (var possibleRun in allPossibleRunsInDeck)
+            {
+                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
+                if (isRun)
+                {
+                    allRunsInDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                }
+            }
+
+            if (allRunsInDeck.Count >= numberOfRunsToDrop)
+            {
+                for (var i = 0; i < numberOfRunsToDrop; i++)
+                {
+                    player.DroppedCards.AddRange(allRunsInDeck[i]);
+                    player.Deck.RemoveAll(c => allRunsInDeck[i].Contains(c));
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DropSets(Player player, int numberOfSetsToDrop)
+        {
+            var allSetsInDeck = player.Deck.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
+            if (allSetsInDeck.Count == 1 && allSetsInDeck[0].Count >= 6 && numberOfSetsToDrop == 2)
+            {
+                 player.DroppedCards.AddRange(player.Deck.Where(c => allSetsInDeck[0].Contains(c)));
+                 player.Deck.RemoveAll(c => allSetsInDeck[0].Contains(c));
+
+                 return true;
+            }
+
+            if (allSetsInDeck.Count >= numberOfSetsToDrop)
+            {
+                for (var i = 0; i < numberOfSetsToDrop; i++)
+                {
+                    player.DroppedCards.AddRange(allSetsInDeck[i]);
+                    player.Deck.RemoveAll(c => allSetsInDeck[i].Contains(c));
+                }
+
+                return true;
             }
 
             return false;
@@ -226,6 +324,11 @@ namespace Liverpool.Models
             }
 
             return numberOfRuns;
+        }
+
+        public bool DropValidCards(Player player)
+        {
+            return DropCards(player);
         }
     }
 }

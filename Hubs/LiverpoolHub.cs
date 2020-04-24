@@ -239,7 +239,7 @@ namespace Liverpool.Hubs
             }
         }
 
-        public async Task DropCard(string gameName, string card)
+        public async Task DropCards(string gameName)
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -255,10 +255,13 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            player.Deck.RemoveAll(c => c.DisplayName == card);
-            player.DroppedCards.Add(new Card(card));
+            if (game.DropValidCards(player))
+            {
+                await GameUpdated(gameName);
+            }
 
-            await GameUpdated(gameName);
+            //player.Deck.RemoveAll(c => c.DisplayName == card);
+            //player.DroppedCards.Add(new Card(card));
         }
     }
 }

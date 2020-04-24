@@ -9,8 +9,8 @@ namespace Liverpool
         public int Value { get; set; }
         public Card(string displayName)
         {
-            string value = displayName.Substring(0, 1);
-            string suitCharacter = displayName.Substring(1, 1);
+            string value = displayName.Substring(0, displayName.Length - 1);
+            string suitCharacter = displayName.Substring(displayName.Length - 1, 1);
 
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
             {
