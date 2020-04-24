@@ -14,6 +14,7 @@ export class Game extends Component {
         const { params } = this.props.match;
         this.gameName = params.name;
         this.handleDropCards = this.handleDropCards.bind(this);
+        this.handleNextRound = this.handleNextRound.bind(this);
 
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
@@ -42,6 +43,11 @@ export class Game extends Component {
     handleDropCards() {
         if (this.state != null && this.state.game != null)
             LiverpoolService.dropCards(this.state.game.name);
+    }
+
+    handleNextRound() {
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.nextRound(this.state.game.name);
     }
 
     render() {
@@ -121,7 +127,12 @@ export class Game extends Component {
                                         {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
                                             <Card className="m-3 card" name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
                                         }
-                                        <Card className="m-3 card" name="back" cardType={ItemTypes.CARD}/>
+                                        <Card className="m-3 card" name="back" cardType={ItemTypes.CARD} />
+                                        {this.state != null && this.state.game != null && this.state.game.roundFinished &&
+                                            <button onClick={this.handleNextRound}>
+                                                "Next round"
+                                            </button>
+                                        }
                                     </div>
                                 </div>
                             </div>

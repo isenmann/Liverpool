@@ -15,6 +15,7 @@ namespace Liverpool.Models
         public Player Creator { get; set; }
         public int Round { get; set; }
         public int StartPlayer { get; set; }
+        public bool RoundFinished { get; set; }
 
         public bool StartGame()
         {
@@ -110,11 +111,13 @@ namespace Liverpool.Models
                 }
                 player.DroppedCards = new List<Card>();
                 player.Turn = false;
+                player.CurrentAllowedMove = MoveType.DrawCard;
             }
 
             Players[StartPlayer].Turn = true;
             DiscardPile = new List<Card>();
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
+            RoundFinished = false;
         }
 
         private bool DropCards(Player player)
@@ -246,6 +249,21 @@ namespace Liverpool.Models
             }
 
             return false;
+        }
+
+        internal bool PlayerWonTheRound(Player player)
+        {
+            if (player.Deck.Count == 0 &&
+                player.DroppedCards.Count > 0)
+            {
+                RoundFinished = true;
+            }
+            else
+            {
+                RoundFinished = false;
+            }
+
+            return RoundFinished;
         }
 
         private bool DropRuns(Player player, int numberOfRunsToDrop)

@@ -46,7 +46,7 @@ namespace Liverpool.Hubs
         {
             var success = _liverpoolGameService.SetUserName(Context.ConnectionId, userName);
 
-            if (success) 
+            if (success)
             {
                 var users = _liverpoolGameService.GetAllUsers();
                 await Clients.All.SendAsync("UserSetName", users.Select(u => u.Name));
@@ -72,7 +72,7 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => new PlayerDto
                     {
                         Name = p.User.Name,
-                        CountofCards = p.Deck != null ? p.Deck.Count : 0, 
+                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
                         DroppedCards = p.DroppedCards,
                         Points = p.Points
                     }).ToList()
@@ -137,7 +137,7 @@ namespace Liverpool.Hubs
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
-            
+
             if (game.GameStarted)
             {
                 foreach (var player in allPlayersInTheGame)
@@ -154,7 +154,8 @@ namespace Liverpool.Hubs
                             Points = p.Points,
                             PlayersTurn = p.Turn
                         }).ToList(),
-                        DiscardPile = game.DiscardPile.LastOrDefault()
+                        DiscardPile = game.DiscardPile.LastOrDefault(),
+                        RoundFinished = game.RoundFinished
                     };
 
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
@@ -181,10 +182,13 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            game.NextTurn();
-
             game.DiscardPile.Add(new Card(card));
             player.Deck.RemoveAll(c => c.DisplayName == card);
+
+            if (!game.PlayerWonTheRound(player))
+            {
+                game.NextTurn();
+            }
 
             await GameUpdated(gameName);
         }
@@ -208,7 +212,7 @@ namespace Liverpool.Hubs
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
-            
+
             await GameUpdated(gameName);
         }
 
@@ -263,6 +267,15 @@ namespace Liverpool.Hubs
 
             //player.Deck.RemoveAll(c => c.DisplayName == card);
             //player.DroppedCards.Add(new Card(card));
+        }
+
+        public async Task NextRound(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+
+            game.NextRound();
+
+            await GameUpdated(gameName);
         }
     }
 }

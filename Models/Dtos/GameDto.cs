@@ -13,5 +13,6 @@ namespace Liverpool.Models.Dtos
         public PlayerDto Player { get; set; }
         public List<Card> MyCards { get; internal set; }
         public Card DiscardPile { get; internal set; }
+        public bool RoundFinished { get; internal set; }
     }
 }
