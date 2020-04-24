@@ -11,5 +11,6 @@ namespace Liverpool.Models.Dtos
         public int CountofCards { get; set; }
         public List<Card> DroppedCards { get; set; }
         public int Points { get; set; }
+        public bool PlayersTurn { get; set; }
     }
 }

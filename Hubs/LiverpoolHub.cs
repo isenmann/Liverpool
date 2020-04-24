@@ -151,7 +151,8 @@ namespace Liverpool.Hubs
                             Name = p.User.Name,
                             CountofCards = p.Deck != null ? p.Deck.Count : 0,
                             DroppedCards = p.DroppedCards,
-                            Points = p.Points
+                            Points = p.Points,
+                            PlayersTurn = p.Turn
                         }).ToList(),
                         DiscardPile = game.DiscardPile.LastOrDefault()
                     };
