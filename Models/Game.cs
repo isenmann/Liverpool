@@ -344,6 +344,121 @@ namespace Liverpool.Models
             return numberOfRuns;
         }
 
+        internal bool DropCardAtPlayerArea(Player player, string cardName, Player playerToDrop)
+        {
+            if (player.DroppedCards.Count == 0)
+            {
+                return false;
+            }
+
+            var card = new Card(cardName);
+
+            var possibleToSet = AddCardToSet(card, playerToDrop.DroppedCards);
+            var possibleToRun = AddCardToRow(card, playerToDrop.DroppedCards);
+
+            if (possibleToSet || possibleToRun)
+            {
+                player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+            }
+
+            return possibleToRun || possibleToSet;
+        }
+
+        private bool AddCardToSet(Card card, List<Card> sets)
+        {
+            var originalDeck = sets.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
+            var deckToTest = new List<Card>(sets)
+            {
+                card
+            };
+
+            var allSetsInDeckToTest = deckToTest.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
+
+            if (originalDeck.Count != allSetsInDeckToTest.Count)
+            {
+                return false;
+            }
+
+            var possible = false;
+
+            for (int i = 0; i < originalDeck.Count; i++)
+            {
+                if (originalDeck[i].Count != allSetsInDeckToTest[i].Count)
+                {
+                    possible = true;
+                }
+            }
+
+            if (possible)
+            {
+                sets.Clear();
+                foreach (var cards in allSetsInDeckToTest)
+                {
+                    sets.AddRange(cards);
+                }
+            }
+
+            return possible;
+        }
+
+        private bool AddCardToRow(Card card, List<Card> runs)
+        {
+            var originalDeck = runs.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
+            var allRunsInOriginalDeck = new List<List<Card>>();
+
+            foreach (var possibleRun in originalDeck)
+            {
+                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
+                if (isRun)
+                {
+                    allRunsInOriginalDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                }
+            }
+
+            var deckToTest = new List<Card>(runs)
+            {
+                card
+            };
+
+            var testDeck = deckToTest.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
+            var allRunsInTestDeck = new List<List<Card>>();
+
+            foreach (var possibleRun in testDeck)
+            {
+                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
+                if (isRun)
+                {
+                    allRunsInTestDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                }
+            }
+
+            if (allRunsInOriginalDeck.Count != allRunsInTestDeck.Count)
+            {
+                return false;
+            }
+
+            var possible = false;
+
+            for (int i = 0; i < allRunsInOriginalDeck.Count; i++)
+            {
+                if (allRunsInOriginalDeck[i].Count != allRunsInTestDeck[i].Count)
+                {
+                    possible = true;
+                }
+            }
+
+            if (possible)
+            {
+                runs.Clear();
+                foreach (var cards in allRunsInTestDeck)
+                {
+                    runs.AddRange(cards);
+                }
+            }
+
+            return possible;
+        }
+
         public bool DropValidCards(Player player)
         {
             return DropCards(player);

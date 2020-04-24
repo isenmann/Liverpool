@@ -87,6 +87,9 @@ export class Game extends Component {
                                             }
                                             )
                                         }
+                                        {this.state != null && this.state.game != null &&
+                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[0].name} />
+                                        }
                                         {/* <img class="card d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" /> -->*/}
                                     </div>
                                 </div>
@@ -115,6 +118,9 @@ export class Game extends Component {
                                                 }
                                                 )
                                             }
+                                            {this.state != null && this.state.game != null &&
+                                                <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[1].name} />
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +129,7 @@ export class Game extends Component {
                             <div class="row h-33">
                                 <div class="col-12 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
                                     <div class="d-flex justify-content-center">
-                                        <DropArea gameName={this.gameName} discard={true} ownDrop={false} />
+                                        <DropArea gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" />
                                         {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
                                             <Card className="m-3 card" name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
                                         }
@@ -151,11 +157,14 @@ export class Game extends Component {
                                             }
                                             )
                                             }
+                                            {this.state != null && this.state.game != null &&
+                                                <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.player.name} />
+                                            }
                                         </div>
                                     </div>
                                     <div class="col-12 my-auto w-100">
                                         <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
-                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} />
+                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer=""/>
                                             {this.state != null && this.state.game != null &&
                                                 this.state.game.myCards.map(cards => {
                                                     return (<Card className="overlap-h-20 card" name={cards.displayName} cardType={ItemTypes.CARD} />);
@@ -182,7 +191,10 @@ export class Game extends Component {
                                             return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
                                         }
                                         )
-                                    }
+                                        }
+                                        {this.state != null && this.state.game != null &&
+                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[2].name} />
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-6 my-auto">
@@ -203,8 +215,6 @@ export class Game extends Component {
                     </div>
                 </DndProvider>
             </div>
-
-            
         )
     }
 }

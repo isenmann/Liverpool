@@ -7,7 +7,7 @@ const style = {
     height: '50px',
     width: '50px'
 }
-const DropArea = ({ gameName, discard, ownDrop }) => {
+const DropArea = ({ gameName, discard, ownDrop, dropAreaOfPlayer }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: ItemTypes.CARD,
         drop(item, monitor) {
@@ -21,6 +21,9 @@ const DropArea = ({ gameName, discard, ownDrop }) => {
             }
             else if (ownDrop) {
                 LiverpoolService.dropCard(gameName, item.name);
+            }
+            else if (dropAreaOfPlayer != "") {
+                LiverpoolService.dropCardAtPlayer(gameName, item.name, dropAreaOfPlayer);
             }
             else {
                 if (item.name === "back") {

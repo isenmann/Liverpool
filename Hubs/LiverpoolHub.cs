@@ -268,6 +268,27 @@ namespace Liverpool.Hubs
             //player.Deck.RemoveAll(c => c.DisplayName == card);
             //player.DroppedCards.Add(new Card(card));
         }
+        public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+            var playerToDrop = _liverpoolGameService.GetAllPlayersFromGame(gameName).First(p => p.User.Name == playerNameToDrop);
+
+            if (!player.Turn)
+            {
+                return;
+            }
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            if (game.DropCardAtPlayerArea(player, cardName, playerToDrop))
+            {
+                await GameUpdated(gameName);
+            }
+        }
 
         public async Task NextRound(string gameName)
         {
