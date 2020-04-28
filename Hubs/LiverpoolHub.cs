@@ -154,6 +154,11 @@ namespace Liverpool.Hubs
                             Points = p.Points,
                             PlayersTurn = p.Turn
                         }).ToList(),
+                        PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
+                        {
+                            Name = p.User.Name,
+                            Points = p.Points
+                        }).OrderByDescending(p => p.Points).ToList(),
                         DiscardPile = game.DiscardPile.LastOrDefault(),
                         RoundFinished = game.RoundFinished
                     };

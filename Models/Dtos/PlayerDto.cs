@@ -13,4 +13,10 @@ namespace Liverpool.Models.Dtos
         public int Points { get; set; }
         public bool PlayersTurn { get; set; }
     }
+
+    public class PlayerRankedDto
+    {
+        public string Name { get; set; }
+        public int Points { get; set; }
+    }
 }
