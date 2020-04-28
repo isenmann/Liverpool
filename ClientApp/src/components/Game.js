@@ -1,10 +1,11 @@
 ﻿import React, { Component } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService';
-import { DndProvider } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-beautiful-dnd';
 import DropArea from './DropArea';
 import Card from './Card';
+import CardNotDraggable from './CardNotDraggable';
 import ItemTypes from './ItemTypes'
+import { move } from './Utils';
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -31,9 +32,9 @@ export class Game extends Component {
         }
         for (let i = 0; i < player.countofCards; i++) {
             if (i === 0) {
-                content.push(<Card className="card d-block" name="back" cardType={ItemTypes.DROPPEDCARD} />);
+                content.push(<CardNotDraggable className="card d-block" name="back" cardType={ItemTypes.DROPPEDCARD} />);
             } else {
-                content.push(<Card className={className} name="back" cardType={ItemTypes.DROPPEDCARD} />);
+                content.push(<CardNotDraggable className={className} name="back" cardType={ItemTypes.DROPPEDCARD}/>);
             }
             
         }
@@ -50,6 +51,46 @@ export class Game extends Component {
             LiverpoolService.nextRound(this.state.game.name);
     }
 
+    onDragEnd = ({ source, destination }) => {
+        if (!destination) {
+          return;
+        }
+
+        if (source.droppableId === "playersCard" && destination.droppableId === "playersCard") {
+            LiverpoolService.sortPlayerCards(this.state.game.name, source.index, destination.index);
+            return;
+        }
+
+        if (source.droppableId === "playersCard" && destination.droppableId === "discardPile") {
+            LiverpoolService.discardCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
+            return;
+        }
+
+        if (source.droppableId === "playersCard" && destination.droppableId === "playersCard_dropped") {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name);
+            return;
+        }
+
+        if (source.droppableId === "discardPile" && destination.droppableId === "playersCard") {
+            LiverpoolService.drawCardFromDiscardPile(this.state.game.name, this.state.game.discardPile.displayName);
+            return;           
+        }
+
+        if (source.droppableId === "drawPile" && destination.droppableId === "playersCard") {
+            LiverpoolService.drawCardFromDrawPile(this.state.game.name);
+            return;
+        }
+
+        if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name || destination.droppableId == this.state.game.players[2].name)) {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId );
+            return;
+        }
+
+        //this.setState(state => {
+        //  return move(state, source, destination);
+        //});
+      };
+
     render() {
 
         let myCards = "";
@@ -64,9 +105,9 @@ export class Game extends Component {
 
         return (
             <div class="container-fluid h-100">
-                <DndProvider backend={Backend}>
+                <DragDropContext onDragEnd={this.onDragEnd}>
                     <div class="row h-100">
-                        <div class="col-3">
+                        <div class="col-2">
                             <div class="row h-100">
                                 <div class="col-6 my-auto">
                                     <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
@@ -81,22 +122,15 @@ export class Game extends Component {
                                 </div>
                                 <div class="col-6 my-auto">
                                     <div class=""> {/* <!-- Linker Spieler abgelegten Karten -->*/}
-                                        {this.state != null && this.state.game != null &&
-                                            this.state.game.players[0].droppedCards.map(cards => {
-                                                return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
-                                            }
-                                            )
+                                    { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
+                                            <DropArea id={this.state.game.players[0].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[0].name} cards={this.state.game.players[0].droppedCards} direction="vertical" />
                                         }
-                                        {this.state != null && this.state.game != null &&
-                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[0].name} />
-                                        }
-                                        {/* <img class="card d-block" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Aceofspades.svg/800px-Aceofspades.svg.png" /> -->*/}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-8">
                             <div class="row h-33">
                                 <div class="row w-100">
                                     <div class="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
@@ -112,15 +146,9 @@ export class Game extends Component {
                                     </div>
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
-                                            {this.state != null && this.state.game != null &&
-                                                this.state.game.players[1].droppedCards.map(cards => {
-                                                    return (<Card className="card overlap-h-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
-                                                }
-                                                )
-                                            }
-                                            {this.state != null && this.state.game != null &&
-                                                <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[1].name} />
-                                            }
+                                        { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[1] != null &&
+                                            <DropArea id={this.state.game.players[1].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[1].name} cards={this.state.game.players[1].droppedCards} direction="horizontal" />
+                                        }
                                         </div>
                                     </div>
                                 </div>
@@ -129,16 +157,18 @@ export class Game extends Component {
                             <div class="row h-33">
                                 <div class="col-12 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
                                     <div class="d-flex justify-content-center">
-                                        <DropArea gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" />
-                                        {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
-                                            <Card className="m-3 card" name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
-                                        }
-                                        <Card className="m-3 card" name="back" cardType={ItemTypes.CARD} />
-                                        {this.state != null && this.state.game != null && this.state.game.roundFinished &&
-                                            <button onClick={this.handleNextRound}>
-                                                "Next round"
-                                            </button>
-                                        }
+                                    { this.state != null && this.state.game != null && this.state.game.discardPile != null &&
+                                        <DropArea id="discardPile" disableDrop={false} gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" cards={[this.state.game.discardPile]} direction="horizontal" />
+                                    }
+                                    { this.state != null && this.state.game != null &&
+                                        <DropArea id="drawPile" disableDrop={true} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" direction="horizontal" />
+                                    }
+                                    {this.state != null && this.state.game != null && this.state.game.roundFinished &&
+                                        <button onClick={this.handleNextRound}>
+                                            "Next round"
+                                        </button>
+                                    }
+
                                     </div>
                                 </div>
                             </div>
@@ -147,59 +177,45 @@ export class Game extends Component {
                                 <div class="row w-100">
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
-                                            
-                                            <button onClick={this.handleDropCards}> 
-                                                "Drop cards"
-                                            </button>
-                                            {this.state != null && this.state.game != null &&
-                                                this.state.game.player.droppedCards.map(cards => {
-                                                    return (<Card className="overlap-h-20 card" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
+                                            {this.state != null && this.state.game != null && this.state.game.player != null && this.state.game.player.droppedCards.length == 0 &&
+                                                <button onClick={this.handleDropCards}>
+                                                    "Drop cards"
+                                                </button>
                                             }
-                                            )
-                                            }
-                                            {this.state != null && this.state.game != null &&
-                                                <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.player.name} />
+                                            { this.state != null && this.state.game != null && this.state.game.player != null &&
+                                                <DropArea id="playersCard_dropped" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={true} dropAreaOfPlayer={this.state.game.player.name} cards={this.state.game.player.droppedCards} direction="horizontal" />
                                             }
                                         </div>
                                     </div>
-                                    <div class="col-12 my-auto w-100">
-                                        <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
-                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer=""/>
-                                            {this.state != null && this.state.game != null &&
-                                                this.state.game.myCards.map(cards => {
-                                                    return (<Card className="overlap-h-20 card" name={cards.displayName} cardType={ItemTypes.CARD} />);
-                                                    }
-                                                )
-                                            }
-                                            {this.state != null && this.state.game != null &&
-                                                    this.state.game.player.playersTurn === true &&
-                                                <p>Your turn</p>
-                                            }
+                                    
+                                        <div class="col-12 my-auto w-100">
+                                            <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
+                                                {this.state != null && this.state.game != null && this.state.game.myCards != null && this.state.game.myCards != null &&
+                                                    <DropArea id="playersCard" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" cards={this.state.game.myCards} direction="horizontal" />
+                                                }
+                                                {this.state != null && this.state.game != null &&
+                                                        this.state.game.player.playersTurn === true &&
+                                                    <p>Your turn</p>
+                                                }
+                                            </div>
                                         </div>
-                                    </div>
+                                   
                                 </div>
                             </div>
                         </div>
 
                         {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
-                            <div class="col-3">
+                            <div class="col-2">
                             <div class="row h-100">
                                 <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
                                     <div>
-                                    {this.state != null && this.state.game != null &&
-                                        this.state.game.players[2].droppedCards.map(cards => {
-                                            return (<Card className="card overlap-v-20 d-block" name={cards.displayName} cardType={ItemTypes.DROPPEDCARD} />);
-                                        }
-                                        )
-                                        }
-                                        {this.state != null && this.state.game != null &&
-                                            <DropArea gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[2].name} />
+                                        { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
+                                            <DropArea id={this.state.game.players[2].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[2].name} cards={this.state.game.players[2].droppedCards} direction="vertical" />
                                         }
                                     </div>
                                 </div>
                                 <div class="col-6 my-auto">
                                     <div> {/* <!-- Rechte Spieler verdeckte Karten  */}
-                                    {/* <!--<img class="card d-block" src="https://i.pinimg.com/originals/62/ea/00/62ea0046d9b332d23393a714b160fa58.jpg" />*/}
                                         {this.state != null && this.state.game != null &&
                                             this.state.game.players[2].playersTurn === true &&
                                             <p>Active player</p>
@@ -213,7 +229,7 @@ export class Game extends Component {
                             </div>
                         }
                     </div>
-                </DndProvider>
+                </DragDropContext>
             </div>
         )
     }

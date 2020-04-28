@@ -159,8 +159,23 @@ namespace Liverpool.Hubs
                     };
 
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
+                    for (int i = 0; i < gameDto.MyCards.Count; i++)
+                    {
+                        gameDto.MyCards[i].Index = i;
+                    }
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
+                    for (int i = 0; i < gameDto.Player.DroppedCards.Count; i++)
+                    {
+                        gameDto.Player.DroppedCards[i].Index = i;
+                    }
                     gameDto.Players.Remove(gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name));
+                    foreach (var opponent in gameDto.Players)
+                    {
+                        for (int i = 0; i < opponent.DroppedCards.Count; i++)
+                        {
+                            opponent.DroppedCards[i].Index = i;
+                        }
+                    }
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }
@@ -212,7 +227,6 @@ namespace Liverpool.Hubs
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
-
             await GameUpdated(gameName);
         }
 
@@ -235,6 +249,11 @@ namespace Liverpool.Hubs
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             var card = game.DiscardPile.Last();
+            if (card.DisplayName == "empty")
+            {
+                return;
+            }
+
             if (card.DisplayName == cardName)
             {
                 player.Deck.Add(card);
@@ -288,6 +307,22 @@ namespace Liverpool.Hubs
             {
                 await GameUpdated(gameName);
             }
+        }
+
+        public async Task SortPlayerCards(string gameName, int oldIndex, int newIndex)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            var cardToMove = player.Deck[oldIndex];
+            var newCard = new Card(cardToMove.DisplayName)
+            {
+                Index = newIndex
+            };
+            player.Deck.RemoveAll(c => c.Index == oldIndex);
+            player.Deck.Insert(newIndex, newCard);
+
+            await GameUpdated(gameName);
         }
 
         public async Task NextRound(string gameName)

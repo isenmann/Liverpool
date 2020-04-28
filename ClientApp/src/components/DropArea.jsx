@@ -1,54 +1,34 @@
 ﻿import React from 'react'
-import { useDrop } from 'react-dnd'
+import { Droppable }  from 'react-beautiful-dnd';
 import ItemTypes from './ItemTypes'
-import LiverpoolService from '../services/LiverpoolHubService';
+import Cards from './Card'
 
-const style = {
-    height: '50px',
-    width: '50px'
-}
-const DropArea = ({ gameName, discard, ownDrop, dropAreaOfPlayer }) => {
-    const [{ canDrop, isOver }, drop] = useDrop({
-        accept: ItemTypes.CARD,
-        drop(item, monitor) {
-            const didDrop = monitor.didDrop()
-            if (didDrop) {
-                return
-            }
+const DropArea = ({ id, gameName, discard, ownDrop, dropAreaOfPlayer, cards, direction, disableDrop }) => (
 
-            if (discard) {
-                LiverpoolService.discardCard(gameName, item.name);
+    <Droppable droppableId={id} isDropDisabled={disableDrop} direction={direction}>
+      {provided => {
+        return (
+          <div>
+            {direction == "horizontal"
+             ? <div class="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
+                 {id == "drawPile" 
+                    ? <Cards key="back" className="card d-block" cardType={ItemTypes.CARD} name="back" index="0" cardOnly={false} />
+                    : cards.map((card) => (
+                      <Cards key={card.displayName+card.index} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                     ))
+                 }
+                {provided.placeholder}
+              </div>
+            : <div {...provided.droppableProps} ref={provided.innerRef}>
+                {cards.map((card) => (
+                    <Cards key={card.displayName+card.index} className="card overlap-v-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                ))}
+                {provided.placeholder}
+              </div>
             }
-            else if (ownDrop) {
-                LiverpoolService.dropCard(gameName, item.name);
-            }
-            else if (dropAreaOfPlayer != "") {
-                LiverpoolService.dropCardAtPlayer(gameName, item.name, dropAreaOfPlayer);
-            }
-            else {
-                if (item.name === "back") {
-                    LiverpoolService.drawCardFromDrawPile(gameName);
-                } else {
-                    LiverpoolService.drawCardFromDiscardPile(gameName, item.name);
-                }
-            }
-        },
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
-        }),
-    })
-    const isActive = canDrop && isOver
-    let backgroundColor = '#222'
-    if (isActive) {
-        backgroundColor = 'darkgreen'
-    } else if (canDrop) {
-        backgroundColor = 'darkkhaki'
-    }
-    return (
-        <div ref={drop} style={{ ...style, backgroundColor }}>
-            
-        </div>
-    )
-}
+          </div>
+        );
+      }}
+    </Droppable>
+);
 export default DropArea
