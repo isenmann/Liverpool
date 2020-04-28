@@ -48,7 +48,10 @@ namespace Liverpool.Models
 
             Players[StartPlayer].Turn = true;
 
-            DiscardPile = new List<Card>();
+            DiscardPile = new List<Card>
+            {
+                new Card("empty")
+            };
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
             Round = 1;
         }
@@ -125,7 +128,10 @@ namespace Liverpool.Models
             }
 
             Players[StartPlayer].Turn = true;
-            DiscardPile = new List<Card>();
+            DiscardPile = new List<Card>
+            {
+                new Card("empty")
+            };
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
             RoundFinished = false;
         }

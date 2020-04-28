@@ -58,38 +58,34 @@ export class Game extends Component {
 
         if (source.droppableId === "playersCard" && destination.droppableId === "playersCard") {
             LiverpoolService.sortPlayerCards(this.state.game.name, source.index, destination.index);
+            return;
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId === "discardPile") {
             LiverpoolService.discardCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
+            return;
+        }
+
+        if (source.droppableId === "playersCard" && destination.droppableId === "playersCard_dropped") {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name);
+            return;
         }
 
         if (source.droppableId === "discardPile" && destination.droppableId === "playersCard") {
-            LiverpoolService.drawCardFromDiscardPile(this.state.game.name, this.state.game.discardPile.displayName);           
+            LiverpoolService.drawCardFromDiscardPile(this.state.game.name, this.state.game.discardPile.displayName);
+            return;           
         }
 
         if (source.droppableId === "drawPile" && destination.droppableId === "playersCard") {
             LiverpoolService.drawCardFromDrawPile(this.state.game.name);
+            return;
         }
 
-        /*
-            if (discard) {
-                LiverpoolService.discardCard(gameName, item.name);
-            }
-            else if (ownDrop) {
-                LiverpoolService.dropCard(gameName, item.name);
-            }
-            else if (dropAreaOfPlayer != "") {
-                LiverpoolService.dropCardAtPlayer(gameName, item.name, dropAreaOfPlayer);
-            }
-            else {
-                if (item.name === "back") {
-                    LiverpoolService.drawCardFromDrawPile(gameName);
-                } else {
-                    LiverpoolService.drawCardFromDiscardPile(gameName, item.name);
-                }
-            }
-        */
+        if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name || destination.droppableId == this.state.game.players[2].name)) {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId );
+            return;
+        }
+
         //this.setState(state => {
         //  return move(state, source, destination);
         //});
@@ -167,20 +163,11 @@ export class Game extends Component {
                                     { this.state != null && this.state.game != null &&
                                         <DropArea id="drawPile" disableDrop={true} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" direction="horizontal" />
                                     }
-
-                                    {/*
-                                    <DropArea gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" />
-                                        {this.state != null && this.state.game != null && this.state.game.discardPile != null &&
-                                            <Card className="m-3 card" name={this.state.game.discardPile.displayName} cardType={ItemTypes.CARD} />                            
-                                        }
-                                        <Card className="m-3 card" name="back" cardType={ItemTypes.CARD} />
-                                        {this.state != null && this.state.game != null && this.state.game.roundFinished &&
-                                            <button onClick={this.handleNextRound}>
-                                                "Next round"
-                                            </button>
-                                        }
-                                    */}
-
+                                    {this.state != null && this.state.game != null && this.state.game.roundFinished &&
+                                        <button onClick={this.handleNextRound}>
+                                            "Next round"
+                                        </button>
+                                    }
 
                                     </div>
                                 </div>

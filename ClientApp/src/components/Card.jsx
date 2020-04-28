@@ -2,7 +2,7 @@
 import { Draggable } from 'react-beautiful-dnd';
 
 const Card = ({ name, cardType, className, index }) => (
-    <Draggable key={name} draggableId={name+index} index={index}>
+    <Draggable key={name+index} draggableId={name+index} index={index}>
     {provided => {
       return (
         <div

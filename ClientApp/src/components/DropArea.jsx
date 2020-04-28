@@ -12,16 +12,16 @@ const DropArea = ({ id, gameName, discard, ownDrop, dropAreaOfPlayer, cards, dir
             {direction == "horizontal"
              ? <div class="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
                  {id == "drawPile" 
-                    ? <Cards key="back" className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name="back" index="0" cardOnly={false} />
+                    ? <Cards key="back" className="card d-block" cardType={ItemTypes.CARD} name="back" index="0" cardOnly={false} />
                     : cards.map((card) => (
-                      <Cards key={card.displayName} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                      <Cards key={card.displayName+card.index} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
                      ))
                  }
                 {provided.placeholder}
               </div>
             : <div {...provided.droppableProps} ref={provided.innerRef}>
                 {cards.map((card) => (
-                    <Cards key={card.displayName} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                    <Cards key={card.displayName+card.index} className="card overlap-v-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
                 ))}
                 {provided.placeholder}
               </div>
