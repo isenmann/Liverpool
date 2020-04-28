@@ -290,6 +290,27 @@ namespace Liverpool.Hubs
             }
         }
 
+        public async Task SortPlayerCards(string gameName, int oldIndex, int newIndex)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            var cardToMove = player.Deck[oldIndex];
+            var newCard = new Card(cardToMove.DisplayName)
+            {
+                Index = newIndex
+            };
+            player.Deck.RemoveAll(c => c.Index == oldIndex);
+            player.Deck.Insert(newIndex, newCard);
+           
+            for (int i = 0; i < player.Deck.Count; i++)
+            {
+                player.Deck[i].Index = i;
+            }
+
+            await GameUpdated(gameName);
+        }
+
         public async Task NextRound(string gameName)
         {
             var game = _liverpoolGameService.GetGame(gameName);

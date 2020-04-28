@@ -36,6 +36,10 @@ namespace Liverpool.Models
             foreach (var player in Players)
             {
                 player.Deck = Deck.GetAndRemove(0, 10);
+                for (int i = 0; i < player.Deck.Count; i++)
+                {
+                    player.Deck[i].Index = i;
+                }
                 player.DroppedCards = new List<Card>();
             }
 
@@ -109,6 +113,12 @@ namespace Liverpool.Models
                 {
                     player.Deck = Deck.GetAndRemove(0, 13);
                 }
+
+                for (int i = 0; i < player.Deck.Count; i++)
+                {
+                    player.Deck[i].Index = i;
+                }
+
                 player.DroppedCards = new List<Card>();
                 player.Turn = false;
                 player.CurrentAllowedMove = MoveType.DrawCard;
