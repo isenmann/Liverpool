@@ -205,7 +205,11 @@ export class Game extends Component {
 
                                     </div>
                                 </div>
-                                <div class="col-3 d-flex justify-content-center my-auto"></div>
+                                <div class="col-3 justify-content-center my-auto">
+                                    {this.state != null && this.state.game != null &&
+                                        <b>Round {this.state.game.round} ({this.state.game.mantra})</b>
+                                    }
+                                </div>
                             </div>
 
                             <div class="row h-33">

@@ -16,6 +16,46 @@ namespace Liverpool.Models
         public int Round { get; set; }
         public int StartPlayer { get; set; }
         public bool RoundFinished { get; set; }
+        public string Mantra 
+        { 
+            get 
+            {
+                if (Round == 1)
+                {
+                    return "2 Sets";
+                }
+                if (Round == 2)
+                {
+                    return "1 Set, 1 Run";
+                }
+                if (Round == 3)
+                {
+                    return "2 Runs";
+                }
+                if (Round == 4)
+                {
+                    return "3 Sets";
+                }
+                if (Round == 5)
+                {
+                    return "2 Sets, 1 Run";
+                }
+                if (Round == 6)
+                {
+                    return "1 Set, 2 Runs";
+                }
+                if (Round == 7)
+                {
+                    return "3 Runs";
+                }
+                if (Round == 8)
+                {
+                    return "3 Sets, 1 Run";
+                }
+
+                return string.Empty;
+            } 
+        }
 
         public bool StartGame()
         {
@@ -54,6 +94,11 @@ namespace Liverpool.Models
             };
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
             Round = 1;
+        }
+
+        public void SetMantra()
+        {
+
         }
 
         public void NextTurn()

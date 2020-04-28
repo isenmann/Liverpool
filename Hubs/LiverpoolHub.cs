@@ -160,7 +160,9 @@ namespace Liverpool.Hubs
                             Points = p.Points
                         }).OrderByDescending(p => p.Points).ToList(),
                         DiscardPile = game.DiscardPile.LastOrDefault(),
-                        RoundFinished = game.RoundFinished
+                        RoundFinished = game.RoundFinished,
+                        Mantra = game.Mantra,
+                        Round = game.Round
                     };
 
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
