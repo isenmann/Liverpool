@@ -107,7 +107,7 @@ export class Game extends Component {
             <div class="container-fluid h-100">
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <div class="row h-100">
-                        <div class="col-3">
+                        <div class="col-2">
                             <div class="row h-100">
                                 <div class="col-6 my-auto">
                                     <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
@@ -130,7 +130,7 @@ export class Game extends Component {
                             </div>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-8">
                             <div class="row h-33">
                                 <div class="row w-100">
                                     <div class="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
@@ -177,9 +177,11 @@ export class Game extends Component {
                                 <div class="row w-100">
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
-                                            <button onClick={this.handleDropCards}> 
-                                                "Drop cards"
-                                            </button>
+                                            {this.state != null && this.state.game != null && this.state.game.player != null && this.state.game.player.droppedCards.length == 0 &&
+                                                <button onClick={this.handleDropCards}>
+                                                    "Drop cards"
+                                                </button>
+                                            }
                                             { this.state != null && this.state.game != null && this.state.game.player != null &&
                                                 <DropArea id="playersCard_dropped" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={true} dropAreaOfPlayer={this.state.game.player.name} cards={this.state.game.player.droppedCards} direction="horizontal" />
                                             }
@@ -203,7 +205,7 @@ export class Game extends Component {
                         </div>
 
                         {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
-                            <div class="col-3">
+                            <div class="col-2">
                             <div class="row h-100">
                                 <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
                                     <div>
