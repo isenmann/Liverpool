@@ -69,75 +69,82 @@ export class Liverpool extends Component {
 handleGameCreate(event) {
     event.preventDefault();
     LiverpoolService.createGame(this.state.gameNameToCreateOrJoin);
+}
+
+handleGameJoin(gameName) {
+    return event => {
+        event.preventDefault()
+        LiverpoolService.joinGame(gameName);
     }
-
-handleGameJoin(event) {
-    event.preventDefault();
-    LiverpoolService.joinGame(this.state.gameNameToCreateOrJoin);
 }
 
-handleGameStart(event) {
-    event.preventDefault();
-    LiverpoolService.startGame(this.state.gameNameToCreateOrJoin);
+handleGameStart(gameName) {
+    return event => {
+        event.preventDefault()
+        LiverpoolService.startGame(gameName);
+    }
 }
-  
 
   render() {
     return (
-        <div>
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Name: 
-                     <input type="text" value={this.state.userName} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col-6">
+                    <form onSubmit={this.handleSubmit}>
+                        <label class="col-6 my-auto">
+                            Bitte Spielername eingeben:                              
+                        </label>
+                        <input class="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
+                        <input class="col-2" type="submit" value="Senden" />
+                    </form>
 
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Spieler online</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.userNames.map(name =>
-                        <tr key={name}>
-                            <td>{name}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-       
-            <form onSubmit={this.handleGameCreate}>
-                <label>
-                    Name:
-                    <input type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
-                </label>
-                <input type="submit" value="Spiel erstellen" />
-            </form>
-
-            <form onSubmit={this.handleGameJoin}>
-                <input type="submit" value="Spiel beitreten" />
-            </form>
-            <form onSubmit={this.handleGameStart}>
-                <input type="submit" value="Spiel starten" />
-            </form>
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Nicht gestartete Spiele</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.notStartedGames.map(game =>
-                        <tr key={game.name}>
-                            <td>{game.name}</td>
-                            <td>{game.gameStarted}</td>
-                            <td>{game.players.map(p => p.name)}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                        <thead>
+                            <tr>
+                                <th>Spieler online</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.userNames.map(name =>
+                                <tr key={name}>
+                                    <td>{name}</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <form onSubmit={this.handleGameCreate}>
+                        <label class="col-6 my-auto">
+                            Bitte Spielname eingeben:
+                        </label>
+                        <input class="col-4" type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
+                        <input class="col-2" type="submit" value="Spiel erstellen" />
+                    </form>
+                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                        <thead>
+                            <tr>
+                                <th>Nicht gestartete Spiele</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.notStartedGames.map(game =>
+                                <tr key={game.name}>
+                                    <td>{game.name}</td>
+                                    <td>{game.gameStarted}</td>
+                                    <td>{game.players.map(p => p.name)}</td>
+                                    <td> <form onSubmit={this.handleGameJoin(game.name)}>
+                                        <input type="submit" value="Spiel beitreten" />
+                                    </form></td>
+                                    <td> <form onSubmit={this.handleGameStart(game.name)}>
+                                        <input type="submit" value="Spiel starten" />
+                                    </form></td>
+                                </tr>
+                            )}
+                        </tbody>
+                        </table>
+                </div>
+            </div>
         </div>
     );
   }
