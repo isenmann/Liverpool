@@ -47,8 +47,28 @@ class LiverpoolHubService {
         this.connection.invoke("DrawCardFromDrawPile", gameName);
     }
 
-    dropCard(gameName, cardName) {
-        this.connection.invoke("DropCard", gameName, cardName);
+    dropCards(gameName) {
+        this.connection.invoke("DropCards", gameName);
+    }
+
+    dropCardAtPlayer(gameName, cardName, playerName) {
+        this.connection.invoke("DropCardAtPlayer", gameName, cardName, playerName);
+    }
+
+    nextRound(gameName) {
+        this.connection.invoke("NextRound", gameName);
+    }
+
+    sortPlayerCards(gameName, oldIndex, newIndex) {
+        this.connection.invoke("SortPlayerCards", gameName, oldIndex, newIndex);
+    }
+
+    knock(gameName) {
+        this.connection.invoke("Knock", gameName);
+    }
+
+    knockFeedback(gameName, feedback){
+        this.connection.invoke("KnockFeedback", gameName, feedback);
     }
 
     registerGetAllUsers(allUsers) {
