@@ -16,45 +16,45 @@ namespace Liverpool.Models
         public int Round { get; set; }
         public int StartPlayer { get; set; }
         public bool RoundFinished { get; set; }
-        public string Mantra 
-        { 
-            get 
+        public string Mantra
+        {
+            get
             {
                 if (Round == 1)
                 {
-                    return "2 Sets";
+                    return "2 Pässe";
                 }
                 if (Round == 2)
                 {
-                    return "1 Set, 1 Run";
+                    return "1 Pass, 1 Straße";
                 }
                 if (Round == 3)
                 {
-                    return "2 Runs";
+                    return "2 Straßen";
                 }
                 if (Round == 4)
                 {
-                    return "3 Sets";
+                    return "3 Pässe";
                 }
                 if (Round == 5)
                 {
-                    return "2 Sets, 1 Run";
+                    return "2 Pässe, 1 Straße";
                 }
                 if (Round == 6)
                 {
-                    return "1 Set, 2 Runs";
+                    return "1 Pass, 2 Straßen";
                 }
                 if (Round == 7)
                 {
-                    return "3 Runs";
+                    return "3 Straßen";
                 }
                 if (Round == 8)
                 {
-                    return "3 Sets, 1 Run";
+                    return "3 Pässe, 1 Straße";
                 }
 
                 return string.Empty;
-            } 
+            }
         }
 
         public bool StartGame()
@@ -96,9 +96,16 @@ namespace Liverpool.Models
             Round = 1;
         }
 
-        public void SetMantra()
+        internal void SetGameFinished()
         {
-
+            GameFinished = true;
+            foreach (var player in Players)
+            {
+                foreach (var card in player.Deck)
+                {
+                    player.Points += card.Value;
+                }
+            }
         }
 
         public void NextTurn()
@@ -117,18 +124,18 @@ namespace Liverpool.Models
 
         public void NextRound()
         {
-            if (Round == 8)
-            {
-                GameFinished = true;
-                foreach (var player in Players)
-                {
-                    foreach (var card in player.Deck)
-                    {
-                        player.Points += card.Value;
-                    }
-                }
-                return;
-            }
+            //if (Round == 8)
+            //{
+            //    GameFinished = true;
+            //    foreach (var player in Players)
+            //    {
+            //        foreach (var card in player.Deck)
+            //        {
+            //            player.Points += card.Value;
+            //        }
+            //    }
+            //    return;
+            //}
 
             Round++;
             StartPlayer++;
@@ -310,6 +317,33 @@ namespace Liverpool.Models
             }
 
             return false;
+        }
+
+        public bool CheckPlayersDropForRoundEight(Player player)
+        {
+            if (Round != 8)
+            {
+                return false;
+            }
+
+            var setsAvailable = NumberOfSetsAvailable(player.Deck);
+            var runsAvailable = NumberOfRunsAvailable(player.Deck);
+            if (setsAvailable != 3)
+            {
+                return false;
+            }
+
+            if (runsAvailable != 1)
+            {
+                return false;
+            }
+
+            if (runsAvailable + setsAvailable != player.Deck.Count)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         internal bool PlayerWonTheRound(Player player)

@@ -159,8 +159,10 @@ namespace Liverpool.Hubs
                             Name = p.User.Name,
                             Points = p.Points
                         }).OrderByDescending(p => p.Points).ToList(),
+                        PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
                         DiscardPile = game.DiscardPile.LastOrDefault(),
                         RoundFinished = game.RoundFinished,
+                        GameFinished = game.GameFinished,
                         Mantra = game.Mantra,
                         Round = game.Round
                     };
@@ -205,7 +207,7 @@ namespace Liverpool.Hubs
             }
 
             game.DiscardPile.Add(new Card(card));
-            player.Deck.RemoveAll(c => c.DisplayName == card);
+            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
 
             if (!game.PlayerWonTheRound(player))
             {
@@ -266,6 +268,13 @@ namespace Liverpool.Hubs
                 player.Deck.Add(card);
                 game.DiscardPile.Remove(card);
 
+                // if someone knocked then reset it, because the active player has advantage
+                foreach (var p in _liverpoolGameService.GetAllPlayersFromGame(gameName))
+                {
+                    p.FeedbackOnKnock = null;
+                    p.PlayerKnocked = false;
+                }
+
                 await GameUpdated(gameName);
             }
         }
@@ -286,13 +295,21 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            if (game.DropValidCards(player))
+            if (game.CheckPlayersDropForRoundEight(player))
             {
-                await GameUpdated(gameName);
+                game.SetGameFinished();
             }
 
-            //player.Deck.RemoveAll(c => c.DisplayName == card);
-            //player.DroppedCards.Add(new Card(card));
+            if (game.DropValidCards(player))
+            {
+                // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
+                if (player.Deck.Count == 0 && game.Round != 8)
+                {
+                    game.NextTurn();
+                }
+
+                await GameUpdated(gameName);
+            }
         }
         public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop)
         {
@@ -339,6 +356,71 @@ namespace Liverpool.Hubs
             game.NextRound();
 
             await GameUpdated(gameName);
+        }
+
+        public async Task Knock(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            if (player.Turn)
+            {
+                return;
+            }
+
+            // Knock is only allowed if a card is on the discard pile
+            var card = game.DiscardPile.Last();
+            if (card.DisplayName == "empty")
+            {
+                return;
+            }
+
+            player.PlayerKnocked = true;
+            player.FeedbackOnKnock = false;
+
+            await GameUpdated(gameName);
+        }
+
+        public async Task KnockFeedback(string gameName, bool allow)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            player.FeedbackOnKnock = allow;
+
+            var allPlayers = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
+            var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKnock == null);
+            if (!feedbackMissing)
+            {
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var index = indexOfPlayerInTurn;
+
+                do
+                {
+                    index++;
+                    index %= allPlayers.Count;
+                    // if the player knocked or denied the knock from another player, 
+                    // then he has to take the card
+                    if (allPlayers[index].PlayerKnocked || !allPlayers[index].FeedbackOnKnock.Value)
+                    {
+                        // take the price for the knock, which is an additional card from draw pile
+                        allPlayers[index].Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+                        
+                        var card = game.DiscardPile.Last();
+                        allPlayers[index].Deck.Add(card);
+                        game.DiscardPile.Remove(card);
+                        break;
+                    }
+                } while (index != indexOfPlayerInTurn);
+
+                foreach (var p in _liverpoolGameService.GetAllPlayersFromGame(gameName))
+                {
+                    p.FeedbackOnKnock = null;
+                    p.PlayerKnocked = false;
+                }
+
+                await GameUpdated(gameName);
+            }
         }
     }
 }

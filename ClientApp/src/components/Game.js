@@ -16,6 +16,9 @@ export class Game extends Component {
         this.gameName = params.name;
         this.handleDropCards = this.handleDropCards.bind(this);
         this.handleNextRound = this.handleNextRound.bind(this);
+        this.handleKnock = this.handleKnock.bind(this);
+        this.sendPositiveKnockFeedback = this.sendPositiveKnockFeedback.bind(this);
+        this.sendNegativeKnockFeedback = this.sendNegativeKnockFeedback.bind(this);
 
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
@@ -49,6 +52,21 @@ export class Game extends Component {
     handleNextRound() {
         if (this.state != null && this.state.game != null)
             LiverpoolService.nextRound(this.state.game.name);
+    }
+
+    handleKnock() {
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.knock(this.state.game.name);
+    }
+
+    sendPositiveKnockFeedback(){
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.knockFeedback(this.state.game.name, true);
+    }
+
+    sendNegativeKnockFeedback(){
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.knockFeedback(this.state.game.name, false);
     }
 
     onDragEnd = ({ source, destination }) => {
@@ -111,7 +129,7 @@ export class Game extends Component {
                             <div class="row h-100">
                                 <div class="row h-99 my-auto">
                                     <div class="col-12 my-auto w-100">
-                                        <div class="d-flex justify-content-center">
+                                        <div class="text-left">
                                             {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === true &&
                                                 <b>{this.state.game.players[0].name}</b>
                                             }
@@ -175,7 +193,7 @@ export class Game extends Component {
                                             <thead>
                                                 <tr>
                                                     <th scope="col">Name</th>
-                                                    <th scope="col">Points</th>
+                                                    <th scope="col">Punkte</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -191,25 +209,59 @@ export class Game extends Component {
                                 </div>  
                                 <div class="col-6 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
                                     <div class="d-flex justify-content-center">
-                                    { this.state != null && this.state.game != null && this.state.game.discardPile != null &&
-                                        <DropArea id="discardPile" disableDrop={false} gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" cards={[this.state.game.discardPile]} direction="horizontal" />
-                                    }
-                                    { this.state != null && this.state.game != null &&
-                                        <DropArea id="drawPile" disableDrop={true} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" direction="horizontal" />
-                                    }
-                                    {this.state != null && this.state.game != null && this.state.game.roundFinished &&
-                                        <button onClick={this.handleNextRound}>
-                                            Next round
-                                        </button>
-                                    }
+                                        {this.state != null && this.state.game != null &&
+                                            <b>Runde {this.state.game.round} ({this.state.game.mantra})</b>
+                                        }
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        { this.state != null && this.state.game != null && this.state.game.discardPile != null &&
+                                            <DropArea id="discardPile" disableDrop={false} gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" cards={[this.state.game.discardPile]} direction="horizontal" />
+                                        }
+                                        { this.state != null && this.state.game != null &&
+                                            <DropArea id="drawPile" disableDrop={true} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" direction="horizontal" />
+                                        }
 
+                                        {this.state != null && this.state.game != null && this.state.game.roundFinished && this.state.game.gameFinished === false &&
+                                            <div class="d-flex justify-content-center">
+                                                <button onClick={this.handleNextRound}>
+                                                    Nächste Runde
+                                                </button>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                                <div class="col-3 justify-content-center my-auto">
-                                    {this.state != null && this.state.game != null &&
-                                        <b>Round {this.state.game.round} ({this.state.game.mantra})</b>
+                                <div class="col-3 my-auto">
+                                    {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
+                                        <div class="d-flex justify-content-center">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Geklopft</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {this.state.game.playersKnocked.map((player) => (
+                                                        <tr>
+                                                            <td>{player}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     }
-                                </div>
+                                    <div class="d-flex justify-content-center">
+                                        {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
+                                            <button onClick={this.sendPositiveKnockFeedback}>
+                                                Annehmen
+                                                </button>
+                                        }
+                                        {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 && this.state.game.player.playersTurn === false &&
+                                            <button onClick={this.sendNegativeKnockFeedback}>
+                                                Verweigern
+                                            </button>
+                                        }
+                                    </div>
+                                </div>  
                             </div>
 
                             <div class="row h-33">
@@ -217,10 +269,15 @@ export class Game extends Component {
                                     <div class="col-12 my-auto w-100">
                                         <div class="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true &&
-                                                <b>You</b>
+                                                <b>Du</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === false &&
-                                                <>You</>
+                                                <>Du</>
+                                            }
+                                            {this.state != null && this.state.game != null && this.state.game.player.playersTurn === false &&
+                                                <button onClick={this.handleKnock}>
+                                                    Klopfen
+                                                </button>
                                             }
                                         </div>
                                     </div>
@@ -228,7 +285,7 @@ export class Game extends Component {
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.player != null && this.state.game.player.droppedCards.length == 0 &&
                                                 <button onClick={this.handleDropCards}>
-                                                    Drop cards
+                                                    Karten ablegen
                                                 </button>
                                             }
                                             { this.state != null && this.state.game != null && this.state.game.player != null &&
@@ -254,7 +311,7 @@ export class Game extends Component {
                                 <div class="row h-100">
                                     <div class="row h-99 my-auto">
                                         <div class="col-12 my-auto w-100">
-                                            <div class="d-flex justify-content-center">
+                                            <div class="text-right">
                                                 {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === true &&
                                                     <b>{this.state.game.players[2].name}</b>
                                                 }

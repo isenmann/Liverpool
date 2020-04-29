@@ -96,7 +96,7 @@ handleGameStart(event) {
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
-                        <th>Users online</th>
+                        <th>Spieler online</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,19 +113,19 @@ handleGameStart(event) {
                     Name:
                     <input type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
                 </label>
-                <input type="submit" value="Create game" />
+                <input type="submit" value="Spiel erstellen" />
             </form>
 
             <form onSubmit={this.handleGameJoin}>
-                <input type="submit" value="Join game" />
+                <input type="submit" value="Spiel beitreten" />
             </form>
             <form onSubmit={this.handleGameStart}>
-                <input type="submit" value="Start game" />
+                <input type="submit" value="Spiel starten" />
             </form>
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
-                        <th>Not started games</th>
+                        <th>Nicht gestartete Spiele</th>
                     </tr>
                 </thead>
                 <tbody>

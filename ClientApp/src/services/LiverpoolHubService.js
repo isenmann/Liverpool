@@ -63,6 +63,14 @@ class LiverpoolHubService {
         this.connection.invoke("SortPlayerCards", gameName, oldIndex, newIndex);
     }
 
+    knock(gameName) {
+        this.connection.invoke("Knock", gameName);
+    }
+
+    knockFeedback(gameName, feedback){
+        this.connection.invoke("KnockFeedback", gameName, feedback);
+    }
+
     registerGetAllUsers(allUsers) {
         this.connection.on('AllUsers', (userNames) => {
             allUsers(userNames);

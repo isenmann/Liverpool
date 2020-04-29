@@ -17,5 +17,7 @@ namespace Liverpool.Models.Dtos
         public bool RoundFinished { get; internal set; }
         public string Mantra { get; set; }
         public int Round { get; internal set; }
+        public List<string> PlayersKnocked { get; set; }
+        public bool GameFinished { get; internal set; }
     }
 }
