@@ -10,6 +10,7 @@ namespace Liverpool.Models
         public List<Player> Players { get; set; }
         public List<Card> Deck { get; set; }
         public List<Card> DiscardPile { get; set; }
+        public List<Card> AskToKeepCardPile { get; set; }
         public bool GameStarted { get; set; }
         public bool GameFinished { get; set; }
         public Player Creator { get; set; }
@@ -93,6 +94,12 @@ namespace Liverpool.Models
                 new Card("empty")
             };
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
+
+            AskToKeepCardPile = new List<Card>
+            {
+                new Card("empty")
+            };
+
             Round = 1;
         }
 
@@ -184,10 +191,16 @@ namespace Liverpool.Models
                 player.DroppedCards = new List<Card>();
                 player.Turn = false;
                 player.CurrentAllowedMove = MoveType.DrawCard;
+                player.PlayerAskedToKeepCard = false;
+                player.FeedbackOnKeepingCard = null;
             }
 
             Players[StartPlayer].Turn = true;
             DiscardPile = new List<Card>
+            {
+                new Card("empty")
+            };
+            AskToKeepCardPile = new List<Card>
             {
                 new Card("empty")
             };

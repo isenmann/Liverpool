@@ -164,7 +164,9 @@ namespace Liverpool.Hubs
                         RoundFinished = game.RoundFinished,
                         GameFinished = game.GameFinished,
                         Mantra = game.Mantra,
-                        Round = game.Round
+                        Round = game.Round,
+                        KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
+                        PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
                     };
 
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
@@ -202,6 +204,11 @@ namespace Liverpool.Hubs
             }
 
             if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
             {
                 return;
             }
@@ -290,6 +297,11 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
+            {
+                return;
+            }
+
             if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
             {
                 return;
@@ -318,6 +330,11 @@ namespace Liverpool.Hubs
             var playerToDrop = _liverpoolGameService.GetAllPlayersFromGame(gameName).First(p => p.User.Name == playerNameToDrop);
 
             if (!player.Turn)
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
             {
                 return;
             }
@@ -364,6 +381,17 @@ namespace Liverpool.Hubs
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
 
             if (player.Turn)
+            {
+                return;
+            }
+
+            // Knocking only allowed if the active player hasn't draw a card
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Single(p => p.Turn).CurrentAllowedMove == MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
             {
                 return;
             }
@@ -418,6 +446,91 @@ namespace Liverpool.Hubs
                     p.FeedbackOnKnock = null;
                     p.PlayerKnocked = false;
                 }
+
+                await GameUpdated(gameName);
+            }
+        }
+
+        public async Task AskToKeepCard(string gameName, string card)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            if (!player.Turn)
+            {
+                return;
+            }
+
+            // Asking to keep card only allowed if the active player has draw a card
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Single(p => p.Turn).CurrentAllowedMove == MoveType.DrawCard)
+            {
+                return;
+            }
+
+            player.PlayerAskedToKeepCard = true;
+            player.FeedbackOnKeepingCard = true;
+            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
+            game.AskToKeepCardPile.Add(new Card(card));
+
+            await GameUpdated(gameName);
+        }
+
+        public async Task KeepCardFeedback(string gameName, bool allow)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+
+            player.FeedbackOnKeepingCard = allow;
+
+            var allPlayers = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
+            var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKeepingCard == null);
+            if (!feedbackMissing)
+            {
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var index = indexOfPlayerInTurn;
+                var cardTakenByAnotherPlayer = false;
+
+                var playerAfterCurrentPlayerDenied = true;
+
+                do
+                {
+                    index++;
+                    index %= allPlayers.Count;
+                    // if a player denied the keep request from another player, 
+                    // then he has to take the card
+                    if (!allPlayers[index].FeedbackOnKeepingCard.Value)
+                    {
+                        // take the price for denying it, which is an additional card from draw pile
+                        if (!playerAfterCurrentPlayerDenied)
+                        {
+                            allPlayers[index].Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+                        }
+
+                        var card = game.AskToKeepCardPile.Last();
+                        allPlayers[index].Deck.Add(card);
+                        game.AskToKeepCardPile.Remove(card);
+                        cardTakenByAnotherPlayer = true;
+                        break;
+                    }
+
+                    playerAfterCurrentPlayerDenied = false;
+                } while (index != indexOfPlayerInTurn);
+
+                // if everybody agrees then the player can keep the card
+                if (!cardTakenByAnotherPlayer)
+                {
+                    var card = game.AskToKeepCardPile.Last();
+                    allPlayers.First(p => p.Turn && p.PlayerAskedToKeepCard).Deck.Add(card);
+                    game.AskToKeepCardPile.Remove(card);
+                }
+
+                foreach (var p in _liverpoolGameService.GetAllPlayersFromGame(gameName))
+                {
+                    p.FeedbackOnKeepingCard = null;
+                    p.PlayerAskedToKeepCard = false;
+                }
+
+                game.NextTurn();
 
                 await GameUpdated(gameName);
             }

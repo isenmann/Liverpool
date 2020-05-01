@@ -19,6 +19,8 @@ export class Game extends Component {
         this.handleKnock = this.handleKnock.bind(this);
         this.sendPositiveKnockFeedback = this.sendPositiveKnockFeedback.bind(this);
         this.sendNegativeKnockFeedback = this.sendNegativeKnockFeedback.bind(this);
+        this.sendNegativeKeepFeedback = this.sendNegativeKeepFeedback.bind(this);
+        this.sendPositiveKeepFeedback = this.sendPositiveKeepFeedback.bind(this);
 
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
@@ -69,6 +71,16 @@ export class Game extends Component {
             LiverpoolService.knockFeedback(this.state.game.name, false);
     }
 
+    sendPositiveKeepFeedback() {
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.keepCardFeedback(this.state.game.name, true);
+    }
+
+    sendNegativeKeepFeedback() {
+        if (this.state != null && this.state.game != null)
+            LiverpoolService.keepCardFeedback(this.state.game.name, false);
+    }
+
     onDragEnd = ({ source, destination }) => {
         if (!destination) {
           return;
@@ -96,6 +108,11 @@ export class Game extends Component {
 
         if (source.droppableId === "drawPile" && destination.droppableId === "playersCard") {
             LiverpoolService.drawCardFromDrawPile(this.state.game.name);
+            return;
+        } 
+
+        if (source.droppableId === "playersCard" && destination.droppableId === "playerCardForAskingToKeep") {
+            LiverpoolService.askToKeepCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
             return;
         }
 
@@ -231,6 +248,59 @@ export class Game extends Component {
                                     </div>
                                 </div>
                                 <div class="col-3 my-auto">
+                                    {/* Ask for keeping a card instead of discard it */}
+                                    {this.state != null && this.state.game != null && this.state.game.playerAskedForKeepingCard && !this.state.game.player.playersTurn &&
+                                        <>
+                                        <div class="d-flex justify-content-center">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                    <th scope="col">Folg. Karte will der aktive Spieler behalten</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <button onClick={this.sendPositiveKeepFeedback}>
+                                                Erlauben
+                                            </button>
+                                            <button onClick={this.sendNegativeKeepFeedback}>
+                                                Verweigern
+                                            </button>
+                                            </div>
+                                        </>
+                                    }
+                                    {/* Drop zone for asking to keep one card */}
+                                    {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true &&
+                                        <div class="d-flex justify-content-center">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Karte hier ablegen um sie behalten zu wollen</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                    <td>
+                                                        {this.state.game.playerAskedForKeepingCard ?
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                            :
+                                                            <DropArea id="playerCardForAskingToKeep" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.player.name} cards={this.state.game.keepingCard} direction="horizontal" />
+                                                        }
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    {/* Accept or deny knocking */}
                                     {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
                                         <div class="d-flex justify-content-center">
                                             <table class="table">
@@ -249,18 +319,18 @@ export class Game extends Component {
                                             </table>
                                         </div>
                                     }
-                                    <div class="d-flex justify-content-center">
-                                        {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
-                                            <button onClick={this.sendPositiveKnockFeedback}>
-                                                Annehmen
+                                    {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
+                                        <div class="d-flex justify-content-center">
+                                                <button onClick={this.sendPositiveKnockFeedback}>
+                                                    Annehmen
                                                 </button>
-                                        }
-                                        {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 && this.state.game.player.playersTurn === false &&
-                                            <button onClick={this.sendNegativeKnockFeedback}>
-                                                Verweigern
+                                                {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 && this.state.game.player.playersTurn === false &&
+                                                <button onClick={this.sendNegativeKnockFeedback}>
+                                                    Verweigern
                                             </button>
-                                        }
-                                    </div>
+                                            }
+                                        </div>
+                                    }
                                 </div>  
                             </div>
 

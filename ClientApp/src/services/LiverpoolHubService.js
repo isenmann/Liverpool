@@ -71,6 +71,14 @@ class LiverpoolHubService {
         this.connection.invoke("KnockFeedback", gameName, feedback);
     }
 
+    askToKeepCard(gameName, cardName) {
+        this.connection.invoke("AskToKeepCard", gameName, cardName);
+    }
+
+    keepCardFeedback(gameName, feedback) {
+        this.connection.invoke("KeepCardFeedback", gameName, feedback);
+    }
+
     registerGetAllUsers(allUsers) {
         this.connection.on('AllUsers', (userNames) => {
             allUsers(userNames);

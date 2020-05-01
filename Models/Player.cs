@@ -13,6 +13,8 @@ namespace Liverpool
         public MoveType CurrentAllowedMove { get; set; } = MoveType.DrawCard;
         public bool PlayerKnocked { get; set; }
         public bool? FeedbackOnKnock { get; set; }
+        public bool? FeedbackOnKeepingCard { get; set; }
+        public bool PlayerAskedToKeepCard { get; set; }
         public Player(User user)
         {
             User = user;

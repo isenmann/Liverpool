@@ -19,5 +19,7 @@ namespace Liverpool.Models.Dtos
         public int Round { get; internal set; }
         public List<string> PlayersKnocked { get; set; }
         public bool GameFinished { get; internal set; }
+        public bool PlayerAskedForKeepingCard { get; set; }
+        public Card KeepingCard { get; set; }
     }
 }
