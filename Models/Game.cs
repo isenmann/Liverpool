@@ -145,6 +145,13 @@ namespace Liverpool.Models
             }
             Deck = DeckCreator.CreateCards().ToList();
 
+            // if the player is the only one who dropped his cards, he gets -50 points
+            var playerWhoWonRound = Players.FirstOrDefault(p => p.Deck.Count == 0);
+            if (Players.Count(p => p.DroppedCards.Count > 0) == 1)
+            {
+                playerWhoWonRound.Points -= 50;
+            }
+
             foreach (var player in Players)
             {
                 foreach (var card in player.Deck)
