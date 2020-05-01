@@ -213,6 +213,11 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
+            {
+                return;
+            }
+
             game.DiscardPile.Add(new Card(card));
             player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
 
@@ -240,6 +245,11 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
+            {
+                return;
+            }
+
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
@@ -258,6 +268,11 @@ namespace Liverpool.Hubs
             }
 
             if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
             {
                 return;
             }
@@ -302,6 +317,11 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
+            {
+                return;
+            }
+
             if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
             {
                 return;
@@ -323,6 +343,7 @@ namespace Liverpool.Hubs
                 await GameUpdated(gameName);
             }
         }
+
         public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop)
         {
             var game = _liverpoolGameService.GetGame(gameName);
@@ -335,6 +356,11 @@ namespace Liverpool.Hubs
             }
 
             if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
             {
                 return;
             }
@@ -457,6 +483,11 @@ namespace Liverpool.Hubs
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
 
             if (!player.Turn)
+            {
+                return;
+            }
+
+            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
             {
                 return;
             }
