@@ -21,5 +21,23 @@ namespace Liverpool
                 return values;
             }
         }
+
+        public static IEnumerable<IEnumerable<Card>> GroupConsecutive(this IEnumerable<Card> list)
+        {
+            var group = new List<Card>();
+            foreach (var card in list)
+            {
+                if (group.Count == 0 || card.Value - group[group.Count - 1].Value <= 1)
+                {
+                    group.Add(card);
+                }
+                else
+                {
+                    yield return group;
+                    group = new List<Card> { card };
+                }
+            }
+            yield return group;
+        }
     }
 }

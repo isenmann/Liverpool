@@ -193,6 +193,8 @@ namespace Liverpool.Models
                 player.CurrentAllowedMove = MoveType.DrawCard;
                 player.PlayerAskedToKeepCard = false;
                 player.FeedbackOnKeepingCard = null;
+                player.PlayerKnocked = false;
+                player.FeedbackOnKnock = null;
             }
 
             Players[StartPlayer].Turn = true;
@@ -388,10 +390,21 @@ namespace Liverpool.Models
 
             foreach (var possibleRun in allPossibleRunsInDeck)
             {
-                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
-                if (isRun)
+                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
+
+                // detect if the run is overflow from King to Ace
+                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
                 {
-                    allRunsInDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
+                    combinedList.AddRange(listOfConsecutiveCards.Last());
+                    listOfConsecutiveCards.RemoveAt(0);
+                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
+                    listOfConsecutiveCards.Add(combinedList);
+                }
+
+                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
+                {
+                    allRunsInDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
                 }
             }
 
@@ -449,11 +462,19 @@ namespace Liverpool.Models
 
             foreach (var possibleRun in allPossibleRunsInDeck)
             {
-                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
-                if (isRun) 
+                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
+                
+                // detect if the run is overflow from King to Ace
+                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
                 {
-                    numberOfRuns++;
+                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
+                    combinedList.AddRange(listOfConsecutiveCards.Last());
+                    listOfConsecutiveCards.RemoveAt(0);
+                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
+                    listOfConsecutiveCards.Add(combinedList);
                 }
+
+                numberOfRuns += listOfConsecutiveCards.Where(l => l.Count() >= 4).Count();
             }
 
             return numberOfRuns;
@@ -469,7 +490,7 @@ namespace Liverpool.Models
             var card = new Card(cardName);
 
             var possibleToSet = AddCardToSet(card, playerToDrop.DroppedCards);
-            var possibleToRun = AddCardToRow(card, playerToDrop.DroppedCards);
+            var possibleToRun = AddCardToRun(card, playerToDrop.DroppedCards);
 
             if (possibleToSet || possibleToRun)
             {
@@ -516,20 +537,33 @@ namespace Liverpool.Models
             return possible;
         }
 
-        private bool AddCardToRow(Card card, List<Card> runs)
+        private bool AddCardToRun(Card card, List<Card> runs)
         {
+            // Look for the runs in the current deck
             var originalDeck = runs.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
             var allRunsInOriginalDeck = new List<List<Card>>();
 
             foreach (var possibleRun in originalDeck)
             {
-                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
-                if (isRun)
+                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
+
+                // detect if the run is overflow from King to Ace
+                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
                 {
-                    allRunsInOriginalDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
+                    combinedList.AddRange(listOfConsecutiveCards.Last());
+                    listOfConsecutiveCards.RemoveAt(0);
+                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
+                    listOfConsecutiveCards.Add(combinedList);
+                }
+
+                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
+                {
+                    allRunsInOriginalDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
                 }
             }
 
+            // now add the card to test into the current deck and look again for runs
             var deckToTest = new List<Card>(runs)
             {
                 card
@@ -540,13 +574,25 @@ namespace Liverpool.Models
 
             foreach (var possibleRun in testDeck)
             {
-                var isRun = possibleRun.OrderBy(c => c.Value).Zip(possibleRun.Skip(1), (l, r) => l.Value + 1 == r.Value).All(t => t);
-                if (isRun)
+                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
+
+                // detect if the run is overflow from King to Ace
+                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
                 {
-                    allRunsInTestDeck.Add(new List<Card>(possibleRun.OrderBy(v => v.Value)));
+                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
+                    combinedList.AddRange(listOfConsecutiveCards.Last());
+                    listOfConsecutiveCards.RemoveAt(0);
+                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
+                    listOfConsecutiveCards.Add(combinedList);
+                }
+
+                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
+                {
+                    allRunsInTestDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
                 }
             }
 
+            // if a new run was added, then return false, because we are looking for adding a card to a run
             if (allRunsInOriginalDeck.Count != allRunsInTestDeck.Count)
             {
                 return false;
@@ -559,6 +605,7 @@ namespace Liverpool.Models
                 if (allRunsInOriginalDeck[i].Count != allRunsInTestDeck[i].Count)
                 {
                     possible = true;
+                    break;
                 }
             }
 

@@ -272,11 +272,6 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
-            {
-                return;
-            }
-
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
 
             var card = game.DiscardPile.Last();
