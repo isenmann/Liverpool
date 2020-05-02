@@ -175,16 +175,23 @@ namespace Liverpool.Hubs
                         gameDto.MyCards[i].Index = i;
                     }
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
-                    for (int i = 0; i < gameDto.Player.DroppedCards.Count; i++)
+                    foreach (var dropCards in gameDto.Player.DroppedCards)
                     {
-                        gameDto.Player.DroppedCards[i].Index = i;
+                        for (int i = 0; i < dropCards.Count; i++)
+                        {
+                            dropCards[i].Index = i;
+                        }
                     }
+                    
                     gameDto.Players.Remove(gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name));
                     foreach (var opponent in gameDto.Players)
                     {
-                        for (int i = 0; i < opponent.DroppedCards.Count; i++)
+                        foreach (var dropCards in opponent.DroppedCards)
                         {
-                            opponent.DroppedCards[i].Index = i;
+                            for (int i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
                         }
                     }
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);

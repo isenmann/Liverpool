@@ -81,7 +81,17 @@ namespace Liverpool.Models
                 {
                     player.Deck[i].Index = i;
                 }
-                player.DroppedCards = new List<Card>();
+                player.DroppedCards = new List<List<Card>>
+                {
+                    new List<Card>
+                {
+                    new Card("empty")
+                },
+                    new List<Card>
+                {
+                    new Card("empty")
+                }
+                };
             }
 
             Random rnd = new Random();
@@ -166,20 +176,135 @@ namespace Liverpool.Models
                     player.Points += card.Value;
                 }
 
-                if (Round <= 5)
+                player.DroppedCards.Clear();
+
+                if (Round == 2)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 10);
                 }
-                else if (Round == 6)
+                if (Round == 3)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 4)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 5)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 6)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 11);
                 }
-                else if (Round == 7)
+                if (Round == 7)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 12);
                 }
-                else if (Round == 8)
+                if (Round == 8)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 13);
                 }
 
@@ -188,7 +313,6 @@ namespace Liverpool.Models
                     player.Deck[i].Index = i;
                 }
 
-                player.DroppedCards = new List<Card>();
                 player.Turn = false;
                 player.CurrentAllowedMove = MoveType.DrawCard;
                 player.PlayerAskedToKeepCard = false;
@@ -412,7 +536,7 @@ namespace Liverpool.Models
             {
                 for (var i = 0; i < numberOfRunsToDrop; i++)
                 {
-                    player.DroppedCards.AddRange(allRunsInDeck[i]);
+                    //player.DroppedCards.AddRange(allRunsInDeck[i]);
                     player.Deck.RemoveAll(c => allRunsInDeck[i].Contains(c));
                 }
 
@@ -427,7 +551,7 @@ namespace Liverpool.Models
             var allSetsInDeck = player.Deck.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
             if (allSetsInDeck.Count == 1 && allSetsInDeck[0].Count >= 6 && numberOfSetsToDrop == 2)
             {
-                 player.DroppedCards.AddRange(player.Deck.Where(c => allSetsInDeck[0].Contains(c)));
+                 //player.DroppedCards.AddRange(player.Deck.Where(c => allSetsInDeck[0].Contains(c)));
                  player.Deck.RemoveAll(c => allSetsInDeck[0].Contains(c));
 
                  return true;
@@ -437,7 +561,7 @@ namespace Liverpool.Models
             {
                 for (var i = 0; i < numberOfSetsToDrop; i++)
                 {
-                    player.DroppedCards.AddRange(allSetsInDeck[i]);
+                    //player.DroppedCards.AddRange(allSetsInDeck[i]);
                     player.Deck.RemoveAll(c => allSetsInDeck[i].Contains(c));
                 }
 
@@ -489,8 +613,8 @@ namespace Liverpool.Models
 
             var card = new Card(cardName);
 
-            var possibleToSet = AddCardToSet(card, playerToDrop.DroppedCards);
-            var possibleToRun = AddCardToRun(card, playerToDrop.DroppedCards);
+            var possibleToSet = false;// AddCardToSet(card, playerToDrop.DroppedCards);
+            var possibleToRun = false;// AddCardToRun(card, playerToDrop.DroppedCards);
 
             if (possibleToSet || possibleToRun)
             {

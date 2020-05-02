@@ -46,6 +46,19 @@ export class Game extends Component {
         return content;
     };
 
+    getDropAreaForDroppingCards = (player, horizontal) => {
+        var content = [];
+        for (var i = 0; i < player.droppedCards.length; i++) {
+            var dropId = "playersCard_dropped_" + i;
+            content.push(
+            <div class="d-flex col justify-content-center">
+                    <DropArea id={dropId} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={true} dropAreaOfPlayer={this.state.game.player.name} cards={player.droppedCards[i]} direction="horizontal" />
+            </div>
+            );
+        }
+        return content;
+    }
+
     handleDropCards() {
         if (this.state != null && this.state.game != null)
             LiverpoolService.dropCards(this.state.game.name);
@@ -351,26 +364,21 @@ export class Game extends Component {
                                             }
                                         </div>
                                     </div>
-                                    <div class="col-12 my-auto">
+                                    <div class="col-12 my-auto w-100 justify-content-center">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
-                                            {this.state != null && this.state.game != null && this.state.game.player != null && this.state.game.player.droppedCards.length == 0 &&
-                                                <button onClick={this.handleDropCards}>
-                                                    Karten ablegen
-                                                </button>
-                                            }
-                                            { this.state != null && this.state.game != null && this.state.game.player != null &&
-                                                <DropArea id="playersCard_dropped" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={true} dropAreaOfPlayer={this.state.game.player.name} cards={this.state.game.player.droppedCards} direction="horizontal" />
-                                            }
+                                            {this.state != null && this.state.game != null && this.state.game.player != null &&
+                                                this.getDropAreaForDroppingCards(this.state.game.player, true)
+                                        }
                                         </div>
                                     </div>
                                     
-                                        <div class="col-12 my-auto w-100">
-                                            <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
-                                                {this.state != null && this.state.game != null && this.state.game.myCards != null && this.state.game.myCards != null &&
-                                                    <DropArea id="playersCard" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" cards={this.state.game.myCards} direction="horizontal" />
-                                                }
-                                            </div>
+                                    <div class="col-12 my-auto w-100">
+                                        <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
+                                            {this.state != null && this.state.game != null && this.state.game.myCards != null && this.state.game.myCards != null &&
+                                                <DropArea id="playersCard" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" cards={this.state.game.myCards} direction="horizontal" />
+                                            }
                                         </div>
+                                    </div>
                                    
                                 </div>
                             </div>
