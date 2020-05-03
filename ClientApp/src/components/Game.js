@@ -14,7 +14,6 @@ export class Game extends Component {
         super(props);
         const { params } = this.props.match;
         this.gameName = params.name;
-        this.handleDropCards = this.handleDropCards.bind(this);
         this.handleNextRound = this.handleNextRound.bind(this);
         this.handleKnock = this.handleKnock.bind(this);
         this.sendPositiveKnockFeedback = this.sendPositiveKnockFeedback.bind(this);
@@ -57,11 +56,6 @@ export class Game extends Component {
             );
         }
         return content;
-    }
-
-    handleDropCards() {
-        if (this.state != null && this.state.game != null)
-            LiverpoolService.dropCards(this.state.game.name);
     }
 
     handleNextRound() {
@@ -109,8 +103,14 @@ export class Game extends Component {
             return;
         }
 
-        if (source.droppableId === "playersCard" && destination.droppableId === "playersCard_dropped") {
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name);
+        if (source.droppableId === "playersCard" && destination.droppableId.includes("playersCard_dropped_")) {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name, destination.droppableId);
+            return;
+        }
+
+        if (source.droppableId.includes("playersCard_dropped_") && destination.droppableId === "playersCard") {
+            // TODO: Neue Methode um bereits abgelegt Karten zurueckzunehmen, falls sei falsch waren beim ersten ablegen
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name, destination.droppableId);
             return;
         }
 
@@ -130,7 +130,7 @@ export class Game extends Component {
         }
 
         if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name || destination.droppableId == this.state.game.players[2].name)) {
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId );
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId, destination.droppableId);
             return;
         }
 

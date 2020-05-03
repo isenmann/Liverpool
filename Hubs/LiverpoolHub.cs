@@ -225,6 +225,18 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            if (player.DroppedCards.All(d => d.Count > 0) && !game.DroppedCardsAreCorrect(player))
+            {
+                return;
+            }
+
+            if (player.DroppedCards.All(d => d.Count > 0) && game.DroppedCardsAreCorrect(player))
+            {
+                // TODO NOCHMAL CHECKEN, WANN ICH DAS SETZEN MUSS....KOMMT IN KOLLISION WENN EIN SPIELER
+                // KOMPLETT ABLEGT IN EINER RUNDE
+                player.HasDroppedCards = true;
+            }
+
             game.DiscardPile.Add(new Card(card));
             player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
 
@@ -303,50 +315,7 @@ namespace Liverpool.Hubs
             }
         }
 
-        public async Task DropCards(string gameName)
-        {
-            var game = _liverpoolGameService.GetGame(gameName);
-            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
-
-            // if it's not player's turn, do nothing
-            if (!player.Turn)
-            {
-                return;
-            }
-
-            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerAskedToKeepCard))
-            {
-                return;
-            }
-
-            if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Any(p => p.PlayerKnocked))
-            {
-                return;
-            }
-
-            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
-            {
-                return;
-            }
-
-            if (game.CheckPlayersDropForRoundEight(player))
-            {
-                game.SetGameFinished();
-            }
-
-            if (game.DropValidCards(player))
-            {
-                // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
-                if (player.Deck.Count == 0 && game.Round != 8)
-                {
-                    game.NextTurn();
-                }
-
-                await GameUpdated(gameName);
-            }
-        }
-
-        public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop)
+        public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop, string dropAreaName)
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -372,7 +341,26 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            if (game.DropCardAtPlayerArea(player, cardName, playerToDrop))
+            if (player.User.Name == playerToDrop.User.Name && !player.HasDroppedCards)
+            {
+                game.DropCardAtOwnArea(player, cardName, dropAreaName);
+                // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
+                if (player.Deck.Count == 0 && game.Round != 8)
+                {
+                    if (game.DroppedCardsAreCorrect(player))
+                    {
+                        game.NextTurn();
+                    }
+                }
+
+                if (player.Deck.Count == 0 && game.Round == 8)
+                {
+                    // TODO CHECK IF PLAYER HAS WON THIS ROUND
+                }
+
+                await GameUpdated(gameName);
+            }
+            else if (game.DropCardAtPlayerArea(player, cardName, playerToDrop, dropAreaName))
             {
                 await GameUpdated(gameName);
             }

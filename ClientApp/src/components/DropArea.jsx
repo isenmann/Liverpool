@@ -13,11 +13,15 @@ const DropArea = ({ id, gameName, discard, ownDrop, dropAreaOfPlayer, cards, dir
              ? <div class="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
                  {id == "drawPile" 
                     ? <Cards myKey={id + "back" + "0"} key="back" className="card d-block" cardType={ItemTypes.CARD} name="back" index={0} cardOnly={false} />
-                            : id == "playerCardForAskingToKeep"
-                                ? <Cards myKey={id + cards.displayName + cards.index} key={id + cards.displayName + cards.index} className="card d-block" cardType={ItemTypes.CARD} name={cards.displayName} index={0} cardOnly={false} />
-                                : cards.map((card) => (
-                                    <Cards myKey={id + card.displayName + card.index} key={id+card.displayName+card.index} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
-                                     ))
+                    : id == "playerCardForAskingToKeep"
+                        ? <Cards myKey={id + cards.displayName + cards.index} key={id + cards.displayName + cards.index} className="card d-block" cardType={ItemTypes.CARD} name={cards.displayName} index={0} cardOnly={false} />
+                                : id.includes("playersCard_dropped_")
+                                    ? cards.map((card) => (
+                                        <Cards myKey={id + card.displayName + card.index} key={id + card.displayName + card.index} className="card_dropped overlap-h-65 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                                        ))
+                                    : cards.map((card) => (
+                                        <Cards myKey={id + card.displayName + card.index} key={id+card.displayName+card.index} className="card overlap-h-20 d-block" cardType={ItemTypes.CARD} name={card.displayName} index={card.index} cardOnly={false} />
+                                        ))
                  }
                 {provided.placeholder}
               </div>
