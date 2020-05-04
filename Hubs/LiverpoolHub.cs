@@ -225,16 +225,19 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            if (player.DroppedCards.All(d => d.Count > 0) && !game.DroppedCardsAreCorrect(player))
+            // the drop areas of the player are not empty
+            if (!player.DroppedCards.All(droppedList => droppedList.Count > 0 && 
+                droppedList.All(cards => cards.DisplayName == "empty")))
             {
-                return;
-            }
+                if (player.DroppedCards.All(d => d.Count > 0) && !game.DroppedCardsAreCorrect(player))
+                {
+                    return;
+                }
 
-            if (player.DroppedCards.All(d => d.Count > 0) && game.DroppedCardsAreCorrect(player))
-            {
-                // TODO NOCHMAL CHECKEN, WANN ICH DAS SETZEN MUSS....KOMMT IN KOLLISION WENN EIN SPIELER
-                // KOMPLETT ABLEGT IN EINER RUNDE
-                player.HasDroppedCards = true;
+                if (player.DroppedCards.All(d => d.Count > 0) && game.DroppedCardsAreCorrect(player))
+                {
+                    player.HasDroppedCards = true;
+                }
             }
 
             game.DiscardPile.Add(new Card(card));
@@ -349,19 +352,56 @@ namespace Liverpool.Hubs
                 {
                     if (game.DroppedCardsAreCorrect(player))
                     {
+                        player.HasDroppedCards = true;
                         game.NextTurn();
                     }
                 }
 
                 if (player.Deck.Count == 0 && game.Round == 8)
                 {
-                    // TODO CHECK IF PLAYER HAS WON THIS ROUND
+                    if (game.DroppedCardsAreCorrect(player) && game.PlayerWonTheRound(player))
+                    {
+                        game.SetGameFinished();
+                    }
                 }
 
                 await GameUpdated(gameName);
             }
             else if (game.DropCardAtPlayerArea(player, cardName, playerToDrop, dropAreaName))
             {
+                await GameUpdated(gameName);
+            }
+        }
+
+        public async Task TakeBackPlayersCard(string gameName, string cardName, string index)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+            var indexOfDroppedCardList = int.Parse(index);
+
+            if (!player.Turn)
+            {
+                return;
+            }
+
+            if (player.CurrentAllowedMove != MoveType.DropOrDiscardCards)
+            {
+                return;
+            }
+
+            if (!player.HasDroppedCards)
+            {
+                var droppedCards = player.DroppedCards[indexOfDroppedCardList];
+                droppedCards.Remove(droppedCards.First(c => c.DisplayName == cardName));
+
+                if (droppedCards.Count == 0)
+                {
+                    droppedCards.Add(new Card("empty"));
+                }
+                
+                var card = new Card(cardName);
+                player.Deck.Add(card);
+
                 await GameUpdated(gameName);
             }
         }
@@ -486,6 +526,15 @@ namespace Liverpool.Hubs
             if (_liverpoolGameService.GetAllPlayersFromGame(gameName).Single(p => p.Turn).CurrentAllowedMove == MoveType.DrawCard)
             {
                 return;
+            }
+
+            if (!player.DroppedCards.All(droppedList => droppedList.Count > 0 &&
+                droppedList.All(cards => cards.DisplayName == "empty")))
+            {
+                if (player.DroppedCards.All(d => d.Count > 0) && !game.DroppedCardsAreCorrect(player))
+                {
+                    return;
+                }
             }
 
             player.PlayerAskedToKeepCard = true;

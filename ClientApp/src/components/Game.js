@@ -109,8 +109,9 @@ export class Game extends Component {
         }
 
         if (source.droppableId.includes("playersCard_dropped_") && destination.droppableId === "playersCard") {
-            // TODO: Neue Methode um bereits abgelegt Karten zurueckzunehmen, falls sei falsch waren beim ersten ablegen
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name, destination.droppableId);
+            var index = source.droppableId.substring(source.droppableId.length - 1);
+            var droppedCardsList = this.state.game.player.droppedCards[index];
+            LiverpoolService.takeBackPlayersCard(this.state.game.name, droppedCardsList[source.index].displayName, index);
             return;
         }
 
@@ -129,7 +130,12 @@ export class Game extends Component {
             return;
         }
 
-        if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name || destination.droppableId == this.state.game.players[2].name)) {
+        if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name)) {
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId, destination.droppableId);
+            return;
+        }
+
+        if (this.state.game.players.length === 3 && source.droppableId === "playersCard" && destination.droppableId == this.state.game.players[2].name) {
             LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId, destination.droppableId);
             return;
         }
@@ -368,7 +374,7 @@ export class Game extends Component {
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.player != null &&
                                                 this.getDropAreaForDroppingCards(this.state.game.player, true)
-                                        }
+                                            }
                                         </div>
                                     </div>
                                     
