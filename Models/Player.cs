@@ -7,7 +7,7 @@ namespace Liverpool
     {
         public User User { get; set; }
         public List<Card> Deck { get; set; }
-        public List<Card> DroppedCards { get; set; }
+        public List<List<Card>> DroppedCards { get; set; }
         public int Points { get; set; }
         public bool Turn { get; set; }
         public MoveType CurrentAllowedMove { get; set; } = MoveType.DrawCard;
@@ -15,6 +15,7 @@ namespace Liverpool
         public bool? FeedbackOnKnock { get; set; }
         public bool? FeedbackOnKeepingCard { get; set; }
         public bool PlayerAskedToKeepCard { get; set; }
+        public bool HasDroppedCards { get; set; }
         public Player(User user)
         {
             User = user;

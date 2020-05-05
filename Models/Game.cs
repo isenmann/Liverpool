@@ -81,7 +81,17 @@ namespace Liverpool.Models
                 {
                     player.Deck[i].Index = i;
                 }
-                player.DroppedCards = new List<Card>();
+                player.DroppedCards = new List<List<Card>>
+                {
+                    new List<Card>
+                {
+                    new Card("empty")
+                },
+                    new List<Card>
+                {
+                    new Card("empty")
+                }
+                };
             }
 
             Random rnd = new Random();
@@ -131,26 +141,13 @@ namespace Liverpool.Models
 
         public void NextRound()
         {
-            //if (Round == 8)
-            //{
-            //    GameFinished = true;
-            //    foreach (var player in Players)
-            //    {
-            //        foreach (var card in player.Deck)
-            //        {
-            //            player.Points += card.Value;
-            //        }
-            //    }
-            //    return;
-            //}
-
             Round++;
             StartPlayer++;
             if (StartPlayer >= Players.Count)
             {
                 StartPlayer = 0;
             }
-            Deck = DeckCreator.CreateCards().ToList();
+            Deck = DeckCreator.CreateCards();
 
             // if the player is the only one who dropped his cards, he gets -50 points
             var playerWhoWonRound = Players.FirstOrDefault(p => p.Deck.Count == 0);
@@ -166,20 +163,135 @@ namespace Liverpool.Models
                     player.Points += card.Value;
                 }
 
-                if (Round <= 5)
+                player.DroppedCards.Clear();
+
+                if (Round == 2)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 10);
                 }
-                else if (Round == 6)
+                if (Round == 3)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 4)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 5)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
+                    player.Deck = Deck.GetAndRemove(0, 10);
+                }
+                if (Round == 6)
+                {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 11);
                 }
-                else if (Round == 7)
+                if (Round == 7)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 12);
                 }
-                else if (Round == 8)
+                if (Round == 8)
                 {
+                    player.DroppedCards = new List<List<Card>>
+                    {
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    },
+                        new List<Card>
+                    {
+                        new Card("empty")
+                    }
+                    };
                     player.Deck = Deck.GetAndRemove(0, 13);
                 }
 
@@ -188,13 +300,13 @@ namespace Liverpool.Models
                     player.Deck[i].Index = i;
                 }
 
-                player.DroppedCards = new List<Card>();
                 player.Turn = false;
                 player.CurrentAllowedMove = MoveType.DrawCard;
                 player.PlayerAskedToKeepCard = false;
                 player.FeedbackOnKeepingCard = null;
                 player.PlayerKnocked = false;
                 player.FeedbackOnKnock = null;
+                player.HasDroppedCards = false;
             }
 
             Players[StartPlayer].Turn = true;
@@ -210,17 +322,16 @@ namespace Liverpool.Models
             RoundFinished = false;
         }
 
-        private bool DropCards(Player player)
+        internal bool DroppedCardsAreCorrect(Player player)
         {
             // SETS: Books of 3 or more cards sharing the same rank, i.e., 8♥ 8♣ 8♠.
             // RUNS: 4 or more cards of the same suit in sequence, i.e., 3♥ 4♥ 5♥ 6♥.
             if (Round == 1)
             {
                 // First - 2 sets
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable >= 2)
+                if (CheckIfDeckIsSet(player.DroppedCards[0]))
                 {
-                    return DropSets(player, 2);
+                    return CheckIfDeckIsSet(player.DroppedCards[1]);
                 }
 
                 return false;
@@ -229,17 +340,15 @@ namespace Liverpool.Models
             if (Round == 2)
             {
                 // Second - 1 set & 1 run
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable < 1)
-                {
-                    return false;
-                }
+                var isSet = CheckIfDeckIsSet(player.DroppedCards[0]);
+                isSet |= CheckIfDeckIsSet(player.DroppedCards[1]);
 
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 1)
+                if (isSet)
                 {
-                    DropSets(player, 1);
-                    return DropRuns(player, 1);
+                    var isRun = CheckIfDeckIsRun(player.DroppedCards[0]);
+                    isRun |= CheckIfDeckIsRun(player.DroppedCards[1]);
+
+                    return isRun;
                 }
 
                 return false;
@@ -248,10 +357,9 @@ namespace Liverpool.Models
             if (Round == 3)
             {
                 // Third - 2 runs
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 2)
+                if (CheckIfDeckIsRun(player.DroppedCards[0]))
                 {
-                    return DropRuns(player, 2);
+                    return CheckIfDeckIsRun(player.DroppedCards[1]);
                 }
 
                 return false;
@@ -260,10 +368,11 @@ namespace Liverpool.Models
             if (Round == 4)
             {
                 // Fourth - 3 sets
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable >= 3)
+                if (CheckIfDeckIsSet(player.DroppedCards[0]) &&
+                    CheckIfDeckIsSet(player.DroppedCards[1]) &&
+                    CheckIfDeckIsSet(player.DroppedCards[2]))
                 {
-                    return DropSets(player, 3);
+                    return true;
                 }
 
                 return false;
@@ -272,17 +381,25 @@ namespace Liverpool.Models
             if (Round == 5)
             {
                 // Fifth - 2 sets & 1 run
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable < 2)
-                {
-                    return false;
-                }
+                var isRun = CheckIfDeckIsRun(player.DroppedCards[0]);
+                isRun |= CheckIfDeckIsRun(player.DroppedCards[1]);
+                isRun |= CheckIfDeckIsRun(player.DroppedCards[2]);
 
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 1)
+                if (isRun)
                 {
-                    DropSets(player, 2);
-                    return DropRuns(player, 1);
+                    int count = 0;
+                    foreach (var cards in player.DroppedCards)
+                    {
+                        if (CheckIfDeckIsSet(cards))
+                        {
+                            count++;
+                        }
+                    }
+
+                    if (count == 2)
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
@@ -291,17 +408,25 @@ namespace Liverpool.Models
             if (Round == 6)
             {
                 // Sixth - 1 set & 2 runs
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable < 1)
-                {
-                    return false;
-                }
+                var isSet = CheckIfDeckIsSet(player.DroppedCards[0]);
+                isSet |= CheckIfDeckIsSet(player.DroppedCards[1]);
+                isSet |= CheckIfDeckIsSet(player.DroppedCards[2]);
 
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 2)
+                if (isSet)
                 {
-                    DropSets(player, 1);
-                    return DropRuns(player, 2);
+                    int count = 0;
+                    foreach (var cards in player.DroppedCards)
+                    {
+                        if (CheckIfDeckIsRun(cards))
+                        {
+                            count++;
+                        }
+                    }
+
+                    if (count == 2)
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
@@ -310,10 +435,11 @@ namespace Liverpool.Models
             if (Round == 7)
             {
                 // Seventh - 3 runs
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 3)
+                if (CheckIfDeckIsRun(player.DroppedCards[0]) &&
+                    CheckIfDeckIsRun(player.DroppedCards[1]) &&
+                    CheckIfDeckIsSet(player.DroppedCards[2]))
                 {
-                    return DropRuns(player, 3);
+                    return true;
                 }
 
                 return false;
@@ -322,17 +448,26 @@ namespace Liverpool.Models
             if (Round == 8)
             {
                 // Eight - 3 sets & 1 run with no remaining cards in hand, no final discard
-                var setsAvailable = NumberOfSetsAvailable(player.Deck);
-                if (setsAvailable < 3)
-                {
-                    return false;
-                }
+                var isRun = CheckIfDeckIsRun(player.DroppedCards[0]);
+                isRun |= CheckIfDeckIsRun(player.DroppedCards[1]);
+                isRun |= CheckIfDeckIsRun(player.DroppedCards[2]);
+                isRun |= CheckIfDeckIsRun(player.DroppedCards[3]);
 
-                var runsAvailable = NumberOfRunsAvailable(player.Deck);
-                if (runsAvailable >= 1)
+                if (isRun)
                 {
-                    DropSets(player, 3);
-                    return DropRuns(player, 1);
+                    int count = 0;
+                    foreach (var cards in player.DroppedCards)
+                    {
+                        if (CheckIfDeckIsSet(cards))
+                        {
+                            count++;
+                        }
+                    }
+
+                    if (count == 3)
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
@@ -341,31 +476,17 @@ namespace Liverpool.Models
             return false;
         }
 
-        public bool CheckPlayersDropForRoundEight(Player player)
+        internal void CheckIfDeckHasEnoughCards()
         {
-            if (Round != 8)
+            // everything is fine, enough cards on the game deck
+            if (Deck.Count != 0)
             {
-                return false;
+                return;
             }
 
-            var setsAvailable = NumberOfSetsAvailable(player.Deck);
-            var runsAvailable = NumberOfRunsAvailable(player.Deck);
-            if (setsAvailable != 3)
-            {
-                return false;
-            }
-
-            if (runsAvailable != 1)
-            {
-                return false;
-            }
-
-            if (runsAvailable + setsAvailable != player.Deck.Count)
-            {
-                return false;
-            }
-
-            return true;
+            // take cards from the discard pile and shuffle them
+            var cardsFromDiscardPile = DiscardPile.GetAndRemove(1, DiscardPile.Count - 1);
+            Deck.AddRange(DeckCreator.Shuffle(cardsFromDiscardPile));
         }
 
         internal bool PlayerWonTheRound(Player player)
@@ -383,247 +504,154 @@ namespace Liverpool.Models
             return RoundFinished;
         }
 
-        private bool DropRuns(Player player, int numberOfRunsToDrop)
+        internal bool DropCardAtPlayerArea(Player player, string cardName, Player playerToDrop, string dropAreaName)
         {
-            var allPossibleRunsInDeck = player.Deck.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
-            var allRunsInDeck = new List<List<Card>>();
-
-            foreach (var possibleRun in allPossibleRunsInDeck)
+            // no own dropped cards and want to drop at another player, deny it
+            if (player.User.ConnectionId != playerToDrop.User.ConnectionId && player.DroppedCards.Any(droppedList => droppedList.Any(card => card.DisplayName == "empty")))
             {
-                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
-
-                // detect if the run is overflow from King to Ace
-                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
-                {
-                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
-                    combinedList.AddRange(listOfConsecutiveCards.Last());
-                    listOfConsecutiveCards.RemoveAt(0);
-                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
-                    listOfConsecutiveCards.Add(combinedList);
-                }
-
-                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
-                {
-                    allRunsInDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
-                }
+                return false;
             }
 
-            if (allRunsInDeck.Count >= numberOfRunsToDrop)
-            {
-                for (var i = 0; i < numberOfRunsToDrop; i++)
-                {
-                    player.DroppedCards.AddRange(allRunsInDeck[i]);
-                    player.Deck.RemoveAll(c => allRunsInDeck[i].Contains(c));
-                }
+            // find list index in dropAreaName
+            var listIndex = int.Parse(dropAreaName.Substring(dropAreaName.Length - 1));
 
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool DropSets(Player player, int numberOfSetsToDrop)
-        {
-            var allSetsInDeck = player.Deck.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
-            if (allSetsInDeck.Count == 1 && allSetsInDeck[0].Count >= 6 && numberOfSetsToDrop == 2)
-            {
-                 player.DroppedCards.AddRange(player.Deck.Where(c => allSetsInDeck[0].Contains(c)));
-                 player.Deck.RemoveAll(c => allSetsInDeck[0].Contains(c));
-
-                 return true;
-            }
-
-            if (allSetsInDeck.Count >= numberOfSetsToDrop)
-            {
-                for (var i = 0; i < numberOfSetsToDrop; i++)
-                {
-                    player.DroppedCards.AddRange(allSetsInDeck[i]);
-                    player.Deck.RemoveAll(c => allSetsInDeck[i].Contains(c));
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private int NumberOfSetsAvailable(List<Card> deck)
-        {
-            var allSetsInDeck = deck.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(g => new Tuple<int, int>(g.Key, g.Count()));
-            var numberOfDoubleSets = allSetsInDeck.Where(t => t.Item2 >= 6).Count();
-
-            return allSetsInDeck.Count() + numberOfDoubleSets;
-        }
-
-        private int NumberOfRunsAvailable(List<Card> deck)
-        {
-            var numberOfRuns = 0;
-            var allPossibleRunsInDeck = deck.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).ToList();
-
-            foreach (var possibleRun in allPossibleRunsInDeck)
-            {
-                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
-                
-                // detect if the run is overflow from King to Ace
-                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
-                {
-                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
-                    combinedList.AddRange(listOfConsecutiveCards.Last());
-                    listOfConsecutiveCards.RemoveAt(0);
-                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
-                    listOfConsecutiveCards.Add(combinedList);
-                }
-
-                numberOfRuns += listOfConsecutiveCards.Where(l => l.Count() >= 4).Count();
-            }
-
-            return numberOfRuns;
-        }
-
-        internal bool DropCardAtPlayerArea(Player player, string cardName, Player playerToDrop)
-        {
-            if (player.DroppedCards.Count == 0)
+            // not allowed to drop at another player if there is no dropped card already 
+            if (player.User.ConnectionId != playerToDrop.User.ConnectionId && playerToDrop.DroppedCards[listIndex].Any(c => c.DisplayName == "empty"))
             {
                 return false;
             }
 
             var card = new Card(cardName);
+            var isRun = false;
+            var isSet = false;
 
-            var possibleToSet = AddCardToSet(card, playerToDrop.DroppedCards);
-            var possibleToRun = AddCardToRun(card, playerToDrop.DroppedCards);
-
-            if (possibleToSet || possibleToRun)
+            // if there are already dropped cards
+            if (!playerToDrop.DroppedCards[listIndex].Any(c => c.DisplayName == "empty") &&
+                playerToDrop.DroppedCards[listIndex].Count() > 0)
             {
+                // check if the card match the run or set
+                isSet = CheckIfDeckIsSetAfterAddingCard(card, playerToDrop.DroppedCards[listIndex]);
+                isRun = CheckIfDeckIsRunAfterAddingCard(card, playerToDrop.DroppedCards[listIndex]);
+                if (isSet || isRun)
+                {
+                    // if yes, add it and remove it from player's deck
+                    playerToDrop.DroppedCards[listIndex].Add(card);
+                    player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+                }
+            }
+            else
+            {
+                playerToDrop.DroppedCards[listIndex].Add(card);
+                playerToDrop.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
                 player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
             }
 
-            return possibleToRun || possibleToSet;
+            return isRun || isSet;
         }
 
-        private bool AddCardToSet(Card card, List<Card> sets)
+        internal void DropCardAtOwnArea(Player player, string cardName, string dropAreaName)
         {
-            var originalDeck = sets.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
+            // find list index in dropAreaName
+            var listIndex = int.Parse(dropAreaName.Substring(dropAreaName.Length - 1));
+            var card = new Card(cardName);
+
+            player.DroppedCards[listIndex].Add(card);
+            player.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
+            player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+        }
+
+        private bool CheckIfDeckIsSet(List<Card> set)
+        {
+            // deck is not a set
+            if (set.Count < 3)
+            {
+                return false;
+            }
+
+            if (!set.All(c => c.Value == set.First().Value))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool CheckIfDeckIsRun(List<Card> run)
+        {
+            // deck itself is not a run because there are more than one suit available
+            var deck = run.GroupBy(suit => suit.Suit).Select(element => element.ToList());
+            if (deck.Count() == 0 || deck.Count() > 1)
+            {
+                return false;
+            }
+
+            // there must be only one suit available with more than or equal to 4 cards of a suit
+            deck = run.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList());
+            if (deck.Count() != 1)
+            {
+                return false;
+            }
+
+            // look how many consecutive lists are available (only one should be available 
+            // or two if there is an "overflow" from King to Ace
+            var consecutiveDecks = deck.ToList()[0].OrderBy(c => c.Value).GroupConsecutive().ToList();
+            if (consecutiveDecks.Count > 2)
+            {
+                return false;
+            }
+
+            // check if it is an "overflow" from King to Ace, if not return false
+            if (consecutiveDecks.Count == 2 && (consecutiveDecks.First().First().Value != 1 || consecutiveDecks.Last().Last().Value != 13))
+            {
+                return false;
+            }
+
+            // look for duplicates which are not allowed
+            var cards = new List<Card>();
+            foreach (var decks in consecutiveDecks)
+            {
+                cards.AddRange(decks);
+            }
+
+            if (cards.GroupBy(card => card.Value).Any(c => c.Count() > 1))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool CheckIfDeckIsSetAfterAddingCard(Card card, List<Card> sets)
+        {
+            // deck itself is not a set
+            if (!CheckIfDeckIsSet(sets))
+            {
+                return false;
+            }
+
+            // add card to the set
             var deckToTest = new List<Card>(sets)
             {
                 card
             };
 
-            var allSetsInDeckToTest = deckToTest.GroupBy(v => v.Value).Where(c => c.Count() >= 3).Select(element => element.ToList()).OrderByDescending(s => s.Count).ToList();
+            return CheckIfDeckIsSet(deckToTest);
+        }
 
-            if (originalDeck.Count != allSetsInDeckToTest.Count)
+        private bool CheckIfDeckIsRunAfterAddingCard(Card card, List<Card> runs)
+        {
+            if (!CheckIfDeckIsRun(runs))
             {
                 return false;
             }
 
-            var possible = false;
-
-            for (int i = 0; i < originalDeck.Count; i++)
-            {
-                if (originalDeck[i].Count != allSetsInDeckToTest[i].Count)
-                {
-                    possible = true;
-                }
-            }
-
-            if (possible)
-            {
-                sets.Clear();
-                foreach (var cards in allSetsInDeckToTest)
-                {
-                    sets.AddRange(cards);
-                }
-            }
-
-            return possible;
-        }
-
-        private bool AddCardToRun(Card card, List<Card> runs)
-        {
-            // Look for the runs in the current deck
-            var originalDeck = runs.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
-            var allRunsInOriginalDeck = new List<List<Card>>();
-
-            foreach (var possibleRun in originalDeck)
-            {
-                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
-
-                // detect if the run is overflow from King to Ace
-                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
-                {
-                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
-                    combinedList.AddRange(listOfConsecutiveCards.Last());
-                    listOfConsecutiveCards.RemoveAt(0);
-                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
-                    listOfConsecutiveCards.Add(combinedList);
-                }
-
-                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
-                {
-                    allRunsInOriginalDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
-                }
-            }
-
-            // now add the card to test into the current deck and look again for runs
+            // add card to the run
             var deckToTest = new List<Card>(runs)
             {
                 card
             };
 
-            var testDeck = deckToTest.GroupBy(suit => suit.Suit).Where(c => c.Count() >= 4).Select(element => element.ToList()).OrderByDescending(r => r.Count).ToList();
-            var allRunsInTestDeck = new List<List<Card>>();
-
-            foreach (var possibleRun in testDeck)
-            {
-                var listOfConsecutiveCards = possibleRun.OrderBy(c => c.Value).GroupConsecutive().ToList();
-
-                // detect if the run is overflow from King to Ace
-                if (listOfConsecutiveCards.First().First().Value == 1 && listOfConsecutiveCards.Last().Last().Value == 13)
-                {
-                    var combinedList = new List<Card>(listOfConsecutiveCards.First());
-                    combinedList.AddRange(listOfConsecutiveCards.Last());
-                    listOfConsecutiveCards.RemoveAt(0);
-                    listOfConsecutiveCards.RemoveAt(listOfConsecutiveCards.Count() - 1);
-                    listOfConsecutiveCards.Add(combinedList);
-                }
-
-                foreach (var cardRun in listOfConsecutiveCards.Where(l => l.Count() >= 4))
-                {
-                    allRunsInTestDeck.Add(new List<Card>(cardRun.OrderBy(v => v.Value)));
-                }
-            }
-
-            // if a new run was added, then return false, because we are looking for adding a card to a run
-            if (allRunsInOriginalDeck.Count != allRunsInTestDeck.Count)
-            {
-                return false;
-            }
-
-            var possible = false;
-
-            for (int i = 0; i < allRunsInOriginalDeck.Count; i++)
-            {
-                if (allRunsInOriginalDeck[i].Count != allRunsInTestDeck[i].Count)
-                {
-                    possible = true;
-                    break;
-                }
-            }
-
-            if (possible)
-            {
-                runs.Clear();
-                foreach (var cards in allRunsInTestDeck)
-                {
-                    runs.AddRange(cards);
-                }
-            }
-
-            return possible;
-        }
-
-        public bool DropValidCards(Player player)
-        {
-            return DropCards(player);
+            return CheckIfDeckIsRun(deckToTest);
         }
     }
 }

@@ -51,8 +51,12 @@ class LiverpoolHubService {
         this.connection.invoke("DropCards", gameName);
     }
 
-    dropCardAtPlayer(gameName, cardName, playerName) {
-        this.connection.invoke("DropCardAtPlayer", gameName, cardName, playerName);
+    dropCardAtPlayer(gameName, cardName, playerName, dropAreaName) {
+        this.connection.invoke("DropCardAtPlayer", gameName, cardName, playerName, dropAreaName);
+    }
+
+    takeBackPlayersCard(gameName, cardName, index) {
+        this.connection.invoke("TakeBackPlayersCard", gameName, cardName, index);
     }
 
     nextRound(gameName) {

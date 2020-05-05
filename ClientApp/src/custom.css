@@ -37,3 +37,15 @@ html, body {
 .h-33 {
   height: 33.33%;
 }
+
+.card_dropped {
+    width: 80px;
+}
+
+.overlap-h-65 {
+    margin-left: -65px;
+}
+
+.overlap-v-105 {
+    margin-top: -85px;
+}

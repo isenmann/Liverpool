@@ -101,7 +101,7 @@ namespace Liverpool.Services
                 Name = name,
                 Players = new List<Player> { player }, 
                 GameStarted = false,
-                Deck = DeckCreator.CreateCards().ToList(),
+                Deck = DeckCreator.CreateCards(),
                 Creator = player
             };
 
