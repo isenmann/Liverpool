@@ -45,13 +45,13 @@ export class Game extends Component {
         return content;
     };
 
-    getDropAreaForDroppingCards = (player, horizontal) => {
+    getDropAreaForDroppingCards = (player, direction) => {
         var content = [];
         for (var i = 0; i < player.droppedCards.length; i++) {
-            var dropId = "playersCard_dropped_" + i;
+            var dropId = player.name + "_card_dropped_" + i;
             content.push(
             <div class="d-flex col justify-content-center">
-                    <DropArea id={dropId} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={true} dropAreaOfPlayer={this.state.game.player.name} cards={player.droppedCards[i]} direction="horizontal" />
+                    <DropArea id={dropId} disableDrop={false} cards={player.droppedCards[i]} direction={direction} />
             </div>
             );
         }
@@ -103,15 +103,19 @@ export class Game extends Component {
             return;
         }
 
-        if (source.droppableId === "playersCard" && destination.droppableId.includes("playersCard_dropped_")) {
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, this.state.game.player.name, destination.droppableId);
+        if (source.droppableId === "playersCard" && destination.droppableId.includes("_card_dropped_")) {
+            var playerName = destination.droppableId.split("_", 1);
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, playerName[0], destination.droppableId);
             return;
         }
 
-        if (source.droppableId.includes("playersCard_dropped_") && destination.droppableId === "playersCard") {
-            var index = source.droppableId.substring(source.droppableId.length - 1);
-            var droppedCardsList = this.state.game.player.droppedCards[index];
-            LiverpoolService.takeBackPlayersCard(this.state.game.name, droppedCardsList[source.index].displayName, index);
+        if (source.droppableId.includes("_card_dropped_") && destination.droppableId === "playersCard") {
+            var playerName = source.droppableId.split("_", 1);
+            if (playerName[0] === this.state.game.player.name) {
+                var index = source.droppableId.substring(source.droppableId.length - 1);
+                var droppedCardsList = this.state.game.player.droppedCards[index];
+                LiverpoolService.takeBackPlayersCard(this.state.game.name, droppedCardsList[source.index].displayName, index);
+            }
             return;
         }
 
@@ -129,20 +133,6 @@ export class Game extends Component {
             LiverpoolService.askToKeepCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
             return;
         }
-
-        if (source.droppableId === "playersCard" && (destination.droppableId == this.state.game.players[0].name || destination.droppableId == this.state.game.players[1].name)) {
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId, destination.droppableId);
-            return;
-        }
-
-        if (this.state.game.players.length === 3 && source.droppableId === "playersCard" && destination.droppableId == this.state.game.players[2].name) {
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, destination.droppableId, destination.droppableId);
-            return;
-        }
-
-        //this.setState(state => {
-        //  return move(state, source, destination);
-        //});
       };
 
     render() {
@@ -184,7 +174,7 @@ export class Game extends Component {
                                     <div class="col-6 my-auto">
                                         <div class=""> {/* <!-- Linker Spieler abgelegten Karten -->*/}
                                         { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
-                                                <DropArea id={this.state.game.players[0].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[0].name} cards={this.state.game.players[0].droppedCards} direction="vertical" />
+                                                this.getDropAreaForDroppingCards(this.state.game.players[0], "vertical")
                                             }
                                         </div>
                                     </div>
@@ -205,7 +195,7 @@ export class Game extends Component {
                                     <div class="col-12 my-auto">
                                         <div class="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
                                         { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[1] != null &&
-                                            <DropArea id={this.state.game.players[1].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[1].name} cards={this.state.game.players[1].droppedCards} direction="horizontal" />
+                                                this.getDropAreaForDroppingCards(this.state.game.players[1], "horizontal")
                                         }
                                         </div>
                                     </div>
@@ -251,10 +241,10 @@ export class Game extends Component {
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         { this.state != null && this.state.game != null && this.state.game.discardPile != null &&
-                                            <DropArea id="discardPile" disableDrop={false} gameName={this.gameName} discard={true} ownDrop={false} dropAreaOfPlayer="" cards={[this.state.game.discardPile]} direction="horizontal" />
+                                            <DropArea id="discardPile" disableDrop={false} cards={[this.state.game.discardPile]} direction="horizontal" />
                                         }
                                         { this.state != null && this.state.game != null &&
-                                            <DropArea id="drawPile" disableDrop={true} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" direction="horizontal" />
+                                            <DropArea id="drawPile" disableDrop={true} direction="horizontal" />
                                         }
 
                                         {this.state != null && this.state.game != null && this.state.game.roundFinished && this.state.game.gameFinished === false &&
@@ -311,7 +301,7 @@ export class Game extends Component {
                                                         {this.state.game.playerAskedForKeepingCard ?
                                                             <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
                                                             :
-                                                            <DropArea id="playerCardForAskingToKeep" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.player.name} cards={this.state.game.keepingCard} direction="horizontal" />
+                                                            <DropArea id="playerCardForAskingToKeep" disableDrop={false} cards={this.state.game.keepingCard} direction="horizontal" />
                                                         }
                                                         </td>
                                                     </tr>
@@ -373,7 +363,7 @@ export class Game extends Component {
                                     <div class="col-12 my-auto w-100 justify-content-center">
                                         <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.player != null &&
-                                                this.getDropAreaForDroppingCards(this.state.game.player, true)
+                                                this.getDropAreaForDroppingCards(this.state.game.player, "horizontal")
                                             }
                                         </div>
                                     </div>
@@ -381,7 +371,7 @@ export class Game extends Component {
                                     <div class="col-12 my-auto w-100">
                                         <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.myCards != null && this.state.game.myCards != null &&
-                                                <DropArea id="playersCard" disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer="" cards={this.state.game.myCards} direction="horizontal" />
+                                                <DropArea id="playersCard" disableDrop={false} cards={this.state.game.myCards} direction="horizontal" />
                                             }
                                         </div>
                                     </div>
@@ -407,7 +397,7 @@ export class Game extends Component {
                                         <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
                                             <div>
                                                 { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
-                                                    <DropArea id={this.state.game.players[2].name} disableDrop={false} gameName={this.gameName} discard={false} ownDrop={false} dropAreaOfPlayer={this.state.game.players[2].name} cards={this.state.game.players[2].droppedCards} direction="vertical" />
+                                                this.getDropAreaForDroppingCards(this.state.game.players[2], "vertical")
                                                 }
                                             </div>
                                         </div>

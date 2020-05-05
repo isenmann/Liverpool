@@ -147,7 +147,7 @@ namespace Liverpool.Models
             {
                 StartPlayer = 0;
             }
-            Deck = DeckCreator.CreateCards().ToList();
+            Deck = DeckCreator.CreateCards();
 
             // if the player is the only one who dropped his cards, he gets -50 points
             var playerWhoWonRound = Players.FirstOrDefault(p => p.Deck.Count == 0);
@@ -306,6 +306,7 @@ namespace Liverpool.Models
                 player.FeedbackOnKeepingCard = null;
                 player.PlayerKnocked = false;
                 player.FeedbackOnKnock = null;
+                player.HasDroppedCards = false;
             }
 
             Players[StartPlayer].Turn = true;
@@ -320,33 +321,6 @@ namespace Liverpool.Models
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
             RoundFinished = false;
         }
-
-        //public bool CheckPlayersDropForRoundEight(Player player)
-        //{
-        //    if (Round != 8)
-        //    {
-        //        return false;
-        //    }
-
-        //    var setsAvailable = NumberOfSetsAvailable(player.Deck);
-        //    var runsAvailable = NumberOfRunsAvailable(player.Deck);
-        //    if (setsAvailable != 3)
-        //    {
-        //        return false;
-        //    }
-
-        //    if (runsAvailable != 1)
-        //    {
-        //        return false;
-        //    }
-
-        //    if (runsAvailable + setsAvailable != player.Deck.Count)
-        //    {
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
 
         internal bool DroppedCardsAreCorrect(Player player)
         {
@@ -502,6 +476,19 @@ namespace Liverpool.Models
             return false;
         }
 
+        internal void CheckIfDeckHasEnoughCards()
+        {
+            // everything is fine, enough cards on the game deck
+            if (Deck.Count != 0)
+            {
+                return;
+            }
+
+            // take cards from the discard pile and shuffle them
+            var cardsFromDiscardPile = DiscardPile.GetAndRemove(1, DiscardPile.Count - 1);
+            Deck.AddRange(DeckCreator.Shuffle(cardsFromDiscardPile));
+        }
+
         internal bool PlayerWonTheRound(Player player)
         {
             if (player.Deck.Count == 0 &&
@@ -615,6 +602,18 @@ namespace Liverpool.Models
 
             // check if it is an "overflow" from King to Ace, if not return false
             if (consecutiveDecks.Count == 2 && (consecutiveDecks.First().First().Value != 1 || consecutiveDecks.Last().Last().Value != 13))
+            {
+                return false;
+            }
+
+            // look for duplicates which are not allowed
+            var cards = new List<Card>();
+            foreach (var decks in consecutiveDecks)
+            {
+                cards.AddRange(decks);
+            }
+
+            if (cards.GroupBy(card => card.Value).Any(c => c.Count() > 1))
             {
                 return false;
             }

@@ -273,6 +273,7 @@ namespace Liverpool.Hubs
             }
 
             player.CurrentAllowedMove = MoveType.DropOrDiscardCards;
+            game.CheckIfDeckHasEnoughCards();
 
             player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
             await GameUpdated(gameName);
@@ -488,6 +489,7 @@ namespace Liverpool.Hubs
                     if (allPlayers[index].PlayerKnocked || !allPlayers[index].FeedbackOnKnock.Value)
                     {
                         // take the price for the knock, which is an additional card from draw pile
+                        game.CheckIfDeckHasEnoughCards();
                         allPlayers[index].Deck.AddRange(game.Deck.GetAndRemove(0, 1));
                         
                         var card = game.DiscardPile.Last();
@@ -573,6 +575,7 @@ namespace Liverpool.Hubs
                         // take the price for denying it, which is an additional card from draw pile
                         if (!playerAfterCurrentPlayerDenied)
                         {
+                            game.CheckIfDeckHasEnoughCards();
                             allPlayers[index].Deck.AddRange(game.Deck.GetAndRemove(0, 1));
                         }
 
