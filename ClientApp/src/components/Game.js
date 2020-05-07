@@ -298,7 +298,7 @@ export class Game extends Component {
                                         </>
                                     }
                                     {/* Drop zone for asking to keep one card */}
-                                    {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true &&
+                                    {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length === 0 &&
                                         <div class="d-flex justify-content-center">
                                             <table class="table">
                                                 <thead>
