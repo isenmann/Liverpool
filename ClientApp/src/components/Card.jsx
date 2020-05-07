@@ -10,7 +10,7 @@ const Card = ({ name, className, index, myKey }) => (
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <img className={className} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
+          <img alt="" className={className} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
         </div>
       );
     }}

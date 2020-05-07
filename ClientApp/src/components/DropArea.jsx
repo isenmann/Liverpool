@@ -7,12 +7,12 @@ const DropArea = ({ id, cards, direction, disableDrop }) => (
     <Droppable droppableId={id} isDropDisabled={disableDrop} direction={direction}>
       {provided => {
         return (
-          <div class="my-auto">
-            {direction == "horizontal"
-             ? <div class="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
-                 {id == "drawPile" 
-                    ? <Cards myKey={id + "back" + "0"} key="back" className="card d-block" name="back" index={0} />
-                    : id == "playerCardForAskingToKeep"
+            <div className="my-auto">
+            {direction === "horizontal"
+             ? <div className="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
+                 {id === "drawPile" 
+                    ? <Cards myKey={id + "back0"} key="back" className="card d-block" name="back" index={0} />
+                    : id === "playerCardForAskingToKeep"
                         ? <Cards myKey={id + cards.displayName + cards.index} key={id + cards.displayName + cards.index} className="card d-block" name={cards.displayName} index={0} />
                                 : id.includes("_card_dropped_")
                                     ? cards.map((card) => (

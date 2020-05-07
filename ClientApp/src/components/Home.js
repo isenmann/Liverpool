@@ -6,12 +6,12 @@ export class Home extends Component {
 
   render () {
     return (
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <div class="col-12">
+        <div className="container-fluid h-100">
+            <div className="row h-100">
+                <div className="col-12">
                     <h1>Willkommen zu Liverpool!</h1>
                     <p></p>
-                    <div class="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center">
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="3H" />
