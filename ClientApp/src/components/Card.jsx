@@ -1,7 +1,7 @@
 ﻿import React from 'react'
 import { Draggable } from 'react-beautiful-dnd';
 
-const Card = ({ name, cardType, className, index, myKey }) => (
+const Card = ({ name, className, index, myKey }) => (
     <Draggable key={myKey} draggableId={myKey} index={index}>
     {provided => {
       return (

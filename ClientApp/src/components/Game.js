@@ -2,10 +2,7 @@
 import LiverpoolService from '../services/LiverpoolHubService';
 import { DragDropContext } from 'react-beautiful-dnd';
 import DropArea from './DropArea';
-import Card from './Card';
 import CardNotDraggable from './CardNotDraggable';
-import ItemTypes from './ItemTypes'
-import { move } from './Utils';
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -36,9 +33,9 @@ export class Game extends Component {
         }
         for (let i = 0; i < player.countofCards; i++) {
             if (i === 0) {
-                content.push(<CardNotDraggable className="card d-block" name="back" cardType={ItemTypes.DROPPEDCARD} />);
+                content.push(<CardNotDraggable className="card d-block" name="back"/>);
             } else {
-                content.push(<CardNotDraggable className={className} name="back" cardType={ItemTypes.DROPPEDCARD}/>);
+                content.push(<CardNotDraggable className={className} name="back"/>);
             }
             
         }
@@ -170,15 +167,14 @@ export class Game extends Component {
                     <div class="row h-100">
                         <div class="col-1 my-auto d-flex justify-content-center"> 
                             <div>
-                                <div class="text-left">
+                                <div class="text-center">
                                     {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === true &&
-                                        <b>{this.state.game.players[0].name}</b>
+                                        <b style={{ backgroundColor: 'green' }}>{this.state.game.players[0].name}</b>
                                     }
                                     {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === false &&
                                         this.state.game.players[0].name
                                     }
                                 </div>
-                           
                                 <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
                                     {this.state != null && this.state.game != null &&
                                         this.getOpponentCards(this.state.game.players[0], false)
@@ -213,10 +209,10 @@ export class Game extends Component {
                                     <div class="col-12 my-auto w-100">
                                         <div class="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === true &&
-                                                <b>{this.state.game.players[1].name}</b>
+                                               <b style={{ backgroundColor: 'green' }}>{this.state.game.players[1].name}</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === false &&
-                                                this.state.game.players[1].name
+                                               this.state.game.players[1].name
                                             }
                                         </div>
                                     </div>
@@ -281,7 +277,7 @@ export class Game extends Component {
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName}/>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -310,7 +306,7 @@ export class Game extends Component {
                                                     <tr>
                                                     <td>
                                                         {this.state.game.playerAskedForKeepingCard ?
-                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName}/>
                                                             :
                                                             <DropArea id="playerCardForAskingToKeep" disableDrop={false} cards={this.state.game.keepingCard} direction="horizontal" />
                                                         }
@@ -359,7 +355,7 @@ export class Game extends Component {
                                     <div class="col-12 my-auto w-100">
                                         <div class="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true &&
-                                                <b>Du</b>
+                                                <b style={{ backgroundColor: 'green' }}>Du</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === false &&
                                                 <>Du</>
@@ -401,22 +397,21 @@ export class Game extends Component {
                                 </div>
                                 <div class="col-1 my-auto d-flex justify-content-center">
                                     <div>
-                                        <div class="text-left">
+                                        <div class="text-center">
                                             {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === true &&
-                                                <b>{this.state.game.players[2].name}</b>
+                                              <b style={{ backgroundColor: 'green' }}>{this.state.game.players[2].name}</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === false &&
-                                                this.state.game.players[2].name
+                                              this.state.game.players[2].name
                                             }
                                         </div>
-
                                         <div class=""> {/* < !--Rechter Spieler verdeckte Karten --> */}
-                                            {this.state != null && this.state.game != null &&
-                                                this.getOpponentCards(this.state.game.players[2], false)
-                                            }
+                                                {this.state != null && this.state.game != null &&
+                                                    this.getOpponentCards(this.state.game.players[2], false)
+                                                }
                                         </div>
-                                    </div>
-                                </div> 
+                                    </div> 
+                                </div>
                             </>
                         }
                     </div>

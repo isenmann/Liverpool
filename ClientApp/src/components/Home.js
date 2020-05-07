@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import CardNotDraggable from './CardNotDraggable';
-import ItemTypes from './ItemTypes'
 
 export class Home extends Component {
   static displayName = Home.name;
@@ -13,19 +12,19 @@ export class Home extends Component {
                     <h1>Willkommen zu Liverpool!</h1>
                     <p></p>
                     <div class="d-flex justify-content-center">
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="AH" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="2H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="3H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="4H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="5H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="6H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="7H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="8H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="9H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="10H" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="JH" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="QH" cardOnly={false} />
-                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" cardType={ItemTypes.CARD} name="KH" cardOnly={false} />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="3H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="4H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="5H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="6H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="7H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="8H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="9H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="10H" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="JH" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="QH" />
+                        <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="KH" />
                     </div>
                     <p></p>
                     <ul>
