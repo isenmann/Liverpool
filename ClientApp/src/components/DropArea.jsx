@@ -8,7 +8,7 @@ const DropArea = ({ id, cards, direction, disableDrop }) => (
     <Droppable droppableId={id} isDropDisabled={disableDrop} direction={direction}>
       {provided => {
         return (
-          <div>
+          <div class="my-auto">
             {direction == "horizontal"
              ? <div class="d-flex" {...provided.droppableProps} ref={provided.innerRef}>
                  {id == "drawPile" 

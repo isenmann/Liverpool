@@ -47,10 +47,27 @@ export class Game extends Component {
 
     getDropAreaForDroppingCards = (player, direction) => {
         var content = [];
+        var height = "";
+        let className = "d-flex col justify-content-center";
+
+        if (direction === "vertical") {
+            if (player.droppedCards.length === 2) {
+                height = "h-50";
+            }
+            if (player.droppedCards.length === 3) {
+                height = "h-33";
+            }
+            if (player.droppedCards.length === 4) {
+                height = "h-25";
+            }
+
+            className = height + " d-flex w-100 justify-content-center";
+        }
+
         for (var i = 0; i < player.droppedCards.length; i++) {
             var dropId = player.name + "_card_dropped_" + i;
             content.push(
-            <div class="d-flex col justify-content-center">
+                <div class={className}>
                     <DropArea id={dropId} disableDrop={false} cards={player.droppedCards[i]} direction={direction} />
             </div>
             );
@@ -151,35 +168,29 @@ export class Game extends Component {
             <div class="container-fluid h-100">
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <div class="row h-100">
-                        <div class="col-2">
-                            <div class="row h-100">
-                                <div class="row h-99 my-auto">
-                                    <div class="col-12 my-auto w-100">
-                                        <div class="text-left">
-                                            {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === true &&
-                                                <b>{this.state.game.players[0].name}</b>
-                                            }
-                                            {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === false &&
-                                                this.state.game.players[0].name
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="col-6 my-auto">
-                                        <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
-                                            {this.state != null && this.state.game != null &&
-                                                this.getOpponentCards(this.state.game.players[0], false)
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="col-6 my-auto">
-                                        <div class=""> {/* <!-- Linker Spieler abgelegten Karten -->*/}
-                                        { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
-                                                this.getDropAreaForDroppingCards(this.state.game.players[0], "vertical")
-                                            }
-                                        </div>
-                                    </div>
+                        <div class="col-1 my-auto d-flex justify-content-center"> 
+                            <div>
+                                <div class="text-left">
+                                    {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === true &&
+                                        <b>{this.state.game.players[0].name}</b>
+                                    }
+                                    {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === false &&
+                                        this.state.game.players[0].name
+                                    }
+                                </div>
+                           
+                                <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
+                                    {this.state != null && this.state.game != null &&
+                                        this.getOpponentCards(this.state.game.players[0], false)
+                                    }
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-1 p-0">
+                             {/* <!-- Linker Spieler abgelegten Karten -->*/}
+                            {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
+                                this.getDropAreaForDroppingCards(this.state.game.players[0], "vertical")
+                            }
                         </div>
 
                         <div class="col-8">
@@ -381,36 +392,32 @@ export class Game extends Component {
                         </div>
 
                         {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
-                            <div class="col-2">
-                                <div class="row h-100">
-                                    <div class="row h-99 my-auto">
-                                        <div class="col-12 my-auto w-100">
-                                            <div class="text-right">
-                                                {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === true &&
-                                                    <b>{this.state.game.players[2].name}</b>
-                                                }
-                                                {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === false &&
-                                                    this.state.game.players[2].name
-                                                }
-                                            </div>
+                            <>
+                                <div class="col-1 p-0">
+                                        {/* <!-- Rechter Spieler abgelegten Karten -->*/}
+                                        {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
+                                            this.getDropAreaForDroppingCards(this.state.game.players[2], "vertical")
+                                        }
+                                </div>
+                                <div class="col-1 my-auto d-flex justify-content-center">
+                                    <div>
+                                        <div class="text-left">
+                                            {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === true &&
+                                                <b>{this.state.game.players[2].name}</b>
+                                            }
+                                            {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === false &&
+                                                this.state.game.players[2].name
+                                            }
                                         </div>
-                                        <div class="col-6 my-auto"> {/* <!-- Rechte Spieler abgelegt Karten -->*/}
-                                            <div>
-                                                { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
-                                                this.getDropAreaForDroppingCards(this.state.game.players[2], "vertical")
-                                                }
-                                            </div>
-                                        </div>
-                                        <div class="col-6 my-auto">
-                                            <div> {/* <!-- Rechte Spieler verdeckte Karten  */}     
-                                                {this.state != null && this.state.game != null &&
-                                                    this.getOpponentCards(this.state.game.players[2], false)
-                                                }
-                                            </div>
+
+                                        <div class=""> {/* < !--Rechter Spieler verdeckte Karten --> */}
+                                            {this.state != null && this.state.game != null &&
+                                                this.getOpponentCards(this.state.game.players[2], false)
+                                            }
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                </div> 
+                            </>
                         }
                     </div>
                 </DragDropContext>
