@@ -437,7 +437,7 @@ namespace Liverpool.Models
                 // Seventh - 3 runs
                 if (CheckIfDeckIsRun(player.DroppedCards[0]) &&
                     CheckIfDeckIsRun(player.DroppedCards[1]) &&
-                    CheckIfDeckIsSet(player.DroppedCards[2]))
+                    CheckIfDeckIsRun(player.DroppedCards[2]))
                 {
                     return true;
                 }
