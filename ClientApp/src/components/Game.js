@@ -322,7 +322,7 @@ export class Game extends Component {
                                     }
                                     {/* Accept or deny knocking */}
                                     {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
-                                        <div class="d-flex justify-content-center">
+                                        <div class="d-flex bg-danger justify-content-center">
                                             <table class="table">
                                                 <thead>
                                                     <tr>
