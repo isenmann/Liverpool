@@ -67,9 +67,11 @@ namespace Liverpool.Services
             var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
             if (user != null)
             {
+                userName = userName.Replace("_", "");
+
                 while (_users.Any(u => u.Name == userName))
                 {
-                    Random rnd = new Random();
+                    var rnd = new Random();
                     userName += rnd.Next(1, 100);
                 }
 
@@ -117,6 +119,12 @@ namespace Liverpool.Services
             if (game != null && user != null)
             {
                 if (game.GameStarted)
+                {
+                    return false;
+                }
+
+                // don't allow the same user to join the same game
+                if (game.Players.Any(p => p.User.ConnectionId== user.ConnectionId))
                 {
                     return false;
                 }

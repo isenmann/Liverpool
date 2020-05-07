@@ -151,7 +151,9 @@ namespace Liverpool.Models
 
             // if the player is the only one who dropped his cards, he gets -50 points
             var playerWhoWonRound = Players.FirstOrDefault(p => p.Deck.Count == 0);
-            if (Players.Count(p => p.DroppedCards.Count > 0) == 1)
+            var anotherPlayerHasDroppedCards = Players.Where(player => player.User.ConnectionId != playerWhoWonRound.User.ConnectionId).Any(p => p.HasDroppedCards);
+
+            if (!anotherPlayerHasDroppedCards)
             {
                 playerWhoWonRound.Points -= 50;
             }
@@ -536,6 +538,7 @@ namespace Liverpool.Models
                 {
                     // if yes, add it and remove it from player's deck
                     playerToDrop.DroppedCards[listIndex].Add(card);
+                    playerToDrop.DroppedCards[listIndex] = playerToDrop.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
                     player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
                 }
             }
@@ -543,6 +546,7 @@ namespace Liverpool.Models
             {
                 playerToDrop.DroppedCards[listIndex].Add(card);
                 playerToDrop.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
+                playerToDrop.DroppedCards[listIndex] = playerToDrop.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
                 player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
             }
 
@@ -557,6 +561,7 @@ namespace Liverpool.Models
 
             player.DroppedCards[listIndex].Add(card);
             player.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
+            player.DroppedCards[listIndex] = player.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
             player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
         }
 

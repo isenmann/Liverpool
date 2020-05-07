@@ -239,6 +239,14 @@ namespace Liverpool.Hubs
                     player.HasDroppedCards = true;
                 }
             }
+            
+            // if it's the last round and the player discard the last one to the discard pile, deny it
+            if (game.Round == 8 && 
+                player.Deck.Count == 1 && 
+                player.Deck[0].DisplayName == card)
+            {
+                return;
+            }
 
             game.DiscardPile.Add(new Card(card));
             player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
