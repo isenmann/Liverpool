@@ -158,7 +158,7 @@ namespace Liverpool.Hubs
                         {
                             Name = p.User.Name,
                             Points = p.Points
-                        }).OrderByDescending(p => p.Points).ToList(),
+                        }).OrderBy(p => p.Points).ToList(),
                         PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
                         DiscardPile = game.DiscardPile.LastOrDefault(),
                         RoundFinished = game.RoundFinished,
@@ -168,6 +168,12 @@ namespace Liverpool.Hubs
                         KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
                         PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
                     };
+
+                    // If the game is finished, add a crown to the player who won
+                    if (game.GameFinished)
+                    {
+                        gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
+                    }
 
                     gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
                     for (int i = 0; i < gameDto.MyCards.Count; i++)
