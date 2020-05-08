@@ -2,10 +2,7 @@
 import LiverpoolService from '../services/LiverpoolHubService';
 import { DragDropContext } from 'react-beautiful-dnd';
 import DropArea from './DropArea';
-import Card from './Card';
 import CardNotDraggable from './CardNotDraggable';
-import ItemTypes from './ItemTypes'
-import { move } from './Utils';
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -36,9 +33,9 @@ export class Game extends Component {
         }
         for (let i = 0; i < player.countofCards; i++) {
             if (i === 0) {
-                content.push(<CardNotDraggable className="card d-block" name="back" cardType={ItemTypes.DROPPEDCARD} />);
+                content.push(<CardNotDraggable className="card d-block" name="back"/>);
             } else {
-                content.push(<CardNotDraggable className={className} name="back" cardType={ItemTypes.DROPPEDCARD}/>);
+                content.push(<CardNotDraggable className={className} name="back"/>);
             }
             
         }
@@ -67,7 +64,7 @@ export class Game extends Component {
         for (var i = 0; i < player.droppedCards.length; i++) {
             var dropId = player.name + "_card_dropped_" + i;
             content.push(
-                <div class={className}>
+                <div className={className}>
                     <DropArea id={dropId} disableDrop={false} cards={player.droppedCards[i]} direction={direction} />
             </div>
             );
@@ -121,8 +118,8 @@ export class Game extends Component {
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId.includes("_card_dropped_")) {
-            var playerName = destination.droppableId.split("_", 1);
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, playerName[0], destination.droppableId);
+            var name = destination.droppableId.split("_", 1);
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, name[0], destination.droppableId);
             return;
         }
 
@@ -165,68 +162,67 @@ export class Game extends Component {
         }
 
         return (
-            <div class="container-fluid h-100">
+            <div className="container-fluid h-100">
                 <DragDropContext onDragEnd={this.onDragEnd}>
-                    <div class="row h-100">
-                        <div class="col-1 my-auto d-flex justify-content-center"> 
+                    <div className="row h-100">
+                        <div className="col-1 my-auto d-flex justify-content-center"> 
                             <div>
-                                <div class="text-left">
+                                <div className="text-center">
                                     {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === true &&
-                                        <b>{this.state.game.players[0].name}</b>
+                                        <b style={{ backgroundColor: 'green' }}>{this.state.game.players[0].name}</b>
                                     }
                                     {this.state != null && this.state.game != null && this.state.game.players[0].playersTurn === false &&
                                         this.state.game.players[0].name
                                     }
                                 </div>
-                           
-                                <div class=""> {/* < !--Linker Spieler verdeckte Karten --> */}
+                                <div className=""> {/* < !--Linker Spieler verdeckte Karten --> */}
                                     {this.state != null && this.state.game != null &&
                                         this.getOpponentCards(this.state.game.players[0], false)
                                     }
                                 </div>
                             </div>
                         </div>
-                        <div class="col-1 p-0">
+                        <div className="col-1 p-0">
                              {/* <!-- Linker Spieler abgelegten Karten -->*/}
                             {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
                                 this.getDropAreaForDroppingCards(this.state.game.players[0], "vertical")
                             }
                         </div>
 
-                        <div class="col-8">
-                            <div class="row h-33">
-                                <div class="row w-100">
-                                    <div class="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
-                                        <div class="d-flex justify-content-center">
+                        <div className="col-8">
+                            <div className="row h-33">
+                                <div className="row w-100">
+                                    <div className="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
+                                        <div className="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null &&
                                                 this.getOpponentCards(this.state.game.players[1], true)
                                             }
                                         </div>
                                     </div>
-                                    <div class="col-12 my-auto">
-                                        <div class="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
+                                    <div className="col-12 my-auto">
+                                        <div className="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
                                         { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[1] != null &&
                                                 this.getDropAreaForDroppingCards(this.state.game.players[1], "horizontal")
                                         }
                                         </div>
                                     </div>
-                                    <div class="col-12 my-auto w-100">
-                                        <div class="d-flex justify-content-center">
+                                    <div className="col-12 my-auto w-100">
+                                        <div className="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === true &&
-                                                <b>{this.state.game.players[1].name}</b>
+                                               <b style={{ backgroundColor: 'green' }}>{this.state.game.players[1].name}</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.players[1].playersTurn === false &&
-                                                this.state.game.players[1].name
+                                               this.state.game.players[1].name
                                             }
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row h-33">
-                                <div class="col-3 d-flex justify-content-center my-auto">
+                            <div className="row h-33">
+                                <div className="col-3 d-flex justify-content-center my-auto">
                                     {this.state != null && this.state.game != null &&
-                                        <table class="table">
+                                        <table className="table">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">Name</th>
@@ -244,13 +240,13 @@ export class Game extends Component {
                                         </table>
                                     }
                                 </div>  
-                                <div class="col-6 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
-                                    <div class="d-flex justify-content-center">
+                                <div className="col-6 my-auto"> {/* <!-- Stapel in der Mitte -->*/}
+                                    <div className="d-flex justify-content-center">
                                         {this.state != null && this.state.game != null &&
                                             <b>Runde {this.state.game.round} ({this.state.game.mantra})</b>
                                         }
                                     </div>
-                                    <div class="d-flex justify-content-center">
+                                    <div className="d-flex justify-content-center">
                                         { this.state != null && this.state.game != null && this.state.game.discardPile != null &&
                                             <DropArea id="discardPile" disableDrop={false} cards={[this.state.game.discardPile]} direction="horizontal" />
                                         }
@@ -259,7 +255,7 @@ export class Game extends Component {
                                         }
 
                                         {this.state != null && this.state.game != null && this.state.game.roundFinished && this.state.game.gameFinished === false &&
-                                            <div class="d-flex justify-content-center">
+                                            <div className="d-flex justify-content-center">
                                                 <button onClick={this.handleNextRound}>
                                                     Nächste Runde
                                                 </button>
@@ -267,12 +263,12 @@ export class Game extends Component {
                                         }
                                     </div>
                                 </div>
-                                <div class="col-3 my-auto">
+                                <div className="col-3 my-auto">
                                     {/* Ask for keeping a card instead of discard it */}
                                     {this.state != null && this.state.game != null && this.state.game.playerAskedForKeepingCard && !this.state.game.player.playersTurn &&
                                         <>
-                                        <div class="d-flex justify-content-center">
-                                            <table class="table">
+                                        <div className="d-flex justify-content-center">
+                                            <table className="table">
                                                 <thead>
                                                     <tr>
                                                     <th scope="col">Folg. Karte will der aktive Spieler behalten</th>
@@ -281,13 +277,13 @@ export class Game extends Component {
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName}/>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="d-flex justify-content-center">
+                                        <div className="d-flex justify-content-center">
                                             <button onClick={this.sendPositiveKeepFeedback}>
                                                 Erlauben
                                             </button>
@@ -299,8 +295,8 @@ export class Game extends Component {
                                     }
                                     {/* Drop zone for asking to keep one card */}
                                     {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length === 0 &&
-                                        <div class="d-flex justify-content-center">
-                                            <table class="table">
+                                        <div className="d-flex justify-content-center">
+                                            <table className="table">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Karte hier ablegen um sie behalten zu wollen</th>
@@ -310,7 +306,7 @@ export class Game extends Component {
                                                     <tr>
                                                     <td>
                                                         {this.state.game.playerAskedForKeepingCard ?
-                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName} cardType={ItemTypes.DROPPEDCARD} />
+                                                            <CardNotDraggable className="card d-block" name={this.state.game.keepingCard.displayName}/>
                                                             :
                                                             <DropArea id="playerCardForAskingToKeep" disableDrop={false} cards={this.state.game.keepingCard} direction="horizontal" />
                                                         }
@@ -322,8 +318,8 @@ export class Game extends Component {
                                     }
                                     {/* Accept or deny knocking */}
                                     {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
-                                        <div class="d-flex justify-content-center">
-                                            <table class="table">
+                                        <div className="d-flex bg-danger justify-content-center">
+                                            <table className="table">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Geklopft</th>
@@ -340,7 +336,7 @@ export class Game extends Component {
                                         </div>
                                     }
                                     {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
-                                        <div class="d-flex justify-content-center">
+                                        <div className="d-flex justify-content-center">
                                                 <button onClick={this.sendPositiveKnockFeedback}>
                                                     Annehmen
                                                 </button>
@@ -354,12 +350,12 @@ export class Game extends Component {
                                 </div>  
                             </div>
 
-                            <div class="row h-33">
-                                <div class="row w-100">
-                                    <div class="col-12 my-auto w-100">
-                                        <div class="d-flex justify-content-center">
+                            <div className="row h-33">
+                                <div className="row w-100">
+                                    <div className="col-12 my-auto w-100">
+                                        <div className="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === true &&
-                                                <b>Du</b>
+                                                <b style={{ backgroundColor: 'green' }}>Du</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.player.playersTurn === false &&
                                                 <>Du</>
@@ -371,16 +367,16 @@ export class Game extends Component {
                                             }
                                         </div>
                                     </div>
-                                    <div class="col-12 my-auto w-100 justify-content-center">
-                                        <div class="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
+                                    <div className="col-12 my-auto w-100 justify-content-center">
+                                        <div className="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.player != null &&
                                                 this.getDropAreaForDroppingCards(this.state.game.player, "horizontal")
                                             }
                                         </div>
                                     </div>
                                     
-                                    <div class="col-12 my-auto w-100">
-                                        <div class="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
+                                    <div className="col-12 my-auto w-100">
+                                        <div className="d-flex justify-content-center"> {/* <!-- Spielerhand -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.myCards != null && this.state.game.myCards != null &&
                                                 <DropArea id="playersCard" disableDrop={false} cards={this.state.game.myCards} direction="horizontal" />
                                             }
@@ -393,30 +389,29 @@ export class Game extends Component {
 
                         {this.state != null && this.state.game != null && this.state.game.players.length === 3 &&
                             <>
-                                <div class="col-1 p-0">
+                                <div className="col-1 p-0">
                                         {/* <!-- Rechter Spieler abgelegten Karten -->*/}
                                         {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
                                             this.getDropAreaForDroppingCards(this.state.game.players[2], "vertical")
                                         }
                                 </div>
-                                <div class="col-1 my-auto d-flex justify-content-center">
+                                <div className="col-1 my-auto d-flex justify-content-center">
                                     <div>
-                                        <div class="text-left">
+                                        <div className="text-center">
                                             {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === true &&
-                                                <b>{this.state.game.players[2].name}</b>
+                                              <b style={{ backgroundColor: 'green' }}>{this.state.game.players[2].name}</b>
                                             }
                                             {this.state != null && this.state.game != null && this.state.game.players[2].playersTurn === false &&
-                                                this.state.game.players[2].name
+                                              this.state.game.players[2].name
                                             }
                                         </div>
-
-                                        <div class=""> {/* < !--Rechter Spieler verdeckte Karten --> */}
-                                            {this.state != null && this.state.game != null &&
-                                                this.getOpponentCards(this.state.game.players[2], false)
-                                            }
+                                        <div className=""> {/* < !--Rechter Spieler verdeckte Karten --> */}
+                                                {this.state != null && this.state.game != null &&
+                                                    this.getOpponentCards(this.state.game.players[2], false)
+                                                }
                                         </div>
-                                    </div>
-                                </div> 
+                                    </div> 
+                                </div>
                             </>
                         }
                     </div>

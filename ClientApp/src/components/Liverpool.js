@@ -87,15 +87,15 @@ handleGameStart(gameName) {
 
   render() {
     return (
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <div class="col-6">
+        <div className="container-fluid h-100">
+            <div className="row h-100">
+                <div className="col-6">
                     <form onSubmit={this.handleSubmit}>
-                        <label class="col-6 my-auto">
+                        <label className="col-6 my-auto">
                             Bitte Spielername eingeben:                              
                         </label>
-                        <input class="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
-                        <input class="col-2" type="submit" value="Senden" />
+                        <input className="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
+                        <input className="col-2" type="submit" value="Senden" />
                     </form>
 
                     <table className='table table-striped' aria-labelledby="tabelLabel">
@@ -113,13 +113,13 @@ handleGameStart(gameName) {
                         </tbody>
                     </table>
                 </div>
-                <div class="col-6">
+                <div className="col-6">
                     <form onSubmit={this.handleGameCreate}>
-                        <label class="col-6 my-auto">
+                        <label className="col-6 my-auto">
                             Bitte Spielname eingeben:
                         </label>
-                        <input class="col-4" type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
-                        <input class="col-2" type="submit" value="Spiel erstellen" />
+                        <input className="col-4" type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
+                        <input className="col-2" type="submit" value="Spiel erstellen" />
                     </form>
                     <table className='table table-striped' aria-labelledby="tabelLabel">
                         <thead>

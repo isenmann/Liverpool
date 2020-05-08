@@ -1,7 +1,7 @@
 ﻿import React from 'react'
 import { Draggable } from 'react-beautiful-dnd';
 
-const Card = ({ name, cardType, className, index, myKey }) => (
+const Card = ({ name, className, index, myKey }) => (
     <Draggable key={myKey} draggableId={myKey} index={index}>
     {provided => {
       return (
@@ -10,7 +10,7 @@ const Card = ({ name, cardType, className, index, myKey }) => (
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <img className={className} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
+          <img alt="" className={className} src={process.env.PUBLIC_URL + '/images/' + name + '.png'} />
         </div>
       );
     }}
