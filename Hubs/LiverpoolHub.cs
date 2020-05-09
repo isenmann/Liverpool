@@ -3,6 +3,7 @@ using Liverpool.Models;
 using Liverpool.Models.Dtos;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -145,13 +146,14 @@ namespace Liverpool.Hubs
                     {
                         GameStarted = game.GameStarted,
                         Name = game.Name,
-                        Players = allPlayersInTheGame.Select(p => new PlayerDto
+                        Players = allPlayersInTheGame.OrderBy(player => player.StartPosition).Select(p => new PlayerDto
                         {
                             Name = p.User.Name,
                             CountofCards = p.Deck != null ? p.Deck.Count : 0,
                             DroppedCards = p.DroppedCards,
                             Points = p.Points,
-                            PlayersTurn = p.Turn
+                            PlayersTurn = p.Turn,
+                            Position = p.StartPosition
                         }).ToList(),
                         PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
                         {
@@ -179,6 +181,7 @@ namespace Liverpool.Hubs
                     {
                         gameDto.MyCards[i].Index = i;
                     }
+
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
                     foreach (var dropCards in gameDto.Player.DroppedCards)
                     {
@@ -187,8 +190,14 @@ namespace Liverpool.Hubs
                             dropCards[i].Index = i;
                         }
                     }
+
+                    // sort players to be aligned in the screen in the correct order
+                    var sortedPlayerList = new List<PlayerDto>();
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position > player.StartPosition));
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position < player.StartPosition));
+
+                    gameDto.Players = sortedPlayerList;
                     
-                    gameDto.Players.Remove(gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name));
                     foreach (var opponent in gameDto.Players)
                     {
                         foreach (var dropCards in opponent.DroppedCards)
@@ -199,6 +208,7 @@ namespace Liverpool.Hubs
                             }
                         }
                     }
+
                     await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
                 }
             }

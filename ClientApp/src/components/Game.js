@@ -25,15 +25,15 @@ export class Game extends Component {
 
     getOpponentCards = (player, horizontal) => {
         let content = [];
-        let className = "card d-block";
+        let className = "card_dropped d-block";
         if (horizontal) {
-            className += " overlap-h-20";
+            className += " overlap-h-65";
         } else {
-            className += " overlap-v-20";
+            className += " overlap-v-105";
         }
         for (let i = 0; i < player.countofCards; i++) {
             if (i === 0) {
-                content.push(<CardNotDraggable className="card d-block" name="back"/>);
+                content.push(<CardNotDraggable className="card_dropped d-block" name="back"/>);
             } else {
                 content.push(<CardNotDraggable className={className} name="back"/>);
             }
@@ -338,7 +338,7 @@ export class Game extends Component {
                                     {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 &&
                                         <div className="d-flex justify-content-center">
                                                 <button onClick={this.sendPositiveKnockFeedback}>
-                                                    Annehmen
+                                                    Erlauben
                                                 </button>
                                                 {this.state != null && this.state.game != null && this.state.game.playersKnocked != null && this.state.game.playersKnocked.length > 0 && this.state.game.player.playersTurn === false &&
                                                 <button onClick={this.sendNegativeKnockFeedback}>

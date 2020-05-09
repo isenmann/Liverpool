@@ -16,6 +16,7 @@ namespace Liverpool
         public bool? FeedbackOnKeepingCard { get; set; }
         public bool PlayerAskedToKeepCard { get; set; }
         public bool HasDroppedCards { get; set; }
+        public int StartPosition { get; set; } = -1;
         public Player(User user)
         {
             User = user;

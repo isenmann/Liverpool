@@ -98,6 +98,20 @@ namespace Liverpool.Models
             StartPlayer = rnd.Next(0, Players.Count);
 
             Players[StartPlayer].Turn = true;
+            Players[StartPlayer].StartPosition = 0;
+
+            // set start position for all players for sorting
+            var index = Players.IndexOf(Players.First(p => p.StartPosition == 0)) + 1;
+            for (int i = 1; i <= Players.Count - 1; i++)
+            {
+                if (index >= Players.Count)
+                {
+                    index = 0;
+                }
+
+                Players[index].StartPosition = i;
+                index++;
+            }
 
             DiscardPile = new List<Card>
             {
