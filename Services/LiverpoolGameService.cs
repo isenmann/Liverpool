@@ -16,7 +16,7 @@ namespace Liverpool.Services
             var user = _users.FirstOrDefault(p => p.ConnectionId == connectionId);
             if (user == null)
             {
-                _users.Add(new User { ConnectionId = connectionId, Name = connectionId });
+                _users.Add(new User { ConnectionId = connectionId, Name = connectionId.Replace("_", "") });
                 return true;
             }
 

@@ -132,7 +132,7 @@ handleGameStart(gameName) {
                                 <tr key={game.name}>
                                     <td>{game.name}</td>
                                     <td>{game.gameStarted}</td>
-                                    <td>{game.players.map(p => p.name)}</td>
+                                    <td>{game.players.map(p => p.name + " ")}</td>
                                     <td> <form onSubmit={this.handleGameJoin(game.name)}>
                                         <input type="submit" value="Spiel beitreten" />
                                     </form></td>
