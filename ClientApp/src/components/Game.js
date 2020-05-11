@@ -3,6 +3,8 @@ import LiverpoolService from '../services/LiverpoolHubService';
 import { DragDropContext } from 'react-beautiful-dnd';
 import DropArea from './DropArea';
 import CardNotDraggable from './CardNotDraggable';
+import OpponentCards from './OpponentCards'
+import DropAreaForDroppingCards from './DropAreaForDroppingCards'
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -21,55 +23,6 @@ export class Game extends Component {
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
         });
-    }
-
-    getOpponentCards = (player, horizontal) => {
-        let content = [];
-        let className = "card_dropped d-block";
-        if (horizontal) {
-            className += " overlap-h-65";
-        } else {
-            className += " overlap-v-105";
-        }
-        for (let i = 0; i < player.countofCards; i++) {
-            if (i === 0) {
-                content.push(<CardNotDraggable className="card_dropped d-block" name="back"/>);
-            } else {
-                content.push(<CardNotDraggable className={className} name="back"/>);
-            }
-            
-        }
-        return content;
-    };
-
-    getDropAreaForDroppingCards = (player, direction) => {
-        var content = [];
-        var height = "";
-        let className = "d-flex col justify-content-center";
-
-        if (direction === "vertical") {
-            if (player.droppedCards.length === 2) {
-                height = "h-50";
-            }
-            if (player.droppedCards.length === 3) {
-                height = "h-33";
-            }
-            if (player.droppedCards.length === 4) {
-                height = "h-25";
-            }
-
-            className = height + " d-flex w-100 justify-content-center";
-        }
-
-        for (var i = 0; i < player.droppedCards.length; i++) {
-            var dropId = player.name + "_card_dropped_" + i;
-            content.push(
-                <div className={className}>
-                    <DropArea id={dropId} disableDrop={false} cards={player.droppedCards[i]} direction={direction} />
-            </div>
-            );
-        }
-        return content;
     }
 
     handleNextRound() {
@@ -177,7 +130,7 @@ export class Game extends Component {
                                 </div>
                                 <div className=""> {/* < !--Linker Spieler verdeckte Karten --> */}
                                     {this.state != null && this.state.game != null &&
-                                        this.getOpponentCards(this.state.game.players[0], false)
+                                        <OpponentCards player={this.state.game.players[0]} horizontal={false}/>
                                     }
                                 </div>
                             </div>
@@ -185,7 +138,7 @@ export class Game extends Component {
                         <div className="col-1 p-0">
                              {/* <!-- Linker Spieler abgelegten Karten -->*/}
                             {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[0] != null &&
-                                this.getDropAreaForDroppingCards(this.state.game.players[0], "vertical")
+                                <DropAreaForDroppingCards player={this.state.game.players[0]} direction="vertical"/>
                             }
                         </div>
 
@@ -195,15 +148,15 @@ export class Game extends Component {
                                     <div className="col-12 my-auto"> {/* <!-- Oberer Spieler verdeckte Karten -->*/}
                                         <div className="d-flex justify-content-center">
                                             {this.state != null && this.state.game != null &&
-                                                this.getOpponentCards(this.state.game.players[1], true)
+                                                <OpponentCards player={this.state.game.players[1]} horizontal={true} />
                                             }
                                         </div>
                                     </div>
                                     <div className="col-12 my-auto">
                                         <div className="d-flex justify-content-center"> {/* <!-- Oberer Spieler abgelegten Karten -->*/}
-                                        { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[1] != null &&
-                                                this.getDropAreaForDroppingCards(this.state.game.players[1], "horizontal")
-                                        }
+                                            { this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[1] != null &&
+                                                <DropAreaForDroppingCards player={this.state.game.players[1]} direction="horizontal" />
+                                            }
                                         </div>
                                     </div>
                                     <div className="col-12 my-auto w-100">
@@ -370,7 +323,7 @@ export class Game extends Component {
                                     <div className="col-12 my-auto w-100 justify-content-center">
                                         <div className="d-flex justify-content-center"> {/* <!-- Eigene abgelegt Karten -->*/}
                                             {this.state != null && this.state.game != null && this.state.game.player != null &&
-                                                this.getDropAreaForDroppingCards(this.state.game.player, "horizontal")
+                                                <DropAreaForDroppingCards player={this.state.game.player} direction="horizontal" />
                                             }
                                         </div>
                                     </div>
@@ -392,7 +345,7 @@ export class Game extends Component {
                                 <div className="col-1 p-0">
                                         {/* <!-- Rechter Spieler abgelegten Karten -->*/}
                                         {this.state != null && this.state.game != null && this.state.game.players != null && this.state.game.players[2] != null &&
-                                            this.getDropAreaForDroppingCards(this.state.game.players[2], "vertical")
+                                            <DropAreaForDroppingCards player={this.state.game.players[2]} direction="vertical" />
                                         }
                                 </div>
                                 <div className="col-1 my-auto d-flex justify-content-center">
@@ -406,9 +359,9 @@ export class Game extends Component {
                                             }
                                         </div>
                                         <div className=""> {/* < !--Rechter Spieler verdeckte Karten --> */}
-                                                {this.state != null && this.state.game != null &&
-                                                    this.getOpponentCards(this.state.game.players[2], false)
-                                                }
+                                            {this.state != null && this.state.game != null &&
+                                                <OpponentCards player={this.state.game.players[2]} horizontal={false} />
+                                            }
                                         </div>
                                     </div> 
                                 </div>
