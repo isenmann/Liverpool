@@ -16,8 +16,6 @@ export class Game extends Component {
 
     constructor(props) {
         super(props);
-        const { params } = this.props.match;
-        this.gameName = params.name;
         this.handleNextRound = this.handleNextRound.bind(this);
         this.handleKnock = this.handleKnock.bind(this);
         this.sendPositiveKnockFeedback = this.sendPositiveKnockFeedback.bind(this);
@@ -107,16 +105,6 @@ export class Game extends Component {
       };
 
     render() {
-        let myCards = "";
-
-        if (this.state !=null && this.state.game != null) {
-            this.state.game.myCards.map(cards =>
-                myCards = myCards + ' ' + cards.displayName
-            )
-        } else {
-            myCards = "";
-        }
-
         return (
             <div className="container-fluid h-100">
                 {this.state != null && this.state.game != null && this.state.game.players != null &&
@@ -163,7 +151,7 @@ export class Game extends Component {
                                 <div className="col-3 d-flex justify-content-center my-auto">
                                     <ScoreBoard playersRanked={this.state.game.playersRanked}/>
                                 </div>
-                                {/* <!-- Stapeln in der Mitte -->*/}
+                                {/* <!-- Stapel in der Mitte -->*/}
                                 <div className="col-6 my-auto">
                                     <Piles game={this.state.game} clickFunction={this.handleNextRound}/>
                                 </div>

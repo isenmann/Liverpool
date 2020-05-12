@@ -17,7 +17,7 @@ export default class PlayerKnock extends Component {
                         </thead>
                         <tbody>
                         {this.props.playersKnocked.map((player) => (
-                            <tr>
+                            <tr key={player + "knockTable"}>
                                 <td>{player}</td>
                             </tr>
                         ))}
