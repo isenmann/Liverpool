@@ -28,8 +28,8 @@ export default class DropAreaForDroppingCards extends Component {
         for (var i = 0; i < this.props.player.droppedCards.length; i++) {
             var dropId = this.props.player.name + "_card_dropped_" + i;
             content.push(
-                <div className={className}>
-                    <DropArea id={dropId} disableDrop={false} cards={this.props.player.droppedCards[i]} direction={this.props.direction} />
+                <div key={dropId + "Div"} className={className}>
+                    <DropArea key={dropId} id={dropId} disableDrop={false} cards={this.props.player.droppedCards[i]} direction={this.props.direction} />
                 </div>
             );
         }

@@ -26,7 +26,7 @@ export class Home extends Component {
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="QH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="KH" />
                     </div>
-                    <p></p>
+                    <p/>
                     <ul>
                         <li>um ein Spiel zu spielen, klickt oben rechts auf "Lobby"</li>
                         <li>danach Benutzername eingeben</li>
