@@ -393,6 +393,17 @@ namespace Liverpool.Hubs
             }
             else if (game.DropCardAtPlayerArea(player, cardName, playerToDrop, dropAreaName))
             {
+                // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
+                // because player has to discard one card at the discard pile
+                if (player.Deck.Count == 0 && game.Round != 8)
+                {
+                    if (game.DroppedCardsAreCorrect(player))
+                    {
+                        player.HasDroppedCards = true;
+                        game.NextTurn();
+                    }
+                }
+
                 await GameUpdated(gameName);
             }
         }

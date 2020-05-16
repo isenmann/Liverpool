@@ -19,7 +19,6 @@ export class Liverpool extends Component {
       });
 
       LiverpoolService.registerUserDisconnected((disconnectedUser, users) => {
-          console.log(disconnectedUser);
           this.setState({ userNames: users });
       });
 
@@ -92,7 +91,7 @@ handleGameStart(gameName) {
                 <div className="col-6">
                     <form onSubmit={this.handleSubmit}>
                         <label className="col-6 my-auto">
-                            Bitte Spielername eingeben:                              
+                            Bitte Spielername eingeben:
                         </label>
                         <input className="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
                         <input className="col-2" type="submit" value="Senden" />
