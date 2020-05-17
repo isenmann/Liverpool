@@ -26,6 +26,10 @@ export class Game extends Component {
         LiverpoolService.registerGameUpdated((gameDto) => {
             this.setState({ game: gameDto });
         });
+
+        LiverpoolService.connection.onreconnected(() => {
+            LiverpoolService.reconnectUser(this.state.game.name, this.state.game.player.name);
+        });
     }
 
     handleNextRound() {

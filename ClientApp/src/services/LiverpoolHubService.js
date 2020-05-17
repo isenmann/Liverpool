@@ -1,10 +1,11 @@
 ﻿import * as signalR from "@microsoft/signalr";
 
 class LiverpoolHubService {
-    
+
     constructor() {
         const hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/liverpoolHub")
+            .withAutomaticReconnect([500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, null])
             .configureLogging(signalR.LogLevel.Information)
             .build();
         hubConnection.start();
@@ -81,6 +82,10 @@ class LiverpoolHubService {
 
     keepCardFeedback(gameName, feedback) {
         this.connection.invoke("KeepCardFeedback", gameName, feedback);
+    }
+
+    reconnectUser(gameName, username) {
+        this.connection.invoke("ReconnectUser", gameName, username);
     }
 
     registerGetAllUsers(allUsers) {

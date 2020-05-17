@@ -42,6 +42,16 @@ namespace Liverpool.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
+        public async Task ReconnectUser(string gameName, string userName)
+        {
+            var success = _liverpoolGameService.ReconnectUser(Context.ConnectionId, userName);
+
+            if (success)
+            {
+                await GameUpdated(gameName);
+            }
+        }
+
         public async Task SetUserName(string userName)
         {
             var success = _liverpoolGameService.SetUserName(Context.ConnectionId, userName);

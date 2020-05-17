@@ -23,6 +23,27 @@ namespace Liverpool.Services
             return false;
         }
 
+        public bool ReconnectUser(string connectionId, string userName)
+        {
+            var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
+            if (user != null)
+            {
+                user.Name = userName;
+
+                foreach (var game in _currentGames)
+                {
+                    var player = game.Players.FirstOrDefault(p => p.User.Name == userName);
+                    if (player != null)
+                    {
+                        player.User.ConnectionId = connectionId;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public Game GetGame(string gameName)
         {
             return _currentGames.FirstOrDefault(g => g.Name == gameName);

@@ -7,6 +7,7 @@ namespace Liverpool.Interfaces
     {
         string RemoveUser(string connectionId);
         bool AddUser(string connectionId);
+        bool ReconnectUser(string connectionId, string userName);
         bool SetUserName(string connectionId, string userName);
         IEnumerable<User> GetAllUsers();
         IEnumerable<User> GetAllUsersFromGame(string name);
