@@ -470,10 +470,14 @@ namespace Liverpool.Hubs
         public async Task NextRound(string gameName)
         {
             var game = _liverpoolGameService.GetGame(gameName);
-
-            game.NextRound();
-
-            await GameUpdated(gameName);
+            var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
+            
+            // only the player who won the round can start the next round
+            if (game.RoundFinished && player.Deck.Count == 0)
+            {
+                game.NextRound();
+                await GameUpdated(gameName);
+            }
         }
 
         public async Task Knock(string gameName)

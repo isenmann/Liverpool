@@ -155,6 +155,7 @@ namespace Liverpool.Models
 
         public void NextRound()
         {
+            RoundFinished = false;
             Round++;
             StartPlayer++;
             if (StartPlayer >= Players.Count)
@@ -335,7 +336,6 @@ namespace Liverpool.Models
                 new Card("empty")
             };
             DiscardPile.AddRange(Deck.GetAndRemove(0, 1));
-            RoundFinished = false;
         }
 
         internal bool DroppedCardsAreCorrect(Player player)
