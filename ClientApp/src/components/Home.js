@@ -11,7 +11,7 @@ export class Home extends Component {
                 <div className="col-12">
                     <h1>Willkommen zu Liverpool!</h1>
                     <p />
-                    <h4>v1.0</h4>
+                    <h4>v1.1</h4>
                     <div className="d-flex justify-content-center">
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
