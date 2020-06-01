@@ -11,7 +11,7 @@ export class Home extends Component {
                 <div className="col-12">
                     <h1>Willkommen zu Liverpool!</h1>
                     <p />
-                    <h4>v1.1</h4>
+                    <h4>v1.2</h4>
                     <div className="d-flex justify-content-center">
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
@@ -35,6 +35,15 @@ export class Home extends Component {
                         <li>sollte schon ein Spiel erstellt worden sein, dann einfach dieses Spiel beitreten</li>
                         <li>das Spiel kann gestartet werden, wenn mind. 3 Teilnehmer beigetreten sind</li>
                     </ul>
+                    <p />   
+                    <br />
+                    <br />
+                    Thanks to Chris Aguilar for the card images:
+                    <br />
+                    <b>Vectorized Playing Cards 3.1</b><br />
+                    <a href="https://totalnonsense.com/open-source-vector-playing-cards" rel="noopener noreferrer" target="_blank">https://totalnonsense.com/open-source-vector-playing-cards</a> <br />
+                    Copyright 2011,2020 - Chris Aguilar - conjurenation at gmail dot com <br />
+                    Licensed under: LGPL 3.0 - <a href="https://www.gnu.org/licenses/lgpl-3.0.html" rel="noopener noreferrer" target="_blank">https://www.gnu.org/licenses/lgpl-3.0.html</a> <br />
                 </div>
             </div>
         </div>

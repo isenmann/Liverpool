@@ -1,3 +1,4 @@
+using Liverpool.BackgroundServices;
 using Liverpool.Hubs;
 using Liverpool.Interfaces;
 using Liverpool.Services;
@@ -24,6 +25,8 @@ namespace Liverpool
         {
             services.AddControllersWithViews();
             services.AddSingleton<ILiverpoolGameService, LiverpoolGameService>();
+            services.AddSingleton<ICleanupGamesBackgroundService, CleanupGamesBackgroundService>();
+            services.AddSingleton(s => s.GetService<ICleanupGamesBackgroundService>() as IHostedService);
             services.AddSignalR();
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

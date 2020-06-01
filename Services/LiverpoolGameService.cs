@@ -49,6 +49,15 @@ namespace Liverpool.Services
             return _currentGames.FirstOrDefault(g => g.Name == gameName);
         }
 
+        public IEnumerable<Game> GetAllGames()
+        {
+            return _currentGames;
+        }
+        public void DeleteGame(string gameName)
+        {
+            _currentGames.RemoveAll(g => g.Name == gameName);
+        }
+
         public IEnumerable<User> GetAllUsers()
         {
             return _users;

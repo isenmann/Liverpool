@@ -18,5 +18,7 @@ namespace Liverpool.Interfaces
         bool JoinGame(string name, string connectionId);
         bool StartGame(string name, string connectionId);
         Game GetGame(string gameName);
+        IEnumerable<Game> GetAllGames();
+        void DeleteGame(string gameName);
     }
 }
