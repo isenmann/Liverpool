@@ -20,7 +20,7 @@ namespace Liverpool.BackgroundServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var gamesToDelete = _liverpoolGameService.GetAllGames().Where(g => g.GameFinished).ToList();
+                var gamesToDelete = _liverpoolGameService.GetAllGames().Where(g => g.GameFinished || g.Players.Count == 0).ToList();
                 foreach (var game in gamesToDelete)
                 {
                     _liverpoolGameService.DeleteGame(game.Name);
