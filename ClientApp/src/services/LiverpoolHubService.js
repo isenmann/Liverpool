@@ -1,10 +1,11 @@
 ﻿import * as signalR from "@microsoft/signalr";
 
 class LiverpoolHubService {
-    
+
     constructor() {
         const hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/liverpoolHub")
+            .withAutomaticReconnect([500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, null])
             .configureLogging(signalR.LogLevel.Information)
             .build();
         hubConnection.start();
@@ -37,6 +38,54 @@ class LiverpoolHubService {
 
     discardCard(gameName, cardName) {
         this.connection.invoke("DiscardCard", gameName, cardName);
+    }
+
+    drawCardFromDiscardPile(gameName, cardName) {
+        this.connection.invoke("DrawCardFromDiscardPile", gameName, cardName);
+    }
+
+    drawCardFromDrawPile(gameName) {
+        this.connection.invoke("DrawCardFromDrawPile", gameName);
+    }
+
+    dropCards(gameName) {
+        this.connection.invoke("DropCards", gameName);
+    }
+
+    dropCardAtPlayer(gameName, cardName, playerName, dropAreaName) {
+        this.connection.invoke("DropCardAtPlayer", gameName, cardName, playerName, dropAreaName);
+    }
+
+    takeBackPlayersCard(gameName, cardName, index) {
+        this.connection.invoke("TakeBackPlayersCard", gameName, cardName, index);
+    }
+
+    nextRound(gameName) {
+        this.connection.invoke("NextRound", gameName);
+    }
+
+    sortPlayerCards(gameName, oldIndex, newIndex) {
+        this.connection.invoke("SortPlayerCards", gameName, oldIndex, newIndex);
+    }
+
+    knock(gameName) {
+        this.connection.invoke("Knock", gameName);
+    }
+
+    knockFeedback(gameName, feedback){
+        this.connection.invoke("KnockFeedback", gameName, feedback);
+    }
+
+    askToKeepCard(gameName, cardName) {
+        this.connection.invoke("AskToKeepCard", gameName, cardName);
+    }
+
+    keepCardFeedback(gameName, feedback) {
+        this.connection.invoke("KeepCardFeedback", gameName, feedback);
+    }
+
+    reconnectUser(gameName, username) {
+        this.connection.invoke("ReconnectUser", gameName, username);
     }
 
     registerGetAllUsers(allUsers) {

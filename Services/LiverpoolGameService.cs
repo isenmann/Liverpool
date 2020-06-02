@@ -3,8 +3,6 @@ using Liverpool.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Liverpool.Services
 {
@@ -18,8 +16,29 @@ namespace Liverpool.Services
             var user = _users.FirstOrDefault(p => p.ConnectionId == connectionId);
             if (user == null)
             {
-                _users.Add(new User { ConnectionId = connectionId, Name = connectionId });
+                _users.Add(new User { ConnectionId = connectionId, Name = connectionId.Replace("_", "") });
                 return true;
+            }
+
+            return false;
+        }
+
+        public bool ReconnectUser(string connectionId, string userName)
+        {
+            var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
+            if (user != null)
+            {
+                user.Name = userName;
+
+                foreach (var game in _currentGames)
+                {
+                    var player = game.Players.FirstOrDefault(p => p.User.Name == userName);
+                    if (player != null)
+                    {
+                        player.User.ConnectionId = connectionId;
+                        return true;
+                    }
+                }
             }
 
             return false;
@@ -28,6 +47,15 @@ namespace Liverpool.Services
         public Game GetGame(string gameName)
         {
             return _currentGames.FirstOrDefault(g => g.Name == gameName);
+        }
+
+        public IEnumerable<Game> GetAllGames()
+        {
+            return _currentGames;
+        }
+        public void DeleteGame(string gameName)
+        {
+            _currentGames.RemoveAll(g => g.Name == gameName);
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -67,9 +95,11 @@ namespace Liverpool.Services
             var user = _users.FirstOrDefault(u => u.ConnectionId == connectionId);
             if (user != null)
             {
+                userName = userName.Replace("_", "");
+
                 while (_users.Any(u => u.Name == userName))
                 {
-                    Random rnd = new Random();
+                    var rnd = new Random();
                     userName += rnd.Next(1, 100);
                 }
 
@@ -101,7 +131,7 @@ namespace Liverpool.Services
                 Name = name,
                 Players = new List<Player> { player }, 
                 GameStarted = false,
-                Deck = DeckCreator.CreateCards().ToList(),
+                Deck = DeckCreator.CreateCards(),
                 Creator = player
             };
 
@@ -117,6 +147,12 @@ namespace Liverpool.Services
             if (game != null && user != null)
             {
                 if (game.GameStarted)
+                {
+                    return false;
+                }
+
+                // don't allow the same user to join the same game
+                if (game.Players.Any(p => p.User.ConnectionId== user.ConnectionId))
                 {
                     return false;
                 }

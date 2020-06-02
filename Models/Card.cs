@@ -7,10 +7,15 @@ namespace Liverpool
         public string DisplayName { get; set; }
         public Suit Suit { get; set; }
         public int Value { get; set; }
+        public int Index { get; set; }
         public Card(string displayName)
         {
-            string value = displayName.Substring(0, 1);
-            string suitCharacter = displayName.Substring(1, 1);
+            DisplayName = displayName;
+
+            if (DisplayName == "empty") { return; }
+
+            string value = displayName.Substring(0, displayName.Length - 1);
+            string suitCharacter = displayName.Substring(displayName.Length - 1, 1);
 
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
             {

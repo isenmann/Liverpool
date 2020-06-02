@@ -1,9 +1,5 @@
 ﻿using Liverpool.Models;
-using Microsoft.Extensions.Hosting;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Liverpool.Interfaces
 {
@@ -11,6 +7,7 @@ namespace Liverpool.Interfaces
     {
         string RemoveUser(string connectionId);
         bool AddUser(string connectionId);
+        bool ReconnectUser(string connectionId, string userName);
         bool SetUserName(string connectionId, string userName);
         IEnumerable<User> GetAllUsers();
         IEnumerable<User> GetAllUsersFromGame(string name);
@@ -21,5 +18,7 @@ namespace Liverpool.Interfaces
         bool JoinGame(string name, string connectionId);
         bool StartGame(string name, string connectionId);
         Game GetGame(string gameName);
+        IEnumerable<Game> GetAllGames();
+        void DeleteGame(string gameName);
     }
 }
