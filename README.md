@@ -24,7 +24,7 @@ The requirements for each round of play are as follows:
 * Eighth - 3 sets & 1 run with no remaining cards in hand, no final discard
 
 ## How to start a game
-The players meet in the lobby and can set their user name. After that a user can create a game by setting a game name. All the other players can join the game. There is a minimum of 3 players and a maximum of 4 players in a game.
+The players meet in the lobby and can set their user name. After that a user can create a game by setting a game name. All the other players can join the game. There is a minimum of 3 players and a maximum of 4 players to start a game.
 
 ## Technical stuff
 The project is written in ASP.NET Core using .NET Core 3.1 with a React.JS UI. The design is made in bootstrap. The complete communication between UI and backend is done via WebSockets using the SignalR library. No effort was made to make the backend secure in any way.
