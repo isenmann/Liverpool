@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService'
+import {FormattedMessage} from "react-intl";
 
 export class Liverpool extends Component {
     static displayName = Liverpool.name;
@@ -91,7 +92,7 @@ handleGameStart(gameName) {
                 <div className="col-6">
                     <form onSubmit={this.handleSubmit}>
                         <label className="col-6 my-auto">
-                            Bitte Spielername eingeben:
+                            <FormattedMessage id="lobby.username" />
                         </label>
                         <input className="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
                         <input className="col-2" type="submit" value="Senden" />

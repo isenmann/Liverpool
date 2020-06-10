@@ -1,0 +1,11 @@
+{
+  "welcome": "Welcome to Liverpool!",
+  "welcome.start.1": "to start a game, click on \"Lobby\" in the upper right corner",
+  "welcome.start.2": "enter your user name",
+  "welcome.start.3": "enter a game name and click \"Create game\"",
+  "welcome.start.4": "if there is already an existing game, just join it if you want",
+  "welcome.start.5": "the game can be started if there three or four players have joined the game",
+  "welcome.thanks": "Thanks to Chris Aguilar for the images of the cards:",
+  "lobby.username": "Please enter username:",
+  "lobby.submit": "Submit"
+}

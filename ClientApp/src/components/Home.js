@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import CardNotDraggable from './CardNotDraggable';
+import {FormattedMessage} from "react-intl";
 
 export class Home extends Component {
   static displayName = Home.name;
@@ -9,7 +10,7 @@ export class Home extends Component {
         <div className="container-fluid h-100">
             <div className="row h-100">
                 <div className="col-12">
-                    <h1>Willkommen zu Liverpool!</h1>
+                    <h1><FormattedMessage id="welcome" /></h1>
                     <p />
                     <h4>v1.2</h4>
                     <div className="d-flex justify-content-center">
@@ -29,16 +30,16 @@ export class Home extends Component {
                     </div>
                     <p/>
                     <ul>
-                        <li>um ein Spiel zu spielen, klickt oben rechts auf "Lobby"</li>
-                        <li>danach Benutzername eingeben</li>
-                        <li>Spielname vergeben und ein "Spiel erstellen" anklicken</li>
-                        <li>sollte schon ein Spiel erstellt worden sein, dann einfach dieses Spiel beitreten</li>
-                        <li>das Spiel kann gestartet werden, wenn mind. 3 Teilnehmer beigetreten sind</li>
+                        <li><FormattedMessage id="welcome.start.1" /></li>
+                        <li><FormattedMessage id="welcome.start.2" /></li>
+                        <li><FormattedMessage id="welcome.start.3" /></li>
+                        <li><FormattedMessage id="welcome.start.4" /></li>
+                        <li><FormattedMessage id="welcome.start.5" /></li>
                     </ul>
-                    <p />   
+                    <p />
                     <br />
                     <br />
-                    Thanks to Chris Aguilar for the card images:
+                    <FormattedMessage id="welcome.thanks" />
                     <br />
                     <b>Vectorized Playing Cards 3.1</b><br />
                     <a href="https://totalnonsense.com/open-source-vector-playing-cards" rel="noopener noreferrer" target="_blank">https://totalnonsense.com/open-source-vector-playing-cards</a> <br />
