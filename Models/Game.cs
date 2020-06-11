@@ -528,6 +528,12 @@ namespace Liverpool.Models
                 return false;
             }
 
+            // own dropped cards available and want to drop at another player, check if dropped cards are correct, otherwise deny it
+            if (player.User.ConnectionId != playerToDrop.User.ConnectionId && !DroppedCardsAreCorrect(player))
+            {
+                return false;
+            }
+
             // find list index in dropAreaName
             var listIndex = int.Parse(dropAreaName.Substring(dropAreaName.Length - 1));
 
