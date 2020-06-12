@@ -33,8 +33,6 @@ The basic game logic is checked from the backend completely, so it will deny a t
 
 The backend itself can handle multiple games simultaneously.
 
-At the moment the UI is only in German, but will be changed in the near future.
-
 If you find an issue feel free to open a bug here on GitHub. 
 
 ## Hints
