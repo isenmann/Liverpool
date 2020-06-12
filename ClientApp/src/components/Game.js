@@ -114,7 +114,7 @@ export class Game extends Component {
                 {this.state != null && this.state.game != null && this.state.game.players != null &&
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <div className="row h-100">
-                        {/* < !--Linker Spieler --> */}
+                        {/*  Left player  */}
                         <Fragment>
                             <div className="col-1 my-auto d-flex justify-content-center">
                                 <div>
@@ -132,7 +132,7 @@ export class Game extends Component {
                         <div className="col-8">
                             <div className="row h-33">
                                 <div className="row w-100">
-                                    {/* <!-- Oberer Spieler -->*/}
+                                    {/*  Upper player */}
                                     <div className="col-12 my-auto">
                                         <OpponentCards design="d-flex justify-content-center"
                                                        player={this.state.game.players[1]} horizontal={true}/>
@@ -155,7 +155,7 @@ export class Game extends Component {
                                 <div className="col-3 d-flex justify-content-center my-auto">
                                     <ScoreBoard playersRanked={this.state.game.playersRanked}/>
                                 </div>
-                                {/* <!-- Stapel in der Mitte -->*/}
+                                {/* Pile in the middle */}
                                 <div className="col-6 my-auto">
                                     <Piles game={this.state.game} clickFunction={this.handleNextRound}/>
                                 </div>
@@ -189,7 +189,7 @@ export class Game extends Component {
 
                         {this.state.game.players.length === 3 &&
                             <Fragment>
-                                {/* <!-- Rechter Spieler -->*/}
+                                {/* Right player */}
                                 <div className="col-1 p-0">
                                     <DropAreaForDroppingCards key={this.state.game.players[2]} player={this.state.game.players[2]} direction="vertical"/>
                                 </div>
