@@ -15,7 +15,8 @@ const locale = (navigator.languages && navigator.languages[0]) || navigator.lang
 const msg = {
     'en-US': en,
     'en-GB': en,
-    'de-DE': de
+    'de-DE': de,
+    'de': de,
 };
 
 const message = (locale === 'en-US') ? en : Object.assign({}, en, msg[locale]);
