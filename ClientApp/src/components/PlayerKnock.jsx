@@ -1,4 +1,5 @@
 import React, {Component, Fragment} from 'react';
+import {FormattedMessage} from "react-intl";
 
 export default class PlayerKnock extends Component {
     constructor(props) {
@@ -12,7 +13,7 @@ export default class PlayerKnock extends Component {
                     <table className="table">
                         <thead>
                         <tr>
-                            <th scope="col">Geklopft</th>
+                            <th scope="col"><FormattedMessage id="game.knocked" /></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -26,11 +27,11 @@ export default class PlayerKnock extends Component {
                 </div>
                 <div className="d-flex justify-content-center">
                     <button onClick={this.props.sendPositiveKnockFunction}>
-                        Erlauben
+                        <FormattedMessage id="game.allow" />
                     </button>
                     {this.props.playersTurn === false &&
                     <button onClick={this.props.sendNegativeKnockFunction}>
-                        Verweigern
+                        <FormattedMessage id="game.deny" />
                     </button>
                     }
                 </div>

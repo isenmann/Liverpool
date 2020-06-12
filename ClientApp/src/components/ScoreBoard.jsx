@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {FormattedMessage} from "react-intl";
 
 export default class ScoreBoard extends Component {
     constructor(props) {
@@ -10,8 +11,8 @@ export default class ScoreBoard extends Component {
             <table className="table">
                 <thead>
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Punkte</th>
+                    <th scope="col"><FormattedMessage id="game.name" /></th>
+                    <th scope="col"><FormattedMessage id="game.points" /></th>
                 </tr>
                 </thead>
                 <tbody>

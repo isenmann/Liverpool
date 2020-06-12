@@ -21,40 +21,7 @@ namespace Liverpool.Models
         {
             get
             {
-                if (Round == 1)
-                {
-                    return "2 Pässe";
-                }
-                if (Round == 2)
-                {
-                    return "1 Pass, 1 Straße";
-                }
-                if (Round == 3)
-                {
-                    return "2 Straßen";
-                }
-                if (Round == 4)
-                {
-                    return "3 Pässe";
-                }
-                if (Round == 5)
-                {
-                    return "2 Pässe, 1 Straße";
-                }
-                if (Round == 6)
-                {
-                    return "1 Pass, 2 Straßen";
-                }
-                if (Round == 7)
-                {
-                    return "3 Straßen";
-                }
-                if (Round == 8)
-                {
-                    return "3 Pässe, 1 Straße";
-                }
-
-                return string.Empty;
+                return $"game.requirement.round.{Round}";
             }
         }
 
@@ -524,6 +491,12 @@ namespace Liverpool.Models
         {
             // no own dropped cards and want to drop at another player, deny it
             if (player.User.ConnectionId != playerToDrop.User.ConnectionId && player.DroppedCards.Any(droppedList => droppedList.Any(card => card.DisplayName == "empty")))
+            {
+                return false;
+            }
+
+            // own dropped cards available and want to drop at another player, check if dropped cards are correct, otherwise deny it
+            if (player.User.ConnectionId != playerToDrop.User.ConnectionId && !DroppedCardsAreCorrect(player))
             {
                 return false;
             }
