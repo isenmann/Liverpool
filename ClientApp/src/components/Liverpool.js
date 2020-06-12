@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService'
+import { FormattedMessage } from "react-intl";
 
 export class Liverpool extends Component {
     static displayName = Liverpool.name;
@@ -84,23 +85,28 @@ handleGameStart(gameName) {
     }
 }
 
-  render() {
+    render() {
     return (
         <div className="container-fluid h-100">
             <div className="row h-100">
                 <div className="col-6">
                     <form onSubmit={this.handleSubmit}>
                         <label className="col-6 my-auto">
-                            Bitte Spielername eingeben:
+                            <FormattedMessage id="lobby.username" />
                         </label>
                         <input className="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
-                        <input className="col-2" type="submit" value="Senden" />
+                        <FormattedMessage id="lobby.submit">
+                            { (value) =>
+                                <input className="col-2" type="submit" value={value} />
+                            }
+                        </FormattedMessage>
+
                     </form>
 
                     <table className='table table-striped' aria-labelledby="tabelLabel">
                         <thead>
                             <tr>
-                                <th>Spieler online</th>
+                                <th><FormattedMessage id="lobby.playersOnline" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -115,15 +121,19 @@ handleGameStart(gameName) {
                 <div className="col-6">
                     <form onSubmit={this.handleGameCreate}>
                         <label className="col-6 my-auto">
-                            Bitte Spielname eingeben:
+                            <FormattedMessage id="lobby.enterGameName" />
                         </label>
                         <input className="col-4" type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
-                        <input className="col-2" type="submit" value="Spiel erstellen" />
+                        <FormattedMessage id="lobby.createGame">
+                            { (value) =>
+                                <input className="col-2" type="submit" value={value} />
+                            }
+                        </FormattedMessage>
                     </form>
                     <table className='table table-striped' aria-labelledby="tabelLabel">
                         <thead>
                             <tr>
-                                <th>Nicht gestartete Spiele</th>
+                                <th><FormattedMessage id="lobby.notStartedGames" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -133,10 +143,18 @@ handleGameStart(gameName) {
                                     <td>{game.gameStarted}</td>
                                     <td>{game.players.map(p => p.name + " ")}</td>
                                     <td> <form onSubmit={this.handleGameJoin(game.name)}>
-                                        <input type="submit" value="Spiel beitreten" />
+                                        <FormattedMessage id="lobby.joinGame">
+                                            { (value) =>
+                                                <input type="submit" value={value} />
+                                            }
+                                        </FormattedMessage>
                                     </form></td>
                                     <td> <form onSubmit={this.handleGameStart(game.name)}>
-                                        <input type="submit" value="Spiel starten" />
+                                        <FormattedMessage id="lobby.startGame">
+                                            { (value) =>
+                                                <input type="submit" value={value} />
+                                            }
+                                        </FormattedMessage>
                                     </form></td>
                                 </tr>
                             )}

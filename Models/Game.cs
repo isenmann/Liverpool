@@ -21,40 +21,7 @@ namespace Liverpool.Models
         {
             get
             {
-                if (Round == 1)
-                {
-                    return "2 Pässe";
-                }
-                if (Round == 2)
-                {
-                    return "1 Pass, 1 Straße";
-                }
-                if (Round == 3)
-                {
-                    return "2 Straßen";
-                }
-                if (Round == 4)
-                {
-                    return "3 Pässe";
-                }
-                if (Round == 5)
-                {
-                    return "2 Pässe, 1 Straße";
-                }
-                if (Round == 6)
-                {
-                    return "1 Pass, 2 Straßen";
-                }
-                if (Round == 7)
-                {
-                    return "3 Straßen";
-                }
-                if (Round == 8)
-                {
-                    return "3 Pässe, 1 Straße";
-                }
-
-                return string.Empty;
+                return $"game.requirement.round.{Round}";
             }
         }
 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import DropArea from "./DropArea";
+import {FormattedMessage} from "react-intl";
 
 export default class Piles extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ export default class Piles extends Component {
         return (
             <div>
                 <div className="d-flex justify-content-center">
-                    <b>Runde {this.props.game.round} ({this.props.game.mantra})</b>
+                    <b><FormattedMessage id="game.round" /> {this.props.game.round} (<FormattedMessage id={this.props.game.mantra} />)</b>
                 </div>
                 <div className="d-flex justify-content-center">
                     <DropArea id="discardPile" disableDrop={false} cards={[this.props.game.discardPile]} direction="horizontal"/>
@@ -18,7 +19,7 @@ export default class Piles extends Component {
                     {this.props.game.roundFinished && this.props.game.gameFinished === false &&
                     <div className="d-flex justify-content-center">
                         <button onClick={this.props.clickFunction}>
-                            Nächste Runde
+                            <FormattedMessage id="game.nextRound" />
                         </button>
                     </div>
                     }

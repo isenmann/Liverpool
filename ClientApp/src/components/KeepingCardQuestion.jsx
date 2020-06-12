@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import CardNotDraggable from "./CardNotDraggable";
+import {FormattedMessage} from "react-intl";
 
 export default class KeepingCardQuestion extends Component {
     constructor(props) {
@@ -13,7 +14,9 @@ export default class KeepingCardQuestion extends Component {
                     <table className="table">
                         <thead>
                         <tr>
-                            <th scope="col">Folg. Karte will der aktive Spieler behalten</th>
+                            <th scope="col">
+                                <FormattedMessage id="game.keepingCardQuestion" />
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -28,10 +31,10 @@ export default class KeepingCardQuestion extends Component {
                 </div>
                 <div className="d-flex justify-content-center">
                     <button onClick={this.props.positiveKeepFeedbackFunction}>
-                        Erlauben
+                        <FormattedMessage id="game.allow" />
                     </button>
                     <button onClick={this.props.negativeKeepFeedbackFunction}>
-                        Verweigern
+                        <FormattedMessage id="game.deny" />
                     </button>
                 </div>
             </Fragment>

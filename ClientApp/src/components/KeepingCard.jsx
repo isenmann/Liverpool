@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import CardNotDraggable from "./CardNotDraggable";
 import DropArea from "./DropArea";
+import {FormattedMessage} from "react-intl";
 
 export default class KeepingCard extends Component {
     constructor(props) {
@@ -13,7 +14,9 @@ export default class KeepingCard extends Component {
                 <table className="table">
                     <thead>
                     <tr>
-                        <th scope="col">Karte hier ablegen um sie behalten zu wollen</th>
+                        <th scope="col">
+                            <FormattedMessage id="game.keepingCard" />
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
