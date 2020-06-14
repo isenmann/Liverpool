@@ -459,6 +459,30 @@ namespace Liverpool.Models
             return false;
         }
 
+        internal bool CheckIfCardCouldBeAddedToAnyDroppedCards(string card)
+        {
+            var cardToCheck = new Card(card);
+
+            foreach (var player in Players)
+            {
+                if (!player.HasDroppedCards)
+                {
+                    continue;
+                }
+
+                foreach (var droppedCards in player.DroppedCards)
+                {
+                    if (CheckIfDeckIsRunAfterAddingCard(cardToCheck, droppedCards) ||
+                        CheckIfDeckIsSetAfterAddingCard(cardToCheck, droppedCards))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         internal void CheckIfDeckHasEnoughCards()
         {
             // everything is fine, enough cards on the game deck

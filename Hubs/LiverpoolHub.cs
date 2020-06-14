@@ -273,6 +273,19 @@ namespace Liverpool.Hubs
                 return;
             }
 
+            // if it's not the last round, check if the player could drop the last card 
+            // to any of the available dropped cards of other players or on it's own dropped cards.
+            // If so deny the discard
+            if (game.Round != 8 &&
+               player.Deck.Count == 1 &&
+               player.Deck[0].DisplayName == card)
+            {
+                if (game.CheckIfCardCouldBeAddedToAnyDroppedCards(card))
+                {
+                    return;
+                }
+            }
+
             game.DiscardPile.Add(new Card(card));
             player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
 
@@ -324,6 +337,13 @@ namespace Liverpool.Hubs
             }
 
             if (player.CurrentAllowedMove != MoveType.DrawCard)
+            {
+                return;
+            }
+
+            // if player has only one card in his deck, 
+            // he is not allowed to take the card from the discard pile
+            if (player.Deck.Count == 1)
             {
                 return;
             }
