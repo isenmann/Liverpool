@@ -73,13 +73,13 @@ export class Game extends Component {
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId === "discardPile") {
-            LiverpoolService.discardCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
+            LiverpoolService.discardCard(this.state.game.name, this.state.game.myCards[source.index].displayName, source.index);
             return;
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId.includes("_card_dropped_")) {
             var name = destination.droppableId.split("_", 1);
-            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, name[0], destination.droppableId);
+            LiverpoolService.dropCardAtPlayer(this.state.game.name, this.state.game.myCards[source.index].displayName, source.index, name[0], destination.droppableId);
             return;
         }
 
@@ -104,7 +104,7 @@ export class Game extends Component {
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId === "playerCardForAskingToKeep") {
-            LiverpoolService.askToKeepCard(this.state.game.name, this.state.game.myCards[source.index].displayName);
+            LiverpoolService.askToKeepCard(this.state.game.name, this.state.game.myCards[source.index].displayName, source.index);
         }
       };
 

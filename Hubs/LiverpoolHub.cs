@@ -224,7 +224,7 @@ namespace Liverpool.Hubs
             }
         }
 
-        public async Task DiscardCard(string gameName, string card)
+        public async Task DiscardCard(string gameName, string card, int cardIndex)
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -287,7 +287,7 @@ namespace Liverpool.Hubs
             }
 
             game.DiscardPile.Add(new Card(card));
-            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
+            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card && c.Index == cardIndex));
 
             if (!game.PlayerWonTheRound(player))
             {
@@ -372,7 +372,7 @@ namespace Liverpool.Hubs
             }
         }
 
-        public async Task DropCardAtPlayer(string gameName, string cardName, string playerNameToDrop, string dropAreaName)
+        public async Task DropCardAtPlayer(string gameName, string cardName, int cardIndex, string playerNameToDrop, string dropAreaName)
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -400,7 +400,7 @@ namespace Liverpool.Hubs
 
             if (player.User.Name == playerToDrop.User.Name && !player.HasDroppedCards)
             {
-                game.DropCardAtOwnArea(player, cardName, dropAreaName);
+                game.DropCardAtOwnArea(player, cardName, cardIndex, dropAreaName);
                 // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
                 if (player.Deck.Count == 0 && game.Round != 8)
                 {
@@ -421,7 +421,7 @@ namespace Liverpool.Hubs
 
                 await GameUpdated(gameName);
             }
-            else if (game.DropCardAtPlayerArea(player, cardName, playerToDrop, dropAreaName))
+            else if (game.DropCardAtPlayerArea(player, cardName, cardIndex, playerToDrop, dropAreaName))
             {
                 // if all cards are dropped, but no cards anymore on the player's hand, next player's turn
                 // because player has to discard one card at the discard pile
@@ -577,7 +577,7 @@ namespace Liverpool.Hubs
             }
         }
 
-        public async Task AskToKeepCard(string gameName, string card)
+        public async Task AskToKeepCard(string gameName, string card, int cardIndex)
         {
             var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -609,7 +609,7 @@ namespace Liverpool.Hubs
 
             player.PlayerAskedToKeepCard = true;
             player.FeedbackOnKeepingCard = true;
-            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card));
+            player.Deck.Remove(player.Deck.First(c => c.DisplayName == card && c.Index == cardIndex));
             game.AskToKeepCardPile.Add(new Card(card));
 
             await GameUpdated(gameName);

@@ -36,8 +36,8 @@ class LiverpoolHubService {
         this.connection.invoke("StartGame", gameName);
     }
 
-    discardCard(gameName, cardName) {
-        this.connection.invoke("DiscardCard", gameName, cardName);
+    discardCard(gameName, cardName, cardIndex) {
+        this.connection.invoke("DiscardCard", gameName, cardName, cardIndex);
     }
 
     drawCardFromDiscardPile(gameName, cardName) {
@@ -52,8 +52,8 @@ class LiverpoolHubService {
         this.connection.invoke("DropCards", gameName);
     }
 
-    dropCardAtPlayer(gameName, cardName, playerName, dropAreaName) {
-        this.connection.invoke("DropCardAtPlayer", gameName, cardName, playerName, dropAreaName);
+    dropCardAtPlayer(gameName, cardName, cardIndex, playerName, dropAreaName) {
+        this.connection.invoke("DropCardAtPlayer", gameName, cardName, cardIndex, playerName, dropAreaName);
     }
 
     takeBackPlayersCard(gameName, cardName, index) {
@@ -76,8 +76,8 @@ class LiverpoolHubService {
         this.connection.invoke("KnockFeedback", gameName, feedback);
     }
 
-    askToKeepCard(gameName, cardName) {
-        this.connection.invoke("AskToKeepCard", gameName, cardName);
+    askToKeepCard(gameName, cardName, cardIndex) {
+        this.connection.invoke("AskToKeepCard", gameName, cardName, cardIndex);
     }
 
     keepCardFeedback(gameName, feedback) {
