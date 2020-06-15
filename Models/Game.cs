@@ -511,7 +511,7 @@ namespace Liverpool.Models
             return RoundFinished;
         }
 
-        internal bool DropCardAtPlayerArea(Player player, string cardName, Player playerToDrop, string dropAreaName)
+        internal bool DropCardAtPlayerArea(Player player, string cardName, int cardIndex, Player playerToDrop, string dropAreaName)
         {
             // no own dropped cards and want to drop at another player, deny it
             if (player.User.ConnectionId != playerToDrop.User.ConnectionId && player.DroppedCards.Any(droppedList => droppedList.Any(card => card.DisplayName == "empty")))
@@ -550,7 +550,7 @@ namespace Liverpool.Models
                     // if yes, add it and remove it from player's deck
                     playerToDrop.DroppedCards[listIndex].Add(card);
                     playerToDrop.DroppedCards[listIndex] = playerToDrop.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
-                    player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+                    player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName && c.Index == cardIndex));
                 }
             }
             else
@@ -558,13 +558,13 @@ namespace Liverpool.Models
                 playerToDrop.DroppedCards[listIndex].Add(card);
                 playerToDrop.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
                 playerToDrop.DroppedCards[listIndex] = playerToDrop.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
-                player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+                player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName && c.Index == cardIndex));
             }
 
             return isRun || isSet;
         }
 
-        internal void DropCardAtOwnArea(Player player, string cardName, string dropAreaName)
+        internal void DropCardAtOwnArea(Player player, string cardName, int cardIndex, string dropAreaName)
         {
             // find list index in dropAreaName
             var listIndex = int.Parse(dropAreaName.Substring(dropAreaName.Length - 1));
@@ -573,7 +573,7 @@ namespace Liverpool.Models
             player.DroppedCards[listIndex].Add(card);
             player.DroppedCards[listIndex].RemoveAll(c => c.DisplayName == "empty");
             player.DroppedCards[listIndex] = player.DroppedCards[listIndex].OrderBy(c => c.Value).ToList();
-            player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName));
+            player.Deck.Remove(player.Deck.Find(c => c.DisplayName == card.DisplayName && c.Index == cardIndex));
         }
 
         private bool CheckIfDeckIsSet(List<Card> set)
