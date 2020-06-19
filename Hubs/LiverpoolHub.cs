@@ -341,9 +341,9 @@ namespace Liverpool.Hubs
                 return;
             }
 
-            // if player has only one card in his deck, 
+            // if player has only one or zero card in his deck, 
             // he is not allowed to take the card from the discard pile
-            if (player.Deck.Count == 1)
+            if (player.Deck.Count <= 1)
             {
                 return;
             }
@@ -631,6 +631,7 @@ namespace Liverpool.Hubs
                 var cardTakenByAnotherPlayer = false;
 
                 var playerAfterCurrentPlayerDenied = true;
+                var playerAfterCurrentPlayerTookCard = false;
 
                 do
                 {
@@ -645,6 +646,10 @@ namespace Liverpool.Hubs
                         {
                             game.CheckIfDeckHasEnoughCards();
                             allPlayers[index].Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+                        }
+                        else
+                        {
+                            playerAfterCurrentPlayerTookCard = true;
                         }
 
                         var card = game.AskToKeepCardPile.Last();
@@ -671,7 +676,7 @@ namespace Liverpool.Hubs
                     p.PlayerAskedToKeepCard = false;
                 }
 
-                game.NextTurn();
+                game.NextTurn(playerAfterCurrentPlayerTookCard);
 
                 await GameUpdated(gameName);
             }

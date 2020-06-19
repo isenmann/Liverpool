@@ -106,7 +106,7 @@ namespace Liverpool.Models
             }
         }
 
-        public void NextTurn()
+        public void NextTurn(bool keepingCardQuestionDeniedByNextPlayer = false)
         {
             var index = Players.IndexOf(Players.First(p => p.Turn == true));
             index++;
@@ -118,6 +118,13 @@ namespace Liverpool.Models
             Players.ForEach(p => p.Turn = false);
             Players.ForEach(p => p.CurrentAllowedMove = MoveType.DrawCard);
             Players[index].Turn = true;
+
+            // if the next player denied a keeping card question from the current player, 
+            // then he doesn't need to take another card
+            if (keepingCardQuestionDeniedByNextPlayer)
+            {
+                Players[index].CurrentAllowedMove = MoveType.DropOrDiscardCards;
+            }
         }
 
         public void NextRound()
