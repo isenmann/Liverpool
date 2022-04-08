@@ -27,7 +27,7 @@ The requirements for each round of play are as follows:
 The players meet in the lobby and can set their user name. After that a user can create a game by setting a game name. All the other players can join the game. There is a minimum of 3 players and a maximum of 4 players to start a game.
 
 ## Technical stuff
-The project is written in ASP.NET Core using .NET Core 3.1 with a React.JS UI. The design is made in bootstrap. The complete communication between UI and backend is done via WebSockets using the SignalR library. No effort was made to make the backend secure in any way.
+The project is written in ASP.NET Core using .NET 6 with a React UI. The design is made in bootstrap. The complete communication between UI and backend is done via WebSockets using the SignalR library. No effort was made to make the backend secure in any way.
 
 The basic game logic is checked from the backend completely, so it will deny a turn if it's not correct.
 
