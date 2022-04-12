@@ -12,19 +12,13 @@ import PlayerKnock from "./PlayerKnock";
 import Player from "./Player"
 
 function Game() {
-    const [game, setGame] = useState({});
+    const [game, setGame] = useState(undefined);
 
     useEffect(() => {
         LiverpoolService.registerGameUpdated((gameDto) => {
-           setGame(gameDto);
+            setGame(gameDto);
         });
     }, []);
-
-    useEffect(() => {
-        LiverpoolService.connection.onreconnected(() => {
-            LiverpoolService.reconnectUser(game.name, game.player.name);
-        });
-    }, [game.name, game.player.name]);
 
     function handleNextRound() {
         LiverpoolService.nextRound(game.name);
