@@ -1,100 +1,95 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService'
 import { FormattedMessage } from "react-intl";
+import { useNavigate } from "react-router-dom";
 
-export class Liverpool extends Component {
-    static displayName = Liverpool.name;
+function Liverpool() {
+    const [userName, setUserName] = useState('');
+    const [userNames, setUserNames] = useState([]);
+    const [gameNameToCreateOrJoin, setgameNameToCreateOrJoin] = useState('');
+    const [notStartedGames, setnotStartedGames] = useState([]);
+    const navigate = useNavigate();
 
-  constructor(props) {
-      super(props);
-      this.state = { userName: '', userNames: [], gameNameToCreateOrJoin: '', notStartedGames: [] };
-      this.handleSubmit = this.handleSubmit.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleGameCreateOrJoinChange = this.handleGameCreateOrJoinChange.bind(this);
-      this.handleGameCreate = this.handleGameCreate.bind(this);
-      this.handleGameJoin = this.handleGameJoin.bind(this);
-      this.handleGameStart = this.handleGameStart.bind(this);
+    useEffect(() => {
+        LiverpoolService.registerUserConnected((usernames) => {
+            setUserNames(usernames);
+        });
+    
+        LiverpoolService.registerUserDisconnected((disconnectedUser, users) => {
+            setUserNames(users);
+        });
+    
+        LiverpoolService.registerUserSetName((usernames) => {
+            setUserNames(usernames);
+        });
+    
+        LiverpoolService.registerGetAllUsers((usernames) => {
+            setUserNames(usernames);
+        });
+    
+        LiverpoolService.registerGameCreated((games) => {
+            setnotStartedGames(games);
+        });
+    
+        LiverpoolService.registerGameJoined((games) => {
+            setnotStartedGames(games);
+        });
+    
+        LiverpoolService.registerAllNotStartedGames((games) => {
+            setnotStartedGames(games);
+        });
+    
+        LiverpoolService.getAllUsers();
+        LiverpoolService.getAllNotStartedGames();
+    }, []);
 
-      LiverpoolService.registerUserConnected((usernames) => {
-          this.setState({ userNames: usernames });
-      });
+    useEffect(() => {
+        LiverpoolService.registerGameStarted((name) => {
+            navigate('/game/' + name);
+        });
+    }, [navigate]);
 
-      LiverpoolService.registerUserDisconnected((disconnectedUser, users) => {
-          this.setState({ userNames: users });
-      });
+    function handleChange(event)  {
+        setUserName(event.target.value);
+    };
 
-      LiverpoolService.registerUserSetName((usernames) => {
-          this.setState({ userNames: usernames });
-      });
+    function handleSubmit(event) {
+            event.preventDefault();
+            LiverpoolService.setUserName(userName);
+    };
 
-      LiverpoolService.registerGetAllUsers((usernames) => {
-          this.setState({ userNames: usernames });
-      });
+    function handleGameCreateOrJoinChange(event) {
+        setgameNameToCreateOrJoin(event.target.value);
+    };
 
-      LiverpoolService.registerGameCreated((games) => {
-          this.setState({ notStartedGames: games });
-      });
-
-      LiverpoolService.registerGameJoined((games) => {
-          this.setState({ notStartedGames: games });
-      });
-
-      LiverpoolService.registerGameStarted((name) => {
-          this.props.history.push('/game/' + name);
-      });
-
-      LiverpoolService.registerAllNotStartedGames((games) => {
-          this.setState({ notStartedGames: games });
-      });
-    }
-
-  componentDidMount() {
-      LiverpoolService.getAllUsers();
-      LiverpoolService.getAllNotStartedGames();
-  }
-
-  handleChange(event) {
-     this.setState({ userName: event.target.value });
-    }
-
-  handleSubmit(event) {
+    function handleGameCreate(event) {
         event.preventDefault();
-        LiverpoolService.setUserName(this.state.userName);
-  }
+        LiverpoolService.createGame(gameNameToCreateOrJoin);
+    };
 
-  handleGameCreateOrJoinChange(event) {
-      this.setState({ gameNameToCreateOrJoin: event.target.value });
-  }
+    function handleGameJoin(gameName) {
+        return event => {
+            event.preventDefault()
+            LiverpoolService.joinGame(gameName);
+        }
+    };
 
-handleGameCreate(event) {
-    event.preventDefault();
-    LiverpoolService.createGame(this.state.gameNameToCreateOrJoin);
-}
+    function handleGameStart(gameName) {
+        return event => {
+            event.preventDefault()
+            LiverpoolService.startGame(gameName);
+        }
+    };
 
-handleGameJoin(gameName) {
-    return event => {
-        event.preventDefault()
-        LiverpoolService.joinGame(gameName);
-    }
-}
-
-handleGameStart(gameName) {
-    return event => {
-        event.preventDefault()
-        LiverpoolService.startGame(gameName);
-    }
-}
-
-    render() {
     return (
         <div className="container-fluid h-100">
             <div className="row h-100">
                 <div className="col-6">
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <label className="col-6 my-auto">
                             <FormattedMessage id="lobby.username" />
                         </label>
-                        <input className="col-4" type="text" value={this.state.userName} onChange={this.handleChange} />
+                        <input className="col-4" type="text" value={userName} onChange={handleChange} />
                         <FormattedMessage id="lobby.submit">
                             { (value) =>
                                 <input className="col-2" type="submit" value={value} />
@@ -110,7 +105,7 @@ handleGameStart(gameName) {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.userNames.map(name =>
+                            {userNames.map(name =>
                                 <tr key={name}>
                                     <td>{name}</td>
                                 </tr>
@@ -119,11 +114,11 @@ handleGameStart(gameName) {
                     </table>
                 </div>
                 <div className="col-6">
-                    <form onSubmit={this.handleGameCreate}>
+                    <form onSubmit={handleGameCreate}>
                         <label className="col-6 my-auto">
                             <FormattedMessage id="lobby.enterGameName" />
                         </label>
-                        <input className="col-4" type="text" value={this.state.gameNameToCreateOrJoin} onChange={this.handleGameCreateOrJoinChange} />
+                        <input className="col-4" type="text" value={gameNameToCreateOrJoin} onChange={handleGameCreateOrJoinChange} />
                         <FormattedMessage id="lobby.createGame">
                             { (value) =>
                                 <input className="col-2" type="submit" value={value} />
@@ -137,19 +132,19 @@ handleGameStart(gameName) {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.notStartedGames.map(game =>
+                            {notStartedGames.map(game =>
                                 <tr key={game.name}>
                                     <td>{game.name}</td>
                                     <td>{game.gameStarted}</td>
                                     <td>{game.players.map(p => p.name + " ")}</td>
-                                    <td> <form onSubmit={this.handleGameJoin(game.name)}>
+                                    <td> <form onSubmit={handleGameJoin(game.name)}>
                                         <FormattedMessage id="lobby.joinGame">
                                             { (value) =>
                                                 <input type="submit" value={value} />
                                             }
                                         </FormattedMessage>
                                     </form></td>
-                                    <td> <form onSubmit={this.handleGameStart(game.name)}>
+                                    <td> <form onSubmit={handleGameStart(game.name)}>
                                         <FormattedMessage id="lobby.startGame">
                                             { (value) =>
                                                 <input type="submit" value={value} />
@@ -164,5 +159,6 @@ handleGameStart(gameName) {
             </div>
         </div>
     );
-  }
-}
+  };
+
+  export default Liverpool;
