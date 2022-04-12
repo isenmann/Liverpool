@@ -1,19 +1,29 @@
 ﻿import * as signalR from "@microsoft/signalr";
 
 class LiverpoolHubService {
-
     constructor() {
+        this.userName = '';
+        this.gameName = '';
+
         const hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/liverpoolHub")
             .withAutomaticReconnect([500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, null])
             .configureLogging(signalR.LogLevel.Information)
             .build();
-        hubConnection.start();
+        hubConnection.start().then(() => {
+            this.userName = hubConnection.connectionId;
+        });
         this.connection = hubConnection;
+        this.connection.onreconnected(this.reconnect);
+    }
+
+    reconnect(){
+        this.reconnectUser(this.gameName, this.userName);
     }
 
     setUserName(username) {
         this.connection.invoke("SetUserName", username);
+        this.userName = username;
     }
 
     getAllUsers() {
@@ -127,6 +137,7 @@ class LiverpoolHubService {
     registerGameStarted(gameStarted) {
         this.connection.on('GameStarted', (gameName) => {
             gameStarted(gameName);
+            this.gameName = gameName;
         });
     }
 

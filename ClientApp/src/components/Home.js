@@ -1,18 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import CardNotDraggable from './CardNotDraggable';
 import {FormattedMessage} from "react-intl";
 
-export class Home extends Component {
-  static displayName = Home.name;
-
-  render () {
+function Home () {
     return (
         <div className="container-fluid h-100">
             <div className="row h-100">
                 <div className="col-12">
                     <h1><FormattedMessage id="welcome" /></h1>
                     <p />
-                    <h4>v1.7</h4>
+                    <h4>v1.8</h4>
                     <div className="d-flex justify-content-center">
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
@@ -49,5 +46,6 @@ export class Home extends Component {
             </div>
         </div>
     );
-  }
 }
+
+export default Home;
