@@ -11,14 +11,14 @@ class LiverpoolHubService {
             .configureLogging(signalR.LogLevel.Information)
             .build();
         hubConnection.start().then(() => {
-            this.userName = hubConnection.connectionId;
+            if(this.userName === '') {
+                this.userName = hubConnection.connectionId;
+            }
         });
         this.connection = hubConnection;
-        this.connection.onreconnected(this.reconnect);
-    }
-
-    reconnect(){
-        this.reconnectUser(this.gameName, this.userName);
+        this.connection.onreconnected(() => {
+            this.reconnectUser(this.gameName, this.userName);
+        });
     }
 
     setUserName(username) {
