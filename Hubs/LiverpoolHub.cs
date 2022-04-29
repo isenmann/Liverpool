@@ -82,7 +82,7 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => new PlayerDto
                     {
                         Name = p.User.Name,
-                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                        CountofCards = p.Deck?.Count ?? 0,
                         DroppedCards = p.DroppedCards,
                         Points = p.Points
                     }).ToList()
@@ -104,7 +104,7 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => new PlayerDto
                     {
                         Name = p.User.Name,
-                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                        CountofCards = p.Deck?.Count ?? 0,
                         DroppedCards = p.DroppedCards,
                         Points = p.Points
                     }).ToList()
@@ -135,7 +135,7 @@ namespace Liverpool.Hubs
                 Players = g.Players.Select(p => new PlayerDto
                 {
                     Name = p.User.Name,
-                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                    CountofCards = p.Deck?.Count ?? 0,
                     DroppedCards = p.DroppedCards,
                     Points = p.Points
                 }).ToList()
@@ -146,7 +146,7 @@ namespace Liverpool.Hubs
         private async Task GameUpdated(string gameName)
         {
             var game = _liverpoolGameService.GetGame(gameName);
-            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
+            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
 
             if (game.GameStarted)
             {
@@ -156,10 +156,10 @@ namespace Liverpool.Hubs
                     {
                         GameStarted = game.GameStarted,
                         Name = game.Name,
-                        Players = allPlayersInTheGame.OrderBy(player => player.StartPosition).Select(p => new PlayerDto
+                        Players = allPlayersInTheGame.OrderBy(p => p.StartPosition).Select(p => new PlayerDto
                         {
                             Name = p.User.Name,
-                            CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                            CountofCards = p.Deck?.Count ?? 0,
                             DroppedCards = p.DroppedCards,
                             Points = p.Points,
                             PlayersTurn = p.Turn,
@@ -186,18 +186,24 @@ namespace Liverpool.Hubs
                         gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
                     }
 
-                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
-                    for (int i = 0; i < gameDto.MyCards.Count; i++)
+                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId)?.Deck;
+                    if (gameDto.MyCards != null)
                     {
-                        gameDto.MyCards[i].Index = i;
+                        for (var i = 0; i < gameDto.MyCards.Count; i++)
+                        {
+                            gameDto.MyCards[i].Index = i;
+                        }
                     }
 
                     gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
-                    foreach (var dropCards in gameDto.Player.DroppedCards)
+                    if (gameDto.Player != null)
                     {
-                        for (int i = 0; i < dropCards.Count; i++)
+                        foreach (var dropCards in gameDto.Player.DroppedCards)
                         {
-                            dropCards[i].Index = i;
+                            for (var i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
                         }
                     }
 
@@ -212,7 +218,7 @@ namespace Liverpool.Hubs
                     {
                         foreach (var dropCards in opponent.DroppedCards)
                         {
-                            for (int i = 0; i < dropCards.Count; i++)
+                            for (var i = 0; i < dropCards.Count; i++)
                             {
                                 dropCards[i].Index = i;
                             }
@@ -440,7 +446,6 @@ namespace Liverpool.Hubs
 
         public async Task TakeBackPlayersCard(string gameName, string cardName, string index)
         {
-            var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
             var indexOfDroppedCardList = int.Parse(index);
 
@@ -473,7 +478,6 @@ namespace Liverpool.Hubs
 
         public async Task SortPlayerCards(string gameName, int oldIndex, int newIndex)
         {
-            var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
 
             var cardToMove = player.Deck[oldIndex];
@@ -545,7 +549,7 @@ namespace Liverpool.Hubs
             var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKnock == null);
             if (!feedbackMissing)
             {
-                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn));
                 var index = indexOfPlayerInTurn;
 
                 do
@@ -554,7 +558,8 @@ namespace Liverpool.Hubs
                     index %= allPlayers.Count;
                     // if the player knocked or denied the knock from another player, 
                     // then he has to take the card
-                    if (allPlayers[index].PlayerKnocked || !allPlayers[index].FeedbackOnKnock.Value)
+                    var feedbackOnKnock = allPlayers[index].FeedbackOnKnock;
+                    if (feedbackOnKnock != null && (allPlayers[index].PlayerKnocked || !feedbackOnKnock.Value))
                     {
                         // take the price for the knock, which is an additional card from draw pile
                         game.CheckIfDeckHasEnoughCards();
@@ -626,7 +631,7 @@ namespace Liverpool.Hubs
             var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKeepingCard == null);
             if (!feedbackMissing)
             {
-                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn));
                 var index = indexOfPlayerInTurn;
                 var cardTakenByAnotherPlayer = false;
 
@@ -639,7 +644,8 @@ namespace Liverpool.Hubs
                     index %= allPlayers.Count;
                     // if a player denied the keep request from another player, 
                     // then he has to take the card
-                    if (!allPlayers[index].FeedbackOnKeepingCard.Value)
+                    var feedbackOnKeepingCard = allPlayers[index].FeedbackOnKeepingCard;
+                    if (feedbackOnKeepingCard != null && !feedbackOnKeepingCard.Value)
                     {
                         // take the price for denying it, which is an additional card from draw pile
                         if (!playerAfterCurrentPlayerDenied)

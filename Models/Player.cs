@@ -1,7 +1,6 @@
-﻿using Liverpool.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Liverpool
+namespace Liverpool.Models
 {
     public class Player
     {
