@@ -276,6 +276,7 @@ namespace Liverpool.Hubs
                 player.Deck.Count == 1 && 
                 player.Deck[0].DisplayName == card)
             {
+                player.HasDroppedCards = false;
                 return;
             }
 
@@ -283,8 +284,8 @@ namespace Liverpool.Hubs
             // to any of the available dropped cards of other players or on it's own dropped cards.
             // If so deny the discard
             if (game.Round != 8 &&
-               player.Deck.Count == 1 &&
-               player.Deck[0].DisplayName == card)
+                player.Deck.Count == 1 &&
+                player.Deck[0].DisplayName == card)
             {
                 if (game.CheckIfCardCouldBeAddedToAnyDroppedCards(card))
                 {

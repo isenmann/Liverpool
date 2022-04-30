@@ -292,7 +292,7 @@ namespace Liverpool.Specs
 
             game.StartGame();
             game.Players.First(p => p.Turn).CurrentAllowedMove = MoveType.DropOrDiscardCards;
-            game.Players.First(p => !p.Turn).PlayerAskedToKeepCard = true;
+            game.Players.First(p => !p.Turn).PlayerKnocked = true;
 
             A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
             A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
@@ -301,9 +301,8 @@ namespace Liverpool.Specs
 
             await _sut.DiscardCard(game.Name, game.Players.First(p => p.Turn).Deck[0].DisplayName, game.Players.First(p => p.Turn).Deck[0].Index);
 
-            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedTwiceExactly();
             A.CallTo(() => _gameService.GetGame(game.Name)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -351,6 +350,360 @@ namespace Liverpool.Specs
             A.CallTo(() => _gameService.GetGame(game.Name)).MustHaveHappenedTwiceExactly();
             A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedANumberOfTimesMatching(c => c ==3);
             A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+        }
+
+        [Test]
+        public async Task DiscardCardFailedBecauseOfLastRoundAndOnlyOneCardLeftOnHandAndGameUpdatedIsNotCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+            game.Round = 7;
+
+            game.Players.First(p => p.Turn).Deck = new List<Card>();
+
+            game.NextRound();
+            game.Players.First(p => p.Turn).Deck = new List<Card>() { game.Players.First(p => p.Turn).Deck[0] };
+            game.Players.First(p => p.Turn).CurrentAllowedMove = MoveType.DropOrDiscardCards;
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DiscardCard(game.Name, game.Players.First(p => p.Turn).Deck[0].DisplayName, game.Players.First(p => p.Turn).Deck[0].Index);
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 1);
+            A.CallTo(() => _gameService.GetGame(game.Name)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedANumberOfTimesMatching(c => c == 2);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustNotHaveHappened();
+        }
+
+        [Test]
+        public async Task DiscardCardFailedBecauseOfLastRoundAndOnlyOneCardLeftOnHandAndTakeBackCardWorks()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+            game.Round = 7;
+
+            game.Players.First(p => p.Turn).Deck = new List<Card>();
+
+            game.NextRound();
+
+            game.Players.First(p => p.Turn).DroppedCards = new List<List<Card>> 
+            { 
+                game.Players.First(p => p.Turn).Deck.GetAndRemove(0, 3), 
+                game.Players.First(p => p.Turn).Deck.GetAndRemove(0, 3), 
+                game.Players.First(p => p.Turn).Deck.GetAndRemove(0, 3), 
+                game.Players.First(p => p.Turn).Deck.GetAndRemove(0, 3) 
+            };
+
+            game.Players.First(p => p.Turn).CurrentAllowedMove = MoveType.DropOrDiscardCards;
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DiscardCard(game.Name, game.Players.First(p => p.Turn).Deck[0].DisplayName, game.Players.First(p => p.Turn).Deck[0].Index);
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedANumberOfTimesMatching(c => c == 2);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustNotHaveHappened();
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 1);
+
+            await _sut.TakeBackPlayersCard(game.Name, game.Players.First(p => p.Turn).DroppedCards[0].First().DisplayName, game.Players.First(p => p.Turn).DroppedCards[0].First().Index.ToString());
+
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 2);
+        }
+
+        [Test]
+        public async Task DrawCardSucceededAndGameUpdatedIsCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DrawCardFromDrawPile(game.Name);
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 11);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+        }
+
+        [Test]
+        public async Task DrawCardFailedBecauseOnlyAllowedOnceAndGameUpdatedIsNotCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DrawCardFromDrawPile(game.Name);
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 11);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+
+            await _sut.DrawCardFromDrawPile(game.Name);
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 11);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+        }
+
+        [Test]
+        public async Task DrawCardFailedBecauseWrongPlayerTriedItAndGameUpdatedIsNotCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => !p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DrawCardFromDrawPile(game.Name);
+
+            Assert.IsTrue(game.Players.First(p => !p.Turn).Deck.Count == 10);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustNotHaveHappened();
+        }
+
+        [Test]
+        public async Task DrawCardFromDiscardPileSucceededAndGameUpdatedIsCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+            game.DiscardPile.Add(game.Deck.Last());
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+            
+            await _sut.DrawCardFromDiscardPile(game.Name, game.DiscardPile.Last().DisplayName);
+
+            Assert.IsTrue(game.Players.First(p => p.Turn).Deck.Count == 11);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
+        }
+
+        [Test]
+        public async Task DrawCardFromDiscardPileFailedBecauseWrongPlayerTriedItAndGameUpdatedIsCalled()
+        {
+            var players = new List<Player>
+            {
+                new Player(new User
+                {
+                    Name = "Player1",
+                    ConnectionId = "Player1ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player2",
+                    ConnectionId = "Player2ConnectionId"
+                }),
+                new Player(new User
+                {
+                    Name = "Player3",
+                    ConnectionId = "Player3ConnectionId"
+                })
+            };
+
+            var game = new Game
+            {
+                Players = players,
+                Name = "someGameName",
+                GameStarted = false,
+                Deck = DeckCreator.CreateCards(),
+                Creator = players[0]
+            };
+
+            game.StartGame();
+            game.DiscardPile.Add(game.Deck.Last());
+
+            A.CallTo(() => _gameService.GetGame(game.Name)).Returns(game);
+            A.CallTo(() => _gameService.GetPlayerFromGame(game.Name, A<string>._)).Returns(game.Players.First(p => !p.Turn));
+            A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
+            A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
+            A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+
+            await _sut.DrawCardFromDiscardPile(game.Name, game.DiscardPile.Last().DisplayName);
+
+            Assert.IsTrue(game.Players.First(p => !p.Turn).Deck.Count == 10);
+            A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustNotHaveHappened();
         }
     }
 }
