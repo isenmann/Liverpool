@@ -143,93 +143,6 @@ namespace Liverpool.Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("AllNotStartedGames", response);
         }
 
-        private async Task GameUpdated(string gameName)
-        {
-            var game = _liverpoolGameService.GetGame(gameName);
-            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
-
-            if (game.GameStarted)
-            {
-                foreach (var player in allPlayersInTheGame)
-                {
-                    var gameDto = new GameDto
-                    {
-                        GameStarted = game.GameStarted,
-                        Name = game.Name,
-                        Players = allPlayersInTheGame.OrderBy(p => p.StartPosition).Select(p => new PlayerDto
-                        {
-                            Name = p.User.Name,
-                            CountofCards = p.Deck?.Count ?? 0,
-                            DroppedCards = p.DroppedCards,
-                            Points = p.Points,
-                            PlayersTurn = p.Turn,
-                            Position = p.StartPosition
-                        }).ToList(),
-                        PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
-                        {
-                            Name = p.User.Name,
-                            Points = p.Points
-                        }).OrderBy(p => p.Points).ToList(),
-                        PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
-                        DiscardPile = game.DiscardPile.LastOrDefault(),
-                        RoundFinished = game.RoundFinished,
-                        GameFinished = game.GameFinished,
-                        Mantra = game.Mantra,
-                        Round = game.Round,
-                        KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
-                        PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
-                    };
-
-                    // If the game is finished, add a crown to the player who won
-                    if (game.GameFinished)
-                    {
-                        gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
-                    }
-
-                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId)?.Deck;
-                    if (gameDto.MyCards != null)
-                    {
-                        for (var i = 0; i < gameDto.MyCards.Count; i++)
-                        {
-                            gameDto.MyCards[i].Index = i;
-                        }
-                    }
-
-                    gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
-                    if (gameDto.Player != null)
-                    {
-                        foreach (var dropCards in gameDto.Player.DroppedCards)
-                        {
-                            for (var i = 0; i < dropCards.Count; i++)
-                            {
-                                dropCards[i].Index = i;
-                            }
-                        }
-                    }
-
-                    // sort players to be aligned in the screen in the correct order
-                    var sortedPlayerList = new List<PlayerDto>();
-                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position > player.StartPosition));
-                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position < player.StartPosition));
-
-                    gameDto.Players = sortedPlayerList;
-                    
-                    foreach (var opponent in gameDto.Players)
-                    {
-                        foreach (var dropCards in opponent.DroppedCards)
-                        {
-                            for (var i = 0; i < dropCards.Count; i++)
-                            {
-                                dropCards[i].Index = i;
-                            }
-                        }
-                    }
-
-                    await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
-                }
-            }
-        }
-
         public async Task DiscardCard(string gameName, string card, int cardIndex)
         {
             var game = _liverpoolGameService.GetGame(gameName);
@@ -686,6 +599,93 @@ namespace Liverpool.Hubs
                 game.NextTurn(playerAfterCurrentPlayerTookCard);
 
                 await GameUpdated(gameName);
+            }
+        }
+
+        private async Task GameUpdated(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
+
+            if (game.GameStarted)
+            {
+                foreach (var player in allPlayersInTheGame)
+                {
+                    var gameDto = new GameDto
+                    {
+                        GameStarted = game.GameStarted,
+                        Name = game.Name,
+                        Players = allPlayersInTheGame.OrderBy(p => p.StartPosition).Select(p => new PlayerDto
+                        {
+                            Name = p.User.Name,
+                            CountofCards = p.Deck?.Count ?? 0,
+                            DroppedCards = p.DroppedCards,
+                            Points = p.Points,
+                            PlayersTurn = p.Turn,
+                            Position = p.StartPosition
+                        }).ToList(),
+                        PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
+                        {
+                            Name = p.User.Name,
+                            Points = p.Points
+                        }).OrderBy(p => p.Points).ToList(),
+                        PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
+                        DiscardPile = game.DiscardPile.LastOrDefault(),
+                        RoundFinished = game.RoundFinished,
+                        GameFinished = game.GameFinished,
+                        Mantra = game.Mantra,
+                        Round = game.Round,
+                        KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
+                        PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
+                    };
+
+                    // If the game is finished, add a crown to the player who won
+                    if (game.GameFinished)
+                    {
+                        gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
+                    }
+
+                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId)?.Deck;
+                    if (gameDto.MyCards != null)
+                    {
+                        for (var i = 0; i < gameDto.MyCards.Count; i++)
+                        {
+                            gameDto.MyCards[i].Index = i;
+                        }
+                    }
+
+                    gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
+                    if (gameDto.Player != null)
+                    {
+                        foreach (var dropCards in gameDto.Player.DroppedCards)
+                        {
+                            for (var i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
+                        }
+                    }
+
+                    // sort players to be aligned in the screen in the correct order
+                    var sortedPlayerList = new List<PlayerDto>();
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position > player.StartPosition));
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position < player.StartPosition));
+
+                    gameDto.Players = sortedPlayerList;
+
+                    foreach (var opponent in gameDto.Players)
+                    {
+                        foreach (var dropCards in opponent.DroppedCards)
+                        {
+                            for (var i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
+                        }
+                    }
+
+                    await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
+                }
             }
         }
     }
