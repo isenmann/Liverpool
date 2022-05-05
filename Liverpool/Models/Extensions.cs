@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Liverpool
+namespace Liverpool.Models
 {
     public static class Extensions
     {

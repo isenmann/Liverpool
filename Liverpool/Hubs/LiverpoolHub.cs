@@ -82,7 +82,7 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => new PlayerDto
                     {
                         Name = p.User.Name,
-                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                        CountofCards = p.Deck?.Count ?? 0,
                         DroppedCards = p.DroppedCards,
                         Points = p.Points
                     }).ToList()
@@ -104,7 +104,7 @@ namespace Liverpool.Hubs
                     Players = g.Players.Select(p => new PlayerDto
                     {
                         Name = p.User.Name,
-                        CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                        CountofCards = p.Deck?.Count ?? 0,
                         DroppedCards = p.DroppedCards,
                         Points = p.Points
                     }).ToList()
@@ -135,93 +135,12 @@ namespace Liverpool.Hubs
                 Players = g.Players.Select(p => new PlayerDto
                 {
                     Name = p.User.Name,
-                    CountofCards = p.Deck != null ? p.Deck.Count : 0,
+                    CountofCards = p.Deck?.Count ?? 0,
                     DroppedCards = p.DroppedCards,
                     Points = p.Points
                 }).ToList()
             });
             await Clients.Client(Context.ConnectionId).SendAsync("AllNotStartedGames", response);
-        }
-
-        private async Task GameUpdated(string gameName)
-        {
-            var game = _liverpoolGameService.GetGame(gameName);
-            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName);
-
-            if (game.GameStarted)
-            {
-                foreach (var player in allPlayersInTheGame)
-                {
-                    var gameDto = new GameDto
-                    {
-                        GameStarted = game.GameStarted,
-                        Name = game.Name,
-                        Players = allPlayersInTheGame.OrderBy(player => player.StartPosition).Select(p => new PlayerDto
-                        {
-                            Name = p.User.Name,
-                            CountofCards = p.Deck != null ? p.Deck.Count : 0,
-                            DroppedCards = p.DroppedCards,
-                            Points = p.Points,
-                            PlayersTurn = p.Turn,
-                            Position = p.StartPosition
-                        }).ToList(),
-                        PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
-                        {
-                            Name = p.User.Name,
-                            Points = p.Points
-                        }).OrderBy(p => p.Points).ToList(),
-                        PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
-                        DiscardPile = game.DiscardPile.LastOrDefault(),
-                        RoundFinished = game.RoundFinished,
-                        GameFinished = game.GameFinished,
-                        Mantra = game.Mantra,
-                        Round = game.Round,
-                        KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
-                        PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
-                    };
-
-                    // If the game is finished, add a crown to the player who won
-                    if (game.GameFinished)
-                    {
-                        gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
-                    }
-
-                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId).Deck;
-                    for (int i = 0; i < gameDto.MyCards.Count; i++)
-                    {
-                        gameDto.MyCards[i].Index = i;
-                    }
-
-                    gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
-                    foreach (var dropCards in gameDto.Player.DroppedCards)
-                    {
-                        for (int i = 0; i < dropCards.Count; i++)
-                        {
-                            dropCards[i].Index = i;
-                        }
-                    }
-
-                    // sort players to be aligned in the screen in the correct order
-                    var sortedPlayerList = new List<PlayerDto>();
-                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position > player.StartPosition));
-                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position < player.StartPosition));
-
-                    gameDto.Players = sortedPlayerList;
-                    
-                    foreach (var opponent in gameDto.Players)
-                    {
-                        foreach (var dropCards in opponent.DroppedCards)
-                        {
-                            for (int i = 0; i < dropCards.Count; i++)
-                            {
-                                dropCards[i].Index = i;
-                            }
-                        }
-                    }
-
-                    await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
-                }
-            }
         }
 
         public async Task DiscardCard(string gameName, string card, int cardIndex)
@@ -270,6 +189,7 @@ namespace Liverpool.Hubs
                 player.Deck.Count == 1 && 
                 player.Deck[0].DisplayName == card)
             {
+                player.HasDroppedCards = false;
                 return;
             }
 
@@ -277,8 +197,8 @@ namespace Liverpool.Hubs
             // to any of the available dropped cards of other players or on it's own dropped cards.
             // If so deny the discard
             if (game.Round != 8 &&
-               player.Deck.Count == 1 &&
-               player.Deck[0].DisplayName == card)
+                player.Deck.Count == 1 &&
+                player.Deck[0].DisplayName == card)
             {
                 if (game.CheckIfCardCouldBeAddedToAnyDroppedCards(card))
                 {
@@ -440,7 +360,6 @@ namespace Liverpool.Hubs
 
         public async Task TakeBackPlayersCard(string gameName, string cardName, string index)
         {
-            var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
             var indexOfDroppedCardList = int.Parse(index);
 
@@ -473,7 +392,6 @@ namespace Liverpool.Hubs
 
         public async Task SortPlayerCards(string gameName, int oldIndex, int newIndex)
         {
-            var game = _liverpoolGameService.GetGame(gameName);
             var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
 
             var cardToMove = player.Deck[oldIndex];
@@ -545,7 +463,7 @@ namespace Liverpool.Hubs
             var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKnock == null);
             if (!feedbackMissing)
             {
-                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn));
                 var index = indexOfPlayerInTurn;
 
                 do
@@ -554,7 +472,8 @@ namespace Liverpool.Hubs
                     index %= allPlayers.Count;
                     // if the player knocked or denied the knock from another player, 
                     // then he has to take the card
-                    if (allPlayers[index].PlayerKnocked || !allPlayers[index].FeedbackOnKnock.Value)
+                    var feedbackOnKnock = allPlayers[index].FeedbackOnKnock;
+                    if (feedbackOnKnock != null && (allPlayers[index].PlayerKnocked || !feedbackOnKnock.Value))
                     {
                         // take the price for the knock, which is an additional card from draw pile
                         game.CheckIfDeckHasEnoughCards();
@@ -626,7 +545,7 @@ namespace Liverpool.Hubs
             var feedbackMissing = allPlayers.Any(p => p.FeedbackOnKeepingCard == null);
             if (!feedbackMissing)
             {
-                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn == true));
+                var indexOfPlayerInTurn = allPlayers.IndexOf(allPlayers.First(p => p.Turn));
                 var index = indexOfPlayerInTurn;
                 var cardTakenByAnotherPlayer = false;
 
@@ -639,7 +558,8 @@ namespace Liverpool.Hubs
                     index %= allPlayers.Count;
                     // if a player denied the keep request from another player, 
                     // then he has to take the card
-                    if (!allPlayers[index].FeedbackOnKeepingCard.Value)
+                    var feedbackOnKeepingCard = allPlayers[index].FeedbackOnKeepingCard;
+                    if (feedbackOnKeepingCard != null && !feedbackOnKeepingCard.Value)
                     {
                         // take the price for denying it, which is an additional card from draw pile
                         if (!playerAfterCurrentPlayerDenied)
@@ -679,6 +599,93 @@ namespace Liverpool.Hubs
                 game.NextTurn(playerAfterCurrentPlayerTookCard);
 
                 await GameUpdated(gameName);
+            }
+        }
+
+        private async Task GameUpdated(string gameName)
+        {
+            var game = _liverpoolGameService.GetGame(gameName);
+            var allPlayersInTheGame = _liverpoolGameService.GetAllPlayersFromGame(gameName).ToList();
+
+            if (game.GameStarted)
+            {
+                foreach (var player in allPlayersInTheGame)
+                {
+                    var gameDto = new GameDto
+                    {
+                        GameStarted = game.GameStarted,
+                        Name = game.Name,
+                        Players = allPlayersInTheGame.OrderBy(p => p.StartPosition).Select(p => new PlayerDto
+                        {
+                            Name = p.User.Name,
+                            CountofCards = p.Deck?.Count ?? 0,
+                            DroppedCards = p.DroppedCards,
+                            Points = p.Points,
+                            PlayersTurn = p.Turn,
+                            Position = p.StartPosition
+                        }).ToList(),
+                        PlayersRanked = allPlayersInTheGame.Select(p => new PlayerRankedDto
+                        {
+                            Name = p.User.Name,
+                            Points = p.Points
+                        }).OrderBy(p => p.Points).ToList(),
+                        PlayersKnocked = allPlayersInTheGame.Where(p => p.PlayerKnocked).Select(k => k.User.Name).ToList(),
+                        DiscardPile = game.DiscardPile.LastOrDefault(),
+                        RoundFinished = game.RoundFinished,
+                        GameFinished = game.GameFinished,
+                        Mantra = game.Mantra,
+                        Round = game.Round,
+                        KeepingCard = game.AskToKeepCardPile.LastOrDefault(),
+                        PlayerAskedForKeepingCard = allPlayersInTheGame.Any(p => p.PlayerAskedToKeepCard)
+                    };
+
+                    // If the game is finished, add a crown to the player who won
+                    if (game.GameFinished)
+                    {
+                        gameDto.PlayersRanked.First().Name = "\uD83D\uDC51 " + gameDto.PlayersRanked.First().Name;
+                    }
+
+                    gameDto.MyCards = game.Players.FirstOrDefault(x => x.User.ConnectionId == player.User.ConnectionId)?.Deck;
+                    if (gameDto.MyCards != null)
+                    {
+                        for (var i = 0; i < gameDto.MyCards.Count; i++)
+                        {
+                            gameDto.MyCards[i].Index = i;
+                        }
+                    }
+
+                    gameDto.Player = gameDto.Players.FirstOrDefault(x => x.Name == player.User.Name);
+                    if (gameDto.Player != null)
+                    {
+                        foreach (var dropCards in gameDto.Player.DroppedCards)
+                        {
+                            for (var i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
+                        }
+                    }
+
+                    // sort players to be aligned in the screen in the correct order
+                    var sortedPlayerList = new List<PlayerDto>();
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position > player.StartPosition));
+                    sortedPlayerList.AddRange(gameDto.Players.Where(p => p.Position < player.StartPosition));
+
+                    gameDto.Players = sortedPlayerList;
+
+                    foreach (var opponent in gameDto.Players)
+                    {
+                        foreach (var dropCards in opponent.DroppedCards)
+                        {
+                            for (var i = 0; i < dropCards.Count; i++)
+                            {
+                                dropCards[i].Index = i;
+                            }
+                        }
+                    }
+
+                    await Clients.Client(player.User.ConnectionId).SendAsync("GameUpdate", gameDto);
+                }
             }
         }
     }

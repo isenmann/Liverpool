@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Liverpool
+namespace Liverpool.Models
 {
     public class DeckCreator
     {
