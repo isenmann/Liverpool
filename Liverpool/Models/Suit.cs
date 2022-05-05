@@ -1,4 +1,4 @@
-﻿namespace Liverpool
+﻿namespace Liverpool.Models
 {
     public enum Suit
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Liverpool
+namespace Liverpool.Models
 {
     public class Card
     {

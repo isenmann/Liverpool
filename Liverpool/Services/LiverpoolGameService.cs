@@ -65,17 +65,17 @@ namespace Liverpool.Services
 
         public IEnumerable<User> GetAllUsersFromGame(string gameName)
         {
-            return _currentGames.FirstOrDefault(g => g.Name == gameName).Players.Select(p => p.User);
+            return _currentGames.FirstOrDefault(g => g.Name == gameName)?.Players.Select(p => p.User);
         }
 
         public IEnumerable<Player> GetAllPlayersFromGame(string gameName)
         {
-            return _currentGames.FirstOrDefault(g => g.Name == gameName).Players;
+            return _currentGames.FirstOrDefault(g => g.Name == gameName)?.Players;
         }
 
         public Player GetPlayerFromGame(string gameName, string connectionId)
         {
-            return _currentGames.FirstOrDefault(g => g.Name == gameName).Players.FirstOrDefault(p => p.User.ConnectionId == connectionId);
+            return _currentGames.FirstOrDefault(g => g.Name == gameName)?.Players.FirstOrDefault(p => p.User.ConnectionId == connectionId);
         }
 
         public string RemoveUser(string connectionId)
