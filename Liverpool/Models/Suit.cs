@@ -1,10 +1,9 @@
-﻿namespace Liverpool.Models
+﻿namespace Liverpool.Models;
+
+public enum Suit
 {
-    public enum Suit
-    {
-        Clubs,
-        Diamonds,
-        Spades,
-        Hearts
-    }
+    Clubs,
+    Diamonds,
+    Spades,
+    Hearts
 }
