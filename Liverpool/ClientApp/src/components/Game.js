@@ -1,4 +1,4 @@
-﻿import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService';
 import { DragDropContext } from 'react-beautiful-dnd';
 import OpponentCards from './OpponentCards';
