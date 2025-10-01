@@ -1,6 +1,3 @@
-﻿namespace Liverpool.Interfaces
-{
-    public interface ICleanupGamesBackgroundService
-    {
-    }
-}
+﻿namespace Liverpool.Interfaces;
+
+public interface ICleanupGamesBackgroundService;

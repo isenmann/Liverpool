@@ -4,7 +4,7 @@ function PlayerName({ player }) {
     return (
         <div className="text-center">
             {player.playersTurn === true &&
-                <b style={{backgroundColor: 'green'}}>{player.name}</b>
+                <b style={{ backgroundColor: 'green', color: 'white' }}>{player.name}</b>
             }
             {player.playersTurn === false &&
                 player.name
