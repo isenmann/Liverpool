@@ -1,4 +1,4 @@
-﻿import React, { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import DropArea from './DropArea';
 
 function DropAreaForDroppingCards({direction, player}) {

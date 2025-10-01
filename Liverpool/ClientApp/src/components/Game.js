@@ -1,4 +1,4 @@
-﻿import React, {Fragment, useEffect, useState} from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService';
 import { DragDropContext } from 'react-beautiful-dnd';
 import OpponentCards from './OpponentCards';
@@ -32,7 +32,7 @@ function Game() {
         LiverpoolService.knockFeedback(game.name, true);
     }
 
-    function sendNegativeKnockFeedback(){
+    function sendNegativeKnockFeedback() {
         LiverpoolService.knockFeedback(game.name, false);
     }
 
@@ -46,7 +46,7 @@ function Game() {
 
     function onDragEnd({ source, destination }) {
         if (!destination) {
-          return;
+            return;
         }
 
         if (source.droppableId === "playersCard" && destination.droppableId === "playersCard") {
@@ -90,103 +90,103 @@ function Game() {
         }
     };
 
-    
+
     return (
         <div className="container-fluid h-100">
             {game && game.players != null &&
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className="row h-100">
-                    {/*  Left player  */}
-                    <Fragment>
-                        <div className="col-1 my-auto d-flex justify-content-center">
-                            <div>
-                                <Fragment>
-                                    <PlayerName player={game.players[0]}/>
-                                    <OpponentCards player={game.players[0]} horizontal={false}/>
-                                </Fragment>
-                            </div>
-                        </div>
-                        <div className="col-1 p-0">
-                            <DropAreaForDroppingCards key={game.players[0]} player={game.players[0]} direction="vertical"/>
-                        </div>
-                    </Fragment>
-
-                    <div className="col-8">
-                        <div className="row h-33">
-                            <div className="row w-100">
-                                {/*  Upper player */}
-                                <div className="col-12 my-auto">
-                                    <OpponentCards design="d-flex justify-content-center"
-                                                    player={game.players[1]} horizontal={true}/>
-                                </div>
-                                <div className="col-12 my-auto">
-                                    <div className="d-flex justify-content-center">
-                                        <DropAreaForDroppingCards key={game.players[1]} player={game.players[1]}
-                                                                    direction="horizontal"/>
-                                    </div>
-                                </div>
-                                <div className="col-12 my-auto w-100">
-                                    <div className="d-flex justify-content-center">
-                                        <PlayerName player={game.players[1]}/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row h-33">
-                            <div className="col-3 d-flex justify-content-center my-auto">
-                                <ScoreBoard playersRanked={game.playersRanked}/>
-                            </div>
-                            {/* Pile in the middle */}
-                            <div className="col-6 my-auto">
-                                <Piles game={game} clickFunction={handleNextRound}/>
-                            </div>
-                            <div className="col-3 my-auto">
-                                {/* Ask for keeping a card instead of discard it */}
-                                {game.playerAskedForKeepingCard && !game.player.playersTurn &&
-                                    <KeepingCardQuestion cardName={game.keepingCard.displayName}
-                                                            positiveKeepFeedbackFunction={sendPositiveKeepFeedback}
-                                                            negativeKeepFeedbackFunction={sendNegativeKeepFeedback} />
-                                }
-                                {/* Drop zone for asking to keep one card */}
-                                {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length === 0 &&
-                                    <KeepingCard keepingCard={game.keepingCard} askedForKeepingCard={game.playerAskedForKeepingCard}/>
-                                }
-                                {/* Accept or deny knocking */}
-                                {game.playersKnocked != null && game.playersKnocked.length > 0 &&
-                                    <PlayerKnock playersKnocked={game.playersKnocked}
-                                                    playersTurn={game.player.playersTurn}
-                                                    sendPositiveKnockFunction={sendPositiveKnockFeedback}
-                                                    sendNegativeKnockFunction={sendNegativeKnockFeedback}/>
-                                }
-                            </div>
-                        </div>
-
-                        <div className="row h-33">
-                            <div className="row w-100">
-                                <Player myCards={game.myCards} player={game.player} knockFunction={handleKnock}/>
-                            </div>
-                        </div>
-                    </div>
-
-                    {game.players.length === 3 &&
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <div className="row h-100">
+                        {/*  Left player  */}
                         <Fragment>
-                            {/* Right player */}
-                            <div className="col-1 p-0">
-                                <DropAreaForDroppingCards key={game.players[2]} player={game.players[2]} direction="vertical"/>
-                            </div>
                             <div className="col-1 my-auto d-flex justify-content-center">
                                 <div>
                                     <Fragment>
-                                        <PlayerName player={game.players[2]}/>
-                                        <OpponentCards player={game.players[2]} horizontal={false}/>
+                                        <PlayerName player={game.players[0]} />
+                                        <OpponentCards player={game.players[0]} horizontal={false} />
                                     </Fragment>
                                 </div>
                             </div>
+                            <div className="col-1 p-0">
+                                <DropAreaForDroppingCards key={game.players[0]} player={game.players[0]} direction="vertical" />
+                            </div>
                         </Fragment>
-                    }
-                </div>
-            </DragDropContext>
+
+                        <div className="col-8">
+                            <div className="row h-33">
+                                <div className="row w-100">
+                                    {/*  Upper player */}
+                                    <div className="col-12 my-auto">
+                                        <OpponentCards design="d-flex justify-content-center"
+                                            player={game.players[1]} horizontal={true} />
+                                    </div>
+                                    <div className="col-12 my-auto">
+                                        <div className="d-flex justify-content-center">
+                                            <DropAreaForDroppingCards key={game.players[1]} player={game.players[1]}
+                                                direction="horizontal" />
+                                        </div>
+                                    </div>
+                                    <div className="col-12 my-auto w-100">
+                                        <div className="d-flex justify-content-center">
+                                            <PlayerName player={game.players[1]} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row h-33">
+                                <div className="col-3 d-flex justify-content-center my-auto">
+                                    <ScoreBoard playersRanked={game.playersRanked} />
+                                </div>
+                                {/* Pile in the middle */}
+                                <div className="col-6 my-auto">
+                                    <Piles game={game} clickFunction={handleNextRound} />
+                                </div>
+                                <div className="col-3 my-auto">
+                                    {/* Ask for keeping a card instead of discard it */}
+                                    {game.playerAskedForKeepingCard && !game.player.playersTurn &&
+                                        <KeepingCardQuestion cardName={game.keepingCard.displayName}
+                                            positiveKeepFeedbackFunction={sendPositiveKeepFeedback}
+                                            negativeKeepFeedbackFunction={sendNegativeKeepFeedback} />
+                                    }
+                                    {/* Drop zone for asking to keep one card */}
+                                    {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length === 0 &&
+                                        <KeepingCard keepingCard={game.keepingCard} askedForKeepingCard={game.playerAskedForKeepingCard} />
+                                    }
+                                    {/* Accept or deny knocking */}
+                                    {game.playersKnocked != null && game.playersKnocked.length > 0 &&
+                                        <PlayerKnock playersKnocked={game.playersKnocked}
+                                            playersTurn={game.player.playersTurn}
+                                            sendPositiveKnockFunction={sendPositiveKnockFeedback}
+                                            sendNegativeKnockFunction={sendNegativeKnockFeedback} />
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="row h-33">
+                                <div className="row w-100">
+                                    <Player myCards={game.myCards} player={game.player} knockFunction={handleKnock} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {game.players.length === 3 &&
+                            <Fragment>
+                                {/* Right player */}
+                                <div className="col-1 p-0">
+                                    <DropAreaForDroppingCards key={game.players[2]} player={game.players[2]} direction="vertical" />
+                                </div>
+                                <div className="col-1 my-auto d-flex justify-content-center">
+                                    <div>
+                                        <Fragment>
+                                            <PlayerName player={game.players[2]} />
+                                            <OpponentCards player={game.players[2]} horizontal={false} />
+                                        </Fragment>
+                                    </div>
+                                </div>
+                            </Fragment>
+                        }
+                    </div>
+                </DragDropContext>
             }
         </div>
     )

@@ -1,31 +1,31 @@
-import React, {Fragment} from 'react';
-import {FormattedMessage} from "react-intl";
+import React, { Fragment } from 'react';
+import { FormattedMessage } from "react-intl";
 
-function PlayerKnock ({playersKnocked, playersTurn, sendPositiveKnockFunction, sendNegativeKnockFunction}) {
+function PlayerKnock({ playersKnocked, playersTurn, sendPositiveKnockFunction, sendNegativeKnockFunction }) {
     return (
         <Fragment>
             <div className="d-flex bg-danger justify-content-center">
                 <table className="table">
                     <thead>
-                    <tr>
-                        <th scope="col"><FormattedMessage id="game.knocked" /></th>
-                    </tr>
+                        <tr>
+                            <th scope="col"><FormattedMessage id="game.knocked" /></th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {playersKnocked.map((player) => (
-                        <tr key={player + "knockTable"}>
-                            <td>{player}</td>
-                        </tr>
-                    ))}
+                        {playersKnocked.map((player) => (
+                            <tr key={player + "knockTable"}>
+                                <td>{player}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
             <div className="d-flex justify-content-center">
-                <button onClick={sendPositiveKnockFunction}>
+                <button style={{ marginRight: 12, zIndex: 9999 }} onClick={sendPositiveKnockFunction}>
                     <FormattedMessage id="game.allow" />
                 </button>
                 {playersTurn === false &&
-                    <button onClick={sendNegativeKnockFunction}>
+                    <button style={{ zIndex: 9999 }} onClick={sendNegativeKnockFunction}>
                         <FormattedMessage id="game.deny" />
                     </button>
                 }

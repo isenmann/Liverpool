@@ -1,15 +1,15 @@
 import React from 'react';
 import CardNotDraggable from './CardNotDraggable';
-import {FormattedMessage} from "react-intl";
+import { FormattedMessage } from "react-intl";
 
-function Home () {
+function Home() {
     return (
         <div className="container-fluid h-100">
             <div className="row h-100">
                 <div className="col-12">
                     <h1><FormattedMessage id="welcome" /></h1>
                     <p />
-                    <h4>v1.8.2</h4>
+                    <h4>v1.8.3</h4>
                     <div className="d-flex justify-content-center">
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="AH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="2H" />
@@ -25,7 +25,7 @@ function Home () {
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="QH" />
                         <CardNotDraggable className="card_dropped overlap-h-20 d-block" name="KH" />
                     </div>
-                    <p/>
+                    <p />
                     <ul>
                         <li><FormattedMessage id="welcome.start.1" /></li>
                         <li><FormattedMessage id="welcome.start.2" /></li>

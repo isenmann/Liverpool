@@ -5,29 +5,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Liverpool.BackgroundServices
+namespace Liverpool.BackgroundServices;
+
+public class CleanupGamesBackgroundService(ILiverpoolGameService liverpoolGameService)
+    : BackgroundService, ICleanupGamesBackgroundService
 {
-    public class CleanupGamesBackgroundService : BackgroundService, ICleanupGamesBackgroundService
+    private readonly ILiverpoolGameService _liverpoolGameService = liverpoolGameService ?? throw new ArgumentNullException(nameof(liverpoolGameService));
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILiverpoolGameService _liverpoolGameService;
-
-        public CleanupGamesBackgroundService(ILiverpoolGameService liverpoolGameService)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _liverpoolGameService = liverpoolGameService ?? throw new ArgumentNullException(nameof(liverpoolGameService));
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            var gamesToDelete = _liverpoolGameService.GetAllGames().Where(g => g.GameFinished || g.Players.Count == 0).ToList();
+            foreach (var game in gamesToDelete)
             {
-                var gamesToDelete = _liverpoolGameService.GetAllGames().Where(g => g.GameFinished || g.Players.Count == 0).ToList();
-                foreach (var game in gamesToDelete)
-                {
-                    _liverpoolGameService.DeleteGame(game.Name);
-                }
-
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                _liverpoolGameService.DeleteGame(game.Name);
             }
+
+            await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
         }
     }
 }

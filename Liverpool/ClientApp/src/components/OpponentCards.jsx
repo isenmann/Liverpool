@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import CardNotDraggable from './CardNotDraggable';
 
 function OpponentCards({design, player, horizontal}) {

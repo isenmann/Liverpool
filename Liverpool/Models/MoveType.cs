@@ -1,8 +1,7 @@
-﻿namespace Liverpool.Models
+﻿namespace Liverpool.Models;
+
+public enum MoveType
 {
-    public enum MoveType
-    {
-        DrawCard,
-        DropOrDiscardCards
-    }
+    DrawCard,
+    DropOrDiscardCards
 }

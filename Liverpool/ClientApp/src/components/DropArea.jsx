@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { Droppable }  from 'react-beautiful-dnd';
 import Cards from './Card'
 
