@@ -1,44 +1,38 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+const CARD_W = 90;
+const CARD_H = CARD_W * 1.4; // matches playing-card aspect ratio
+
 function AnimatedCardFlyover({ animDto, fromRef, toRef, onComplete }) {
-    const [fromRect, setFromRect] = useState(null);
-    const [toRect, setToRect] = useState(null);
+    const [pos, setPos] = useState(null);
 
     useLayoutEffect(() => {
         if (fromRef?.current && toRef?.current) {
-            setFromRect(fromRef.current.getBoundingClientRect());
-            setToRect(toRef.current.getBoundingClientRect());
+            const from = fromRef.current.getBoundingClientRect();
+            const to   = toRef.current.getBoundingClientRect();
+            // Fly from/to the CENTER of each zone so it doesn't matter how
+            // wide the zone's bounding-rect is (e.g. a full hand of cards).
+            setPos({
+                fromLeft: from.left + from.width  / 2 - CARD_W / 2,
+                fromTop:  from.top  + from.height / 2 - CARD_H / 2,
+                toLeft:   to.left   + to.width    / 2 - CARD_W / 2,
+                toTop:    to.top    + to.height   / 2 - CARD_H / 2,
+            });
         } else {
-            // Refs not available — skip animation and apply game update immediately
             onComplete?.();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (!fromRect || !toRect) return null;
-
-    const cardWidth = Math.max(fromRect.width, 80);
+    if (!pos) return null;
 
     return (
         <motion.div
-            initial={{
-                position: 'fixed',
-                top: fromRect.top,
-                left: fromRect.left,
-                width: cardWidth,
-                zIndex: 9999,
-                pointerEvents: 'none',
-                rotate: 0,
-            }}
-            animate={{
-                top: toRect.top,
-                left: toRect.left,
-                width: toRect.width > 0 ? toRect.width : cardWidth,
-                rotate: [0, -5, 0],
-            }}
+            style={{ position: 'fixed', width: CARD_W, zIndex: 9999, pointerEvents: 'none' }}
+            initial={{ top: pos.fromTop, left: pos.fromLeft, rotate: 0 }}
+            animate={{ top: pos.toTop,   left: pos.toLeft,   rotate: [0, -6, 0] }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             onAnimationComplete={onComplete}
-            style={{ position: 'fixed' }}
         >
             <img
                 alt=""
