@@ -14,7 +14,7 @@ const EMPTY_ZONE_STYLE = {
     justifyContent: 'center',
 };
 
-function DropArea({ id, cards, direction, disableDrop, isDealing, zoneRef }) {
+function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zoneRef }) {
     const isDropZone = id.includes('_card_dropped_');
     const isHand = id === 'playersCard';
     const isDrawPile = id === 'drawPile';
@@ -26,14 +26,19 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, zoneRef }) {
         <Droppable droppableId={id} isDropDisabled={disableDrop} direction={direction}>
             {(provided, snapshot) => (
                 <div className="my-auto">
-                    <motion.div
-                        animate={{
+                    {/* Gold ring + glow on drag-over — boxShadow only, no transforms */}
+                    <div
+                        style={{
+                            borderRadius: 8,
+                            padding: 2,
                             boxShadow: snapshot.isDraggingOver
-                                ? '0 0 0 2px var(--gold-400)'
+                                ? '0 0 0 3px var(--gold-400), 0 0 20px rgba(212,168,67,0.45)'
                                 : '0 0 0 0px transparent',
+                            background: snapshot.isDraggingOver
+                                ? 'rgba(212,168,67,0.08)'
+                                : 'transparent',
+                            transition: 'box-shadow 120ms ease, background 120ms ease',
                         }}
-                        transition={{ duration: 0.15 }}
-                        style={{ borderRadius: 8, padding: 2 }}
                     >
                         {direction === 'horizontal' ? (
                             <div
@@ -75,23 +80,16 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, zoneRef }) {
                                         index={card.index}
                                     />
                                 )))}
-                                {isHand && cards && cards.map((card, i) => (
-                                    <motion.div
+                                {isHand && cards && cards.map((card) => (
+                                    <Cards
+                                        myKey={id + card.displayName + card.index}
                                         key={id + card.displayName + card.index}
-                                        initial={isDealing ? { opacity: 0, y: -200, rotate: -10 } : false}
-                                        animate={{ opacity: 1, y: 0, rotate: 0 }}
-                                        transition={isDealing
-                                            ? { delay: i * 0.07, duration: 0.45, ease: [0.22, 1, 0.36, 1] }
-                                            : { duration: 0.2 }
-                                        }
-                                    >
-                                        <Cards
-                                            myKey={id + card.displayName + card.index}
-                                            className="card overlap-h-20 d-block"
-                                            name={card.displayName}
-                                            index={card.index}
-                                        />
-                                    </motion.div>
+                                        className="card overlap-h-20 d-block"
+                                        name={card.displayName}
+                                        index={card.index}
+                                        isDealing={isDealing}
+                                        animateIn={animateIn}
+                                    />
                                 ))}
                                 {!isDrawPile && !isKeepZone && !isDropZone && !isHand && cards && cards.map((card) => (
                                     <Cards
@@ -139,7 +137,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, zoneRef }) {
                                 {provided.placeholder}
                             </div>
                         )}
-                    </motion.div>
+                    </div>
                 </div>
             )}
         </Droppable>

@@ -20,11 +20,9 @@ const message = (locale === 'en-US') ? en : Object.assign({}, en, msg[locale]);
 
 const root = createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <IntlProvider locale={locale} messages={message}>
-      <Router>
-        <App />
-      </Router>
-    </IntlProvider>
-  </React.StrictMode>
+  <IntlProvider locale={locale} messages={message}>
+    <Router>
+      <App />
+    </Router>
+  </IntlProvider>
 );

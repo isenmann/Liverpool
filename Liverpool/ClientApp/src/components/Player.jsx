@@ -1,23 +1,22 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useLayoutEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DropAreaForDroppingCards from './DropAreaForDroppingCards';
 import DropArea from './DropArea';
 import { FormattedMessage } from 'react-intl';
 
 function Player({ player, knockFunction, myCards, handRef }) {
-    const [isDealing, setIsDealing] = useState(false);
-    const prevCardCountRef = useRef(myCards ? myCards.length : 0);
+    const currCount = myCards?.length ?? 0;
+    const prevCountRef = useRef(currCount);
 
-    useEffect(() => {
-        const prev = prevCardCountRef.current;
-        const curr = myCards ? myCards.length : 0;
-        // Animate deal when hand is refilled (round start: card count jumps up significantly)
-        if (curr > prev + 3) {
-            setIsDealing(true);
-            setTimeout(() => setIsDealing(false), curr * 80 + 600);
-        }
-        prevCardCountRef.current = curr;
-    }, [myCards]);
+    // Derived during this render, before useLayoutEffect updates the ref.
+    // This means a card that mounts in this render already sees animateIn=true.
+    const addedCount = Math.max(0, currCount - prevCountRef.current);
+    const hasNewCards = addedCount > 0;
+    const isDealing = addedCount > 3; // full deal (round start): stagger cards
+
+    useLayoutEffect(() => {
+        prevCountRef.current = currCount;
+    });
 
     return (
         <Fragment>
@@ -82,6 +81,7 @@ function Player({ player, knockFunction, myCards, handRef }) {
                         cards={myCards}
                         direction="horizontal"
                         isDealing={isDealing}
+                        animateIn={hasNewCards}
                     />
                 )}
             </div>
