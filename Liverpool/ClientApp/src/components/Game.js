@@ -153,17 +153,24 @@ function Game() {
 
     const hasRightPlayer = game.players.length === 3;
 
+    function opponentHandRef(player) {
+        return el => {
+            if (!handRefs.current[player.name]) handRefs.current[player.name] = { current: null };
+            handRefs.current[player.name].current = el;
+        };
+    }
+
     const leftPlayerSlot = (
         <Fragment>
             <PlayerName player={game.players[0]} />
-            <OpponentCards player={game.players[0]} horizontal={false} />
+            <OpponentCards player={game.players[0]} horizontal={false} handRef={opponentHandRef(game.players[0])} />
             <DropAreaForDroppingCards player={game.players[0]} direction="vertical" dropZoneRefs={dropZoneRefs} />
         </Fragment>
     );
 
     const topPlayerSlot = (
         <Fragment>
-            <OpponentCards design="d-flex justify-content-center" player={game.players[1]} horizontal={true} />
+            <OpponentCards design="d-flex justify-content-center" player={game.players[1]} horizontal={true} handRef={opponentHandRef(game.players[1])} />
             <div className="d-flex justify-content-center">
                 <DropAreaForDroppingCards player={game.players[1]} direction="horizontal" dropZoneRefs={dropZoneRefs} />
             </div>
@@ -176,7 +183,7 @@ function Game() {
     const rightPlayerSlot = hasRightPlayer ? (
         <Fragment>
             <PlayerName player={game.players[2]} />
-            <OpponentCards player={game.players[2]} horizontal={false} />
+            <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
             <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
         </Fragment>
     ) : null;

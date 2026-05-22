@@ -1,18 +1,13 @@
 import React from 'react';
 import CardNotDraggable from './CardNotDraggable';
 
-function OpponentCards({design, player, horizontal}) {
+function OpponentCards({ design, player, horizontal, handRef }) {
     let content = [];
     let className = "card_dropped d-block";
     if (horizontal) {
         className += " overlap-h-65";
     } else {
         className += " overlap-v-105";
-    }
-
-    let style = "";
-    if (design != null) {
-        style = design;
     }
 
     for (let i = 0; i < player.countofCards; i++) {
@@ -23,7 +18,7 @@ function OpponentCards({design, player, horizontal}) {
         }
     }
 
-    return <div className={style}>{content}</div>;
+    return <div ref={handRef} className={design ?? ''}>{content}</div>;
 }
 
 export default OpponentCards;
