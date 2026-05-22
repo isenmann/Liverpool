@@ -1,0 +1,108 @@
+:root {
+  /* Felt */
+  --felt-900: #0a1f0a;
+  --felt-800: #112b11;
+  --felt-700: #164016;
+  --felt-600: #1a5c1a;
+  --felt-500: #1e7a1e;
+
+  /* Wood rail */
+  --rail-dark:  #2c1810;
+  --rail-mid:   #4a2e1a;
+  --rail-light: #6b4226;
+
+  /* Accents */
+  --gold-400: #d4a843;
+  --gold-300: #e8c97a;
+
+  /* Text */
+  --text-primary: #f0ead6;
+  --text-muted:   #a89060;
+
+  /* Cards */
+  --card-w:            100px;
+  --card-w-sm:         80px;
+  --card-radius:       6px;
+  --card-overlap-h:    -45px;
+  --card-overlap-h-lg: -65px;
+  --card-overlap-v:    -80px;
+  --card-overlap-v-lg: -85px;
+
+  /* Shadows */
+  --shadow-card:       0 4px 8px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-card-hover: 0 12px 24px rgba(0,0,0,0.7), 0 6px 12px rgba(0,0,0,0.5);
+
+  /* Timing */
+  --anim-fast: 150ms ease-out;
+  --anim-card: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --anim-deal: 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--felt-800);
+  background-image:
+    radial-gradient(ellipse at 30% 40%, var(--felt-700) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, var(--felt-600) 0%, transparent 50%);
+  color: var(--text-primary);
+  font-family: 'Lato', sans-serif;
+}
+
+/* Casino button */
+.btn-casino {
+  background: linear-gradient(135deg, var(--rail-dark), var(--rail-mid));
+  color: var(--gold-400);
+  border: 1px solid var(--gold-400);
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background var(--anim-fast), transform var(--anim-fast), box-shadow var(--anim-fast);
+  display: inline-block;
+  text-align: center;
+  user-select: none;
+}
+
+.btn-casino:hover {
+  background: linear-gradient(135deg, var(--rail-mid), var(--rail-light));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  color: var(--gold-300);
+}
+
+.btn-casino:active {
+  transform: translateY(0);
+}
+
+.btn-casino:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Casino input */
+.input-casino {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--gold-400);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 8px 14px;
+  font-family: 'Lato', sans-serif;
+  outline: none;
+  transition: border-color var(--anim-fast), box-shadow var(--anim-fast);
+}
+
+.input-casino:focus {
+  border-color: var(--gold-300);
+  box-shadow: 0 0 0 2px rgba(212,168,67,0.25);
+}
+
+.input-casino::placeholder {
+  color: var(--text-muted);
+}

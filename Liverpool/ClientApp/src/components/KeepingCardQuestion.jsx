@@ -1,39 +1,58 @@
-import React, { Fragment } from 'react';
-import CardNotDraggable from "./CardNotDraggable";
-import { FormattedMessage } from "react-intl";
+import React from 'react';
+import { motion } from 'framer-motion';
+import CardNotDraggable from './CardNotDraggable';
+import { FormattedMessage } from 'react-intl';
 
 function KeepingCardQuestion({ cardName, positiveKeepFeedbackFunction, negativeKeepFeedbackFunction }) {
     return (
-        <Fragment>
-            <div className="d-flex justify-content-center">
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <FormattedMessage id="game.keepingCardQuestion" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <CardNotDraggable className="card d-block"
-                                    name={cardName} />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <motion.div
+            initial={{ y: -20, opacity: 0, scale: 0.9 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: -20, opacity: 0, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            style={{
+                border: '1px solid var(--gold-400)',
+                borderRadius: 10,
+                padding: '12px 16px',
+                textAlign: 'center',
+                background: 'rgba(44,24,16,0.7)',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.5)',
+            }}
+        >
+            <div style={{
+                color: 'var(--gold-400)',
+                fontFamily: "'Playfair Display', serif",
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                marginBottom: 8,
+            }}>
+                <FormattedMessage id="game.keepingCardQuestion" />
             </div>
-            <div className="d-flex justify-content-center">
-                <button style={{ marginRight: 12, zIndex: 9999 }} onClick={positiveKeepFeedbackFunction}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+                <CardNotDraggable className="card d-block" name={cardName} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+                <motion.button
+                    whileHover={{ scale: 1.05, y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="btn-casino"
+                    style={{ fontSize: '0.8rem', padding: '5px 14px', zIndex: 9999 }}
+                    onClick={positiveKeepFeedbackFunction}
+                >
                     <FormattedMessage id="game.allow" />
-                </button>
-                <button style={{ zIndex: 9999 }} onClick={negativeKeepFeedbackFunction}>
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.05, y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="btn-casino"
+                    style={{ fontSize: '0.8rem', padding: '5px 14px', zIndex: 9999 }}
+                    onClick={negativeKeepFeedbackFunction}
+                >
                     <FormattedMessage id="game.deny" />
-                </button>
+                </motion.button>
             </div>
-        </Fragment>
-    )
+        </motion.div>
+    );
 }
 
 export default KeepingCardQuestion;

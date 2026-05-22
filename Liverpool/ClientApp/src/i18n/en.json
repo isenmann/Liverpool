@@ -32,5 +32,6 @@
   "game.requirement.round.6" : "1 Set, 2 Runs",
   "game.requirement.round.7" : "3 Runs",
   "game.requirement.round.8" : "3 Sets, 1 Run",
-  "game.you": "You"
+  "game.you": "You",
+  "game.roundFinished": "Round Complete!"
 }

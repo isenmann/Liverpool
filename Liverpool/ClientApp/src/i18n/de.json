@@ -32,5 +32,6 @@
   "game.requirement.round.6" : "1 Pass, 2 Straßen",
   "game.requirement.round.7" : "3 Straßen",
   "game.requirement.round.8" : "3 Pässe, 1 Straße",
-  "game.you": "Du"
+  "game.you": "Du",
+  "game.roundFinished": "Runde beendet!"
 }

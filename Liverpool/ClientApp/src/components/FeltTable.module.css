@@ -1,0 +1,94 @@
+.tableWrapper {
+  width: 100%;
+  height: calc(100vh - 56px);
+  display: grid;
+  grid-template-areas:
+    "rail-top   rail-top   rail-top"
+    "left-zone  center     right-zone"
+    "rail-bottom rail-bottom rail-bottom";
+  grid-template-columns: 130px 1fr 130px;
+  grid-template-rows: 20px 1fr 20px;
+  background: var(--rail-dark);
+  border-radius: 60px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,0,0,0.8), inset 0 0 120px rgba(0,0,0,0.3);
+  margin: 0 auto;
+}
+
+.railTop {
+  grid-area: rail-top;
+  background: linear-gradient(180deg, var(--rail-dark) 0%, var(--rail-mid) 60%, var(--rail-dark) 100%);
+}
+
+.railBottom {
+  grid-area: rail-bottom;
+  background: linear-gradient(180deg, var(--rail-dark) 0%, var(--rail-mid) 60%, var(--rail-dark) 100%);
+}
+
+.leftZone {
+  grid-area: left-zone;
+  background: var(--felt-700);
+  border-right: 3px solid var(--rail-mid);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 6px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.rightZone {
+  grid-area: right-zone;
+  background: var(--felt-700);
+  border-left: 3px solid var(--rail-mid);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 6px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.rightZoneEmpty {
+  grid-area: right-zone;
+  background: var(--felt-700);
+  border-left: 3px solid var(--rail-mid);
+}
+
+.center {
+  grid-area: center;
+  background: var(--felt-800);
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  overflow: hidden;
+}
+
+.topArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  overflow: hidden;
+}
+
+.midArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid rgba(212, 168, 67, 0.15);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.15);
+}
+
+.bottomArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  overflow: hidden;
+}

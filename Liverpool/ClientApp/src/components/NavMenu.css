@@ -1,18 +1,36 @@
-﻿a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+.navbar {
+  background: linear-gradient(180deg, var(--rail-dark) 0%, var(--rail-mid) 60%, var(--rail-dark) 100%);
+  border-bottom: 2px solid var(--gold-400);
+  height: 56px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold-400) !important;
+  text-decoration: none;
+  letter-spacing: 0.05em;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+.brand:hover {
+  color: var(--gold-300) !important;
+}
+
+.navLink {
+  color: var(--text-primary) !important;
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+
+.navLink:hover {
+  color: var(--gold-400) !important;
+  opacity: 1;
 }

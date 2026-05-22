@@ -1,46 +1,92 @@
-import React, { Fragment } from 'react';
-import DropAreaForDroppingCards from "./DropAreaForDroppingCards";
-import DropArea from "./DropArea";
-import { FormattedMessage } from "react-intl";
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import DropAreaForDroppingCards from './DropAreaForDroppingCards';
+import DropArea from './DropArea';
+import { FormattedMessage } from 'react-intl';
 
-function Player({ player, knockFunction, myCards }) {
+function Player({ player, knockFunction, myCards, handRef }) {
+    const [isDealing, setIsDealing] = useState(false);
+    const prevCardCountRef = useRef(myCards ? myCards.length : 0);
+
+    useEffect(() => {
+        const prev = prevCardCountRef.current;
+        const curr = myCards ? myCards.length : 0;
+        // Animate deal when hand is refilled (round start: card count jumps up significantly)
+        if (curr > prev + 3) {
+            setIsDealing(true);
+            setTimeout(() => setIsDealing(false), curr * 80 + 600);
+        }
+        prevCardCountRef.current = curr;
+    }, [myCards]);
+
     return (
         <Fragment>
-            <div className="col-12 my-auto w-100">
-                <div className="d-flex justify-content-center">
-                    {player.playersTurn === true &&
-                        <b style={{ backgroundColor: 'green', color: 'white' }}><FormattedMessage id="game.you" /></b>
-                    }
-                    {player.playersTurn === false &&
-                        <Fragment>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+                <AnimatePresence mode="wait">
+                    {player.playersTurn === true ? (
+                        <motion.div
+                            key="your-turn"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            style={{
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: 700,
+                                color: 'var(--gold-400)',
+                                fontSize: '1.1rem',
+                                padding: '4px 16px',
+                                borderRadius: 6,
+                                background: 'var(--felt-600)',
+                                border: '1px solid var(--gold-400)',
+                                boxShadow: '0 0 12px rgba(30,122,30,0.5)',
+                            }}
+                        >
                             <FormattedMessage id="game.you" />
-                            <div>
-                                <button style={{ marginLeft: 12, zIndex: 9999 }} onClick={knockFunction}>
-                                    <FormattedMessage id="game.knock" />
-                                </button>
-                            </div>
-                        </Fragment>
-                    }
-                </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="not-your-turn"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                        >
+                            <span style={{ color: 'var(--text-muted)', fontFamily: "'Lato', sans-serif" }}>
+                                <FormattedMessage id="game.you" />
+                            </span>
+                            <motion.button
+                                whileHover={{ scale: 1.05, y: -1 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="btn-casino"
+                                style={{ fontSize: '0.8rem', padding: '4px 14px', zIndex: 9999 }}
+                                onClick={knockFunction}
+                            >
+                                <FormattedMessage id="game.knock" />
+                            </motion.button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-            <div className="col-12 my-auto w-100 justify-content-center">
-                {/* Dropped cards of player */}
-                <div className="d-flex justify-content-center">
-                    <DropAreaForDroppingCards key={player.name} player={player}
-                        direction="horizontal" />
-                </div>
+
+            {/* Dropped cards */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <DropAreaForDroppingCards player={player} direction="horizontal" />
             </div>
-            <div className="col-12 my-auto w-100">
-                {/* Player's cards*/}
-                <div className="d-flex justify-content-center">
-                    {myCards != null &&
-                        <DropArea id="playersCard" disableDrop={false}
-                            cards={myCards} direction="horizontal" />
-                    }
-                </div>
+
+            {/* Hand cards */}
+            <div ref={handRef} style={{ display: 'flex', justifyContent: 'center' }}>
+                {myCards != null && (
+                    <DropArea
+                        id="playersCard"
+                        disableDrop={false}
+                        cards={myCards}
+                        direction="horizontal"
+                        isDealing={isDealing}
+                    />
+                )}
             </div>
         </Fragment>
-    )
+    );
 }
 
 export default Player;

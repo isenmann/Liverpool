@@ -152,6 +152,12 @@ class LiverpoolHubService {
             gameUpdated(game);
         });
     }
+
+    registerCardMovedAnimation(callback) {
+        this.connection.on('CardMovedAnimation', (dto) => {
+            callback(dto);
+        });
+    }
 }
 
 const LiverpoolService = new LiverpoolHubService();

@@ -209,6 +209,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
             game.NextTurn();
         }
 
+        await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
+        {
+            PlayerName = player.User.Name,
+            FromArea   = $"hand:{player.User.Name}",
+            ToArea     = "discardPile",
+            CardName   = card
+        });
         await GameUpdated(gameName);
     }
 
@@ -237,6 +244,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
         game.CheckIfDeckHasEnoughCards();
 
         player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+        await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
+        {
+            PlayerName = player.User.Name,
+            FromArea   = "drawPile",
+            ToArea     = $"hand:{player.User.Name}",
+            CardName   = null  // face-down; other players must not see it
+        });
         await GameUpdated(gameName);
     }
 
@@ -283,6 +297,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
                 p.PlayerKnocked = false;
             }
 
+            await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
+            {
+                PlayerName = player.User.Name,
+                FromArea   = "discardPile",
+                ToArea     = $"hand:{player.User.Name}",
+                CardName   = cardName  // face-up; everyone already saw it on the discard pile
+            });
             await GameUpdated(gameName);
         }
     }
@@ -313,6 +334,8 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
             return;
         }
 
+        var listIndex = int.Parse(dropAreaName[^1].ToString());
+
         if (player.User.Name == playerToDrop.User.Name && !player.HasDroppedCards)
         {
             game.DropCardAtOwnArea(player, cardName, cardIndex, dropAreaName);
@@ -334,6 +357,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
                 }
             }
 
+            await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
+            {
+                PlayerName = player.User.Name,
+                FromArea   = $"hand:{player.User.Name}",
+                ToArea     = $"dropZone:{player.User.Name}:{listIndex}",
+                CardName   = cardName
+            });
             await GameUpdated(gameName);
         }
         else if (game.DropCardAtPlayerArea(player, cardName, cardIndex, playerToDrop, dropAreaName))
@@ -349,6 +379,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
                 }
             }
 
+            await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
+            {
+                PlayerName = player.User.Name,
+                FromArea   = $"hand:{player.User.Name}",
+                ToArea     = $"dropZone:{playerToDrop.User.Name}:{listIndex}",
+                CardName   = cardName
+            });
             await GameUpdated(gameName);
         }
     }
@@ -595,6 +632,13 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
 
             await GameUpdated(gameName);
         }
+    }
+
+    private async Task BroadcastCardMovedAnimation(string gameName, CardMovedAnimationDto dto)
+    {
+        var users = _liverpoolGameService.GetAllPlayersFromGame(gameName);
+        await Clients.Clients(users.Select(u => u.User.ConnectionId).ToList())
+                     .SendAsync("CardMovedAnimation", dto);
     }
 
     private async Task GameUpdated(string gameName)

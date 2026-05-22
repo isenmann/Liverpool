@@ -1,32 +1,28 @@
-/* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+  color: var(--gold-400);
 }
 
 code {
   color: #E01A76;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
-
-html, body {
-  height : 100%;
-}
-
 .card {
-  width: 100px;
+  width: var(--card-w);
+}
+
+.card img,
+.card_dropped img {
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-card);
+  display: block;
 }
 
 .overlap-h-20 {
-  margin-left: -45px;
+  margin-left: var(--card-overlap-h);
 }
 
 .overlap-v-20 {
-  margin-top: -80px;
+  margin-top: var(--card-overlap-v);
 }
 
 .my-auto {
@@ -39,13 +35,13 @@ html, body {
 }
 
 .card_dropped {
-    width: 80px;
+  width: var(--card-w-sm);
 }
 
 .overlap-h-65 {
-    margin-left: -65px;
+  margin-left: var(--card-overlap-h-lg);
 }
 
 .overlap-v-105 {
-    margin-top: -85px;
+  margin-top: var(--card-overlap-v-lg);
 }
