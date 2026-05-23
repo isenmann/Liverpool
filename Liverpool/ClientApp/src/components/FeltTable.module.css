@@ -6,7 +6,7 @@
     "rail-top   rail-top   rail-top"
     "left-zone  center     right-zone"
     "rail-bottom rail-bottom rail-bottom";
-  grid-template-columns: 130px 1fr 130px;
+  grid-template-columns: 210px 1fr 210px;
   grid-template-rows: 20px 1fr 20px;
   background: var(--rail-dark);
   border-radius: 60px;
@@ -78,8 +78,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 8px 16px;
+  flex-wrap: wrap;
+  gap: 64px;
+  padding: 12px 32px;
   border-top: 1px solid rgba(212, 168, 67, 0.15);
   border-bottom: 1px solid rgba(212, 168, 67, 0.15);
 }

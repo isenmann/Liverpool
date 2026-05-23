@@ -17,7 +17,7 @@ function Piles({ game, clickFunction, discardPileRef, drawPileRef }) {
     }, [game.discardPile]);
 
     return (
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', flexShrink: 0 }}>
             <div style={{
                 color: 'var(--gold-400)',
                 fontFamily: "'Playfair Display', serif",
@@ -27,7 +27,7 @@ function Piles({ game, clickFunction, discardPileRef, drawPileRef }) {
             }}>
                 <FormattedMessage id="game.round" /> {game.round} (<FormattedMessage id={game.mantra} />)
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, alignItems: 'flex-start' }}>
                 <motion.div
                     ref={discardPileRef}
                     animate={{ scale: discardFlash ? 1.1 : 1 }}

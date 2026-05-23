@@ -163,8 +163,11 @@ function Game() {
     const leftPlayerSlot = (
         <Fragment>
             <PlayerName player={game.players[0]} />
-            <OpponentCards player={game.players[0]} horizontal={false} handRef={opponentHandRef(game.players[0])} />
-            <DropAreaForDroppingCards player={game.players[0]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+            {/* Hand on the outer (left) side, drops on the inner (right/centre) side */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', justifyContent: 'center' }}>
+                <OpponentCards player={game.players[0]} horizontal={false} handRef={opponentHandRef(game.players[0])} />
+                <DropAreaForDroppingCards player={game.players[0]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+            </div>
         </Fragment>
     );
 
@@ -183,21 +186,26 @@ function Game() {
     const rightPlayerSlot = hasRightPlayer ? (
         <Fragment>
             <PlayerName player={game.players[2]} />
-            <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
-            <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+            {/* Drops on the inner (left/centre) side, hand on the outer (right) side */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', justifyContent: 'center' }}>
+                <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+                <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
+            </div>
         </Fragment>
     ) : null;
 
     const centerMidSlot = (
         <Fragment>
-            <ScoreBoard playersRanked={game.playersRanked} />
+            <div style={{ flexShrink: 0, paddingRight: 24, borderRight: '1px solid rgba(212,168,67,0.25)' }}>
+                <ScoreBoard playersRanked={game.playersRanked} />
+            </div>
             <Piles
                 game={game}
                 clickFunction={handleNextRound}
                 discardPileRef={discardPileRef}
                 drawPileRef={drawPileRef}
             />
-            <div style={{ minWidth: 180 }}>
+            <div style={{ width: 200, flexShrink: 0 }}>
                 {game.playerAskedForKeepingCard && !game.player.playersTurn &&
                     <KeepingCardQuestion
                         cardName={game.keepingCard.displayName}

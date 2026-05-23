@@ -28,6 +28,7 @@ function ScoreBoard({ playersRanked }) {
             color: 'var(--text-primary)',
             fontFamily: "'Lato', sans-serif",
             minWidth: 120,
+            flexShrink: 0,
         }}>
             <thead>
                 <tr>

@@ -1,24 +1,15 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import DropArea from './DropArea';
 
 function DropAreaForDroppingCards({ direction, player, dropZoneRefs }) {
     const content = [];
-    let className = 'd-flex col justify-content-center';
-
-    if (direction === 'vertical') {
-        let height = '';
-        if (player.droppedCards.length === 2) height = 'h-50';
-        if (player.droppedCards.length === 3) height = 'h-33';
-        if (player.droppedCards.length === 4) height = 'h-25';
-        className = `${height} d-flex w-100 justify-content-center`;
-    }
 
     for (let i = 0; i < player.droppedCards.length; i++) {
         const dropId = `${player.name}_card_dropped_${i}`;
         const zoneKey = `${player.name}:${i}`;
 
         content.push(
-            <div key={dropId + 'Div'} className={className}>
+            <div key={dropId + 'Div'} style={{ display: 'flex', justifyContent: 'center' }}>
                 <DropArea
                     key={dropId}
                     id={dropId}
@@ -39,7 +30,20 @@ function DropAreaForDroppingCards({ direction, player, dropZoneRefs }) {
         );
     }
 
-    return <Fragment>{content}</Fragment>;
+    if (direction === 'vertical') {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {content}
+            </div>
+        );
+    }
+
+    // Horizontal (top player): keep inline flow with Bootstrap flex
+    return (
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {content}
+        </div>
+    );
 }
 
 export default DropAreaForDroppingCards;
