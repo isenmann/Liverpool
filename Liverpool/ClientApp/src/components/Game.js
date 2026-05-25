@@ -161,20 +161,19 @@ function Game() {
     }
 
     const leftPlayerSlot = (
-        <Fragment>
-            <PlayerName player={game.players[0]} />
-            {/* Hand on the outer (left) side, drops on the inner (right/centre) side */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, width: '100%', justifyContent: 'center', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, alignSelf: 'center' }}>
+                <PlayerName player={game.players[0]} />
                 <OpponentCards player={game.players[0]} horizontal={false} handRef={opponentHandRef(game.players[0])} />
-                <DropAreaForDroppingCards player={game.players[0]} direction="vertical" dropZoneRefs={dropZoneRefs} />
             </div>
-        </Fragment>
+            <DropAreaForDroppingCards player={game.players[0]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+        </div>
     );
 
     const topPlayerSlot = (
         <Fragment>
             <OpponentCards design="d-flex justify-content-center" player={game.players[1]} horizontal={true} handRef={opponentHandRef(game.players[1])} />
-            <div className="d-flex justify-content-center">
+            <div style={{ width: '100%' }}>
                 <DropAreaForDroppingCards player={game.players[1]} direction="horizontal" dropZoneRefs={dropZoneRefs} />
             </div>
             <div className="d-flex justify-content-center">
@@ -184,19 +183,18 @@ function Game() {
     );
 
     const rightPlayerSlot = hasRightPlayer ? (
-        <Fragment>
-            <PlayerName player={game.players[2]} />
-            {/* Drops on the inner (left/centre) side, hand on the outer (right) side */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', justifyContent: 'center' }}>
-                <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, width: '100%', justifyContent: 'center', flex: 1 }}>
+            <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, alignSelf: 'center' }}>
+                <PlayerName player={game.players[2]} />
                 <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
             </div>
-        </Fragment>
+        </div>
     ) : null;
 
     const centerMidSlot = (
         <Fragment>
-            <div style={{ flexShrink: 0, paddingRight: 24, borderRight: '1px solid rgba(212,168,67,0.25)' }}>
+            <div style={{ flexShrink: 0 }}>
                 <ScoreBoard playersRanked={game.playersRanked} />
             </div>
             <Piles
@@ -241,7 +239,7 @@ function Game() {
     );
 
     return (
-        <div style={{ padding: '8px', flex: 1 }}>
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
             <DragDropContext onDragEnd={onDragEnd}>
                 <FeltTable
                     leftPlayer={leftPlayerSlot}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import { motion } from 'framer-motion';
 import Cards from './Card';
 
 const EMPTY_ZONE_STYLE = {
@@ -27,19 +26,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
             {(provided, snapshot) => (
                 <div className="my-auto">
                     {/* Gold ring + glow on drag-over — boxShadow only, no transforms */}
-                    <div
-                        style={{
-                            borderRadius: 8,
-                            padding: 2,
-                            boxShadow: snapshot.isDraggingOver
-                                ? '0 0 0 3px var(--gold-400), 0 0 20px rgba(212,168,67,0.45)'
-                                : '0 0 0 0px transparent',
-                            background: snapshot.isDraggingOver
-                                ? 'rgba(212,168,67,0.08)'
-                                : 'transparent',
-                            transition: 'box-shadow 120ms ease, background 120ms ease',
-                        }}
-                    >
+                    <div>
                         {direction === 'horizontal' ? (
                             <div
                                 className="d-flex"
@@ -66,11 +53,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
                                     />
                                 )}
                                 {isDropZone && cards && (isAllEmpty ? (
-                                    <motion.div
-                                        style={EMPTY_ZONE_STYLE}
-                                        animate={{ borderColor: ['rgba(212,168,67,0.2)', 'rgba(212,168,67,0.6)', 'rgba(212,168,67,0.2)'] }}
-                                        transition={{ repeat: Infinity, duration: 2 }}
-                                    />
+                                    <div style={EMPTY_ZONE_STYLE} />
                                 ) : cards.map((card) => (
                                     <Cards
                                         myKey={id + card.displayName + card.index}
@@ -111,11 +94,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
                                 }}
                             >
                                 {isDropZone && cards && (isAllEmpty ? (
-                                    <motion.div
-                                        style={{ ...EMPTY_ZONE_STYLE, width: 'var(--card-w-sm)', margin: '4px auto' }}
-                                        animate={{ borderColor: ['rgba(212,168,67,0.2)', 'rgba(212,168,67,0.6)', 'rgba(212,168,67,0.2)'] }}
-                                        transition={{ repeat: Infinity, duration: 2 }}
-                                    />
+                                    <div style={{ ...EMPTY_ZONE_STYLE, width: 'var(--card-w-sm)', margin: '4px auto' }} />
                                 ) : cards.map((card) => (
                                     <Cards
                                         myKey={id + card.displayName + card.index}

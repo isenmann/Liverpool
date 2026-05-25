@@ -25,7 +25,7 @@ function Piles({ game, clickFunction, discardPileRef, drawPileRef }) {
                 fontSize: '1rem',
                 marginBottom: 6,
             }}>
-                <FormattedMessage id="game.round" /> {game.round} (<FormattedMessage id={game.mantra} />)
+                <FormattedMessage id="game.round" /> {game.round} / 8 (<FormattedMessage id={game.mantra} />)
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 20, alignItems: 'flex-start' }}>
                 <motion.div

@@ -4,8 +4,6 @@ import styles from './FeltTable.module.css';
 function FeltTable({ leftPlayer, topPlayer, rightPlayer, centerTop, centerMid, centerBottom }) {
     return (
         <div className={styles.tableWrapper}>
-            <div className={styles.railTop} />
-
             <div className={styles.leftZone}>
                 {leftPlayer}
             </div>
@@ -26,8 +24,6 @@ function FeltTable({ leftPlayer, topPlayer, rightPlayer, centerTop, centerMid, c
                 ? <div className={styles.rightZone}>{rightPlayer}</div>
                 : <div className={styles.rightZoneEmpty} />
             }
-
-            <div className={styles.railBottom} />
         </div>
     );
 }

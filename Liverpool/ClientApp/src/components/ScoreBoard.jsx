@@ -24,7 +24,7 @@ function ScoreBoard({ playersRanked }) {
     return (
         <table style={{
             borderCollapse: 'collapse',
-            fontSize: '0.85rem',
+            fontSize: '1rem',
             color: 'var(--text-primary)',
             fontFamily: "'Lato', sans-serif",
             minWidth: 120,

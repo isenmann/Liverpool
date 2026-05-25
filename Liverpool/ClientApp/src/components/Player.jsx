@@ -68,7 +68,7 @@ function Player({ player, knockFunction, myCards, handRef }) {
             </div>
 
             {/* Dropped cards */}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%' }}>
                 <DropAreaForDroppingCards player={player} direction="horizontal" />
             </div>
 
