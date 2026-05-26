@@ -59,7 +59,7 @@ function Home() {
                             y: { delay: 0.1 + i * 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] },
                             rotate: { delay: 0.1 + i * 0.04, duration: 0.45 },
                         }}
-                        style={{ marginLeft: i === 0 ? 0 : 'var(--card-overlap-h)', cursor: 'pointer' }}
+                        style={{ marginLeft: i === 0 ? 0 : 'var(--card-overlap-h)', cursor: 'pointer', position: 'relative', zIndex: i }}
                     >
                         <CardNotDraggable className="card_dropped d-block" name={name} />
                     </motion.div>

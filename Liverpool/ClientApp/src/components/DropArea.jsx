@@ -15,8 +15,8 @@ const EMPTY_ZONE_STYLE = {
 };
 
 const EMPTY_ZONE_HOVER_STYLE = {
-    border: '2px solid rgba(212,168,67,0.9)',
-    boxShadow: '0 0 14px rgba(212,168,67,0.55), inset 0 0 8px rgba(212,168,67,0.12)',
+    border: '3px solid rgba(212,168,67,0.9)',
+    boxShadow: '0 0 18px rgba(212,168,67,0.65), inset 0 0 10px rgba(212,168,67,0.15)',
     background: 'rgba(212,168,67,0.07)',
 };
 
@@ -46,7 +46,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
                                 style={{
                                     transition: 'box-shadow 0.15s ease',
                                     ...((snapshot.isDraggingOver && ((isDropZone && !isAllEmpty) || isDiscardPile || isKeepZone)) && {
-                                        boxShadow: '0 0 0 2px rgba(212,168,67,0.9), 0 0 14px rgba(212,168,67,0.55)',
+                                        boxShadow: '0 0 0 3px rgba(212,168,67,0.9), 0 0 18px rgba(212,168,67,0.65)',
                                         borderRadius: 'var(--card-radius)',
                                     }),
                                 }}
@@ -118,7 +118,7 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
                                     width: 'var(--card-w-sm)',
                                     transition: 'box-shadow 0.15s ease',
                                     ...(isDropZone && !isAllEmpty && snapshot.isDraggingOver && {
-                                        boxShadow: '0 0 0 2px rgba(212,168,67,0.9), 0 0 14px rgba(212,168,67,0.55)',
+                                        boxShadow: '0 0 0 3px rgba(212,168,67,0.9), 0 0 18px rgba(212,168,67,0.65)',
                                         borderRadius: 'var(--card-radius)',
                                     }),
                                 }}

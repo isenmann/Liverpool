@@ -308,11 +308,12 @@ public class LiverpoolHubTests
         A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
         A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
         A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+        A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("CardMovedAnimation", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
 
         await _sut.DiscardCard(game.Name, game.Players.First(p => p.Turn).Deck[0].DisplayName, game.Players.First(p => p.Turn).Deck[0].Index);
 
         A.CallTo(() => _gameService.GetGame(game.Name)).MustHaveHappenedTwiceExactly();
-        A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedANumberOfTimesMatching(c => c ==3);
+        A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).MustHaveHappenedANumberOfTimesMatching(c => c == 4);
         A.CallTo(() => _hubClients.All.SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).MustHaveHappenedANumberOfTimesMatching(c => c == 3);
     }
 
@@ -440,6 +441,7 @@ public class LiverpoolHubTests
         A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
         A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
         A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+        A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("CardMovedAnimation", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
 
         await _sut.DrawCardFromDrawPile(game.Name, 0);
 
@@ -473,6 +475,7 @@ public class LiverpoolHubTests
         A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
         A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
         A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+        A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("CardMovedAnimation", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
 
         await _sut.DrawCardFromDrawPile(game.Name, 0);
 
@@ -545,6 +548,7 @@ public class LiverpoolHubTests
         A.CallTo(() => _gameService.GetAllPlayersFromGame(game.Name)).Returns(game.Players);
         A.CallTo(() => _hubContext.ConnectionId).Returns("someFakeConnectionId");
         A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("GameUpdate", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
+        A.CallTo(() => _hubClients.Client(_hubContext.ConnectionId).SendCoreAsync("CardMovedAnimation", A<object?[]>._, CancellationToken.None)).Returns(Task.CompletedTask);
             
         await _sut.DrawCardFromDiscardPile(game.Name, game.DiscardPile.Last().DisplayName, 0);
 
