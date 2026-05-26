@@ -16,6 +16,8 @@ function KeepingCard({ keepingCard, askedForKeepingCard }) {
                 padding: '10px 14px',
                 textAlign: 'center',
                 background: 'rgba(0,0,0,0.25)',
+                width: 'fit-content',
+                justifySelf: 'end',
             }}
         >
             <div style={{

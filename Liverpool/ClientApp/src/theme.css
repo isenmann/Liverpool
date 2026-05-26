@@ -19,14 +19,14 @@
   --text-primary: #f0ead6;
   --text-muted:   #a89060;
 
-  /* Cards */
-  --card-w:            100px;
-  --card-w-sm:         80px;
+  /* Cards — clamp() scales down on narrow screens */
+  --card-w:            clamp(62px, 12vw, 100px);
+  --card-w-sm:         clamp(50px, 10vw, 80px);
   --card-radius:       6px;
-  --card-overlap-h:    -45px;
-  --card-overlap-h-lg: -65px;
-  --card-overlap-v:    -80px;
-  --card-overlap-v-lg: -85px;
+  --card-overlap-h:    calc(var(--card-w) * -0.45);
+  --card-overlap-h-lg: calc(var(--card-w) * -0.65);
+  --card-overlap-v:    calc(var(--card-w) * -0.80);
+  --card-overlap-v-lg: calc(var(--card-w) * -0.85);
 
   /* Shadows */
   --shadow-card:       0 4px 8px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
@@ -43,6 +43,15 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+  html, body, #root {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 body {
@@ -63,6 +72,12 @@ body {
     transform: translateY(-10px) scale(1.06);
     z-index: 10;
     position: relative;
+}
+
+.card-draggable.no-hover:hover {
+    transform: none;
+    box-shadow: var(--shadow-card);
+    z-index: auto;
 }
 
 /* Casino button */

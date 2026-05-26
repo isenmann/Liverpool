@@ -4,7 +4,7 @@ import DropAreaForDroppingCards from './DropAreaForDroppingCards';
 import DropArea from './DropArea';
 import { FormattedMessage } from 'react-intl';
 
-function Player({ player, knockFunction, myCards, handRef }) {
+function Player({ player, knockFunction, myCards, handRef, isMobile }) {
     const currCount = myCards?.length ?? 0;
     const prevCountRef = useRef(currCount);
 
@@ -73,7 +73,7 @@ function Player({ player, knockFunction, myCards, handRef }) {
             </div>
 
             {/* Hand cards */}
-            <div ref={handRef} style={{ display: 'flex', justifyContent: 'center' }}>
+            <div ref={handRef} style={{ display: 'flex', justifyContent: 'center', overflowX: isMobile ? 'auto' : 'visible', width: '100%' }}>
                 {myCards != null && (
                     <DropArea
                         id="playersCard"

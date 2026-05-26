@@ -7,23 +7,18 @@ function FeltTable({ leftPlayer, topPlayer, rightPlayer, centerTop, centerMid, c
             <div className={styles.leftZone}>
                 {leftPlayer}
             </div>
-
-            <div className={styles.center}>
-                <div className={styles.topArea}>
-                    {topPlayer}
-                </div>
-                <div className={styles.midArea}>
-                    {centerMid}
-                </div>
-                <div className={styles.bottomArea}>
-                    {centerBottom}
-                </div>
+            <div className={styles.topArea}>
+                {topPlayer}
             </div>
-
-            {rightPlayer
-                ? <div className={styles.rightZone}>{rightPlayer}</div>
-                : <div className={styles.rightZoneEmpty} />
-            }
+            <div className={styles.rightZone}>
+                {rightPlayer}
+            </div>
+            <div className={styles.midArea}>
+                {centerMid}
+            </div>
+            <div className={styles.bottomArea}>
+                {centerBottom}
+            </div>
         </div>
     );
 }

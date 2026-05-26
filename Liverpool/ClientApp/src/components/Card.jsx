@@ -2,22 +2,26 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { motion } from 'framer-motion';
 
-function Card({ name, className, index, myKey, isDealing, animateIn }) {
+function Card({ name, className, index, myKey, isDealing, animateIn, isInDropZone, wrapperClassName }) {
     return (
         <Draggable key={myKey} draggableId={myKey} index={index}>
             {(provided, snapshot) => {
                 // Append visual lift to DnD's position transform — does not affect drop-target calculations
                 const baseTransform = provided.draggableProps.style?.transform;
-                const transform = snapshot.isDragging && baseTransform
-                    ? `${baseTransform} scale(1.08) rotate(3deg)`
-                    : baseTransform;
+                const transform = snapshot.isDragging
+                    ? (baseTransform ? `${baseTransform} scale(1.08) rotate(3deg)` : baseTransform)
+                    : (isInDropZone ? undefined : baseTransform);
+
+                let wrapperClass = 'card-draggable';
+                if (isInDropZone) wrapperClass += ' no-hover';
+                if (wrapperClassName) wrapperClass += ' ' + wrapperClassName;
 
                 return (
                     <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="card-draggable"
+                        className={wrapperClass}
                         style={{
                             ...provided.draggableProps.style,
                             transform,

@@ -15,7 +15,21 @@ import Player from './Player';
 import FeltTable from './FeltTable';
 import AnimatedCardFlyover from './AnimatedCardFlyover';
 
+function useIsPortraitMobile() {
+    const [is, setIs] = useState(() =>
+        window.matchMedia('(max-width: 600px) and (orientation: portrait)').matches
+    );
+    useEffect(() => {
+        const mq = window.matchMedia('(max-width: 600px) and (orientation: portrait)');
+        const fn = e => setIs(e.matches);
+        mq.addEventListener('change', fn);
+        return () => mq.removeEventListener('change', fn);
+    }, []);
+    return is;
+}
+
 function Game() {
+    const isMobile = useIsPortraitMobile();
     const [game, setGame] = useState(undefined);
     const [pendingAnimation, setPendingAnimation] = useState(null);
     const pendingGameUpdateRef = useRef(null);
@@ -160,7 +174,19 @@ function Game() {
         };
     }
 
-    const leftPlayerSlot = (
+    function mobileOpponentSlot(player) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: '100%' }}>
+                <PlayerName player={player} />
+                <OpponentCards player={player} horizontal={true} handRef={opponentHandRef(player)} />
+                <div style={{ width: '100%' }}>
+                    <DropAreaForDroppingCards player={player} direction="horizontal" dropZoneRefs={dropZoneRefs} />
+                </div>
+            </div>
+        );
+    }
+
+    const leftPlayerSlot = isMobile ? mobileOpponentSlot(game.players[0]) : (
         <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, width: '100%', justifyContent: 'center', flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, alignSelf: 'center' }}>
                 <PlayerName player={game.players[0]} />
@@ -170,27 +196,29 @@ function Game() {
         </div>
     );
 
-    const topPlayerSlot = (
+    const topPlayerSlot = isMobile ? mobileOpponentSlot(game.players[1]) : (
         <Fragment>
+            <div className="d-flex justify-content-center">
+                <PlayerName player={game.players[1]} />
+            </div>
             <OpponentCards design="d-flex justify-content-center" player={game.players[1]} horizontal={true} handRef={opponentHandRef(game.players[1])} />
             <div style={{ width: '100%' }}>
                 <DropAreaForDroppingCards player={game.players[1]} direction="horizontal" dropZoneRefs={dropZoneRefs} />
             </div>
-            <div className="d-flex justify-content-center">
-                <PlayerName player={game.players[1]} />
-            </div>
         </Fragment>
     );
 
-    const rightPlayerSlot = hasRightPlayer ? (
-        <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, width: '100%', justifyContent: 'center', flex: 1 }}>
-            <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, alignSelf: 'center' }}>
-                <PlayerName player={game.players[2]} />
-                <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
+    const rightPlayerSlot = hasRightPlayer
+        ? (isMobile ? mobileOpponentSlot(game.players[2]) : (
+            <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, width: '100%', justifyContent: 'center', flex: 1 }}>
+                <DropAreaForDroppingCards player={game.players[2]} direction="vertical" dropZoneRefs={dropZoneRefs} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, alignSelf: 'center' }}>
+                    <PlayerName player={game.players[2]} />
+                    <OpponentCards player={game.players[2]} horizontal={false} handRef={opponentHandRef(game.players[2])} />
+                </div>
             </div>
-        </div>
-    ) : null;
+        ))
+        : null;
 
     const centerMidSlot = (
         <Fragment>
@@ -203,26 +231,9 @@ function Game() {
                 discardPileRef={discardPileRef}
                 drawPileRef={drawPileRef}
             />
-            <div style={{ width: 200, flexShrink: 0 }}>
-                {game.playerAskedForKeepingCard && !game.player.playersTurn &&
-                    <KeepingCardQuestion
-                        cardName={game.keepingCard.displayName}
-                        positiveKeepFeedbackFunction={sendPositiveKeepFeedback}
-                        negativeKeepFeedbackFunction={sendNegativeKeepFeedback}
-                    />
-                }
-                {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length === 0 &&
-                    <KeepingCard keepingCard={game.keepingCard} askedForKeepingCard={game.playerAskedForKeepingCard} />
-                }
-                {game.playersKnocked != null && game.playersKnocked.length > 0 &&
-                    <PlayerKnock
-                        playersKnocked={game.playersKnocked}
-                        playersTurn={game.player.playersTurn}
-                        sendPositiveKnockFunction={sendPositiveKnockFeedback}
-                        sendNegativeKnockFunction={sendNegativeKnockFeedback}
-                    />
-                }
-            </div>
+            {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length === 0 &&
+                <KeepingCard keepingCard={game.keepingCard} askedForKeepingCard={game.playerAskedForKeepingCard} />
+            }
         </Fragment>
     );
 
@@ -235,11 +246,12 @@ function Game() {
             player={game.player}
             knockFunction={handleKnock}
             handRef={el => { myHandRef.current = el; }}
+            isMobile={isMobile}
         />
     );
 
     return (
-        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
             <DragDropContext onDragEnd={onDragEnd}>
                 <FeltTable
                     leftPlayer={leftPlayerSlot}
@@ -259,6 +271,57 @@ function Game() {
                         toRef={resolveRef(pendingAnimation.toArea)}
                         onComplete={handleAnimationComplete}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* Knock / keep prompts — fixed overlays so they float above the layout on any screen size */}
+            <AnimatePresence>
+                {game.playerAskedForKeepingCard && !game.player.playersTurn && (
+                    <motion.div
+                        key="keep-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            zIndex: 500,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'rgba(0,0,0,0.45)',
+                        }}
+                    >
+                        <KeepingCardQuestion
+                            cardName={game.keepingCard.displayName}
+                            positiveKeepFeedbackFunction={sendPositiveKeepFeedback}
+                            negativeKeepFeedbackFunction={sendNegativeKeepFeedback}
+                        />
+                    </motion.div>
+                )}
+                {game.playersKnocked != null && game.playersKnocked.length > 0 && (
+                    <motion.div
+                        key="knock-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            zIndex: 500,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'rgba(0,0,0,0.45)',
+                        }}
+                    >
+                        <PlayerKnock
+                            playersKnocked={game.playersKnocked}
+                            playersTurn={game.player.playersTurn}
+                            sendPositiveKnockFunction={sendPositiveKnockFeedback}
+                            sendNegativeKnockFunction={sendNegativeKnockFeedback}
+                        />
+                    </motion.div>
                 )}
             </AnimatePresence>
 

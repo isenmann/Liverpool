@@ -37,7 +37,7 @@ function Home() {
                     border: '1px solid rgba(212,168,67,0.3)',
                     marginBottom: 28,
                 }}>
-                    v1.8.3
+                    v1.8.4
                 </div>
             </motion.div>
 
