@@ -219,7 +219,7 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
         await GameUpdated(gameName);
     }
 
-    public async Task DrawCardFromDrawPile(string gameName)
+    public async Task DrawCardFromDrawPile(string gameName, int insertIndex)
     {
         var game = _liverpoolGameService.GetGame(gameName);
         var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -244,6 +244,9 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
         game.CheckIfDeckHasEnoughCards();
 
         player.Deck.AddRange(game.Deck.GetAndRemove(0, 1));
+        // var drawnCard = game.Deck.GetAndRemove(0, 1)[0];
+        // var clampedIndex = Math.Clamp(insertIndex, 0, player.Deck.Count);
+        // player.Deck.Insert(clampedIndex, drawnCard);
         await BroadcastCardMovedAnimation(gameName, new CardMovedAnimationDto
         {
             PlayerName = player.User.Name,
@@ -254,7 +257,7 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
         await GameUpdated(gameName);
     }
 
-    public async Task DrawCardFromDiscardPile(string gameName, string cardName)
+    public async Task DrawCardFromDiscardPile(string gameName, string cardName, int insertIndex)
     {
         var game = _liverpoolGameService.GetGame(gameName);
         var player = _liverpoolGameService.GetPlayerFromGame(gameName, Context.ConnectionId);
@@ -287,7 +290,8 @@ public class LiverpoolHub(ILiverpoolGameService liverpoolGameService) : Hub
 
         if (card.DisplayName == cardName)
         {
-            player.Deck.Add(card);
+            var clampedIndex = Math.Clamp(insertIndex, 0, player.Deck.Count);
+            player.Deck.Insert(clampedIndex, card);
             game.DiscardPile.Remove(card);
 
             // if someone knocked then reset it, because the active player has advantage

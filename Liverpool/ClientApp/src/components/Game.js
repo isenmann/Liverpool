@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import LiverpoolService from '../services/LiverpoolHubService';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext } from '@hello-pangea/dnd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FormattedMessage } from 'react-intl';
 import OpponentCards from './OpponentCards';
@@ -149,12 +149,12 @@ function Game() {
         }
 
         if (source.droppableId === 'discardPile' && destination.droppableId === 'playersCard') {
-            LiverpoolService.drawCardFromDiscardPile(game.name, game.discardPile.displayName);
+            LiverpoolService.drawCardFromDiscardPile(game.name, game.discardPile.displayName, destination.index);
             return;
         }
 
         if (source.droppableId === 'drawPile' && destination.droppableId === 'playersCard') {
-            LiverpoolService.drawCardFromDrawPile(game.name);
+            LiverpoolService.drawCardFromDrawPile(game.name, destination.index);
             return;
         }
 

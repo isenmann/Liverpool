@@ -1,5 +1,5 @@
 import React from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import { motion } from 'framer-motion';
 
 function Card({ name, className, index, myKey, isDealing, animateIn, isInDropZone, wrapperClassName }) {
