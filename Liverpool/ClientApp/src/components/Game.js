@@ -234,6 +234,17 @@ function Game() {
             {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length === 0 &&
                 <KeepingCard keepingCard={game.keepingCard} askedForKeepingCard={game.playerAskedForKeepingCard} />
             }
+            {game.player.playersTurn === true && game.playersKnocked != null && game.playersKnocked.length > 0 &&
+                <div style={{ width: 'fit-content', justifySelf: 'start' }}>
+                    <PlayerKnock
+                        playersKnocked={game.playersKnocked}
+                        playersTurn={game.player.playersTurn}
+                        playerHasKnocked={game.playersKnocked.includes(game.player.name)}
+                        sendPositiveKnockFunction={sendPositiveKnockFeedback}
+                        sendNegativeKnockFunction={sendNegativeKnockFeedback}
+                    />
+                </div>
+            }
         </Fragment>
     );
 
@@ -245,6 +256,7 @@ function Game() {
             myCards={game.myCards}
             player={game.player}
             knockFunction={handleKnock}
+            knockDisabled={game.playersKnocked != null && game.playersKnocked.length > 0}
             handRef={el => { myHandRef.current = el; }}
             isMobile={isMobile}
         />
@@ -299,7 +311,7 @@ function Game() {
                         />
                     </motion.div>
                 )}
-                {game.playersKnocked != null && game.playersKnocked.length > 0 && (
+                {game.playersKnocked != null && game.playersKnocked.length > 0 && !game.player.playersTurn && (
                     <motion.div
                         key="knock-overlay"
                         initial={{ opacity: 0 }}
@@ -318,6 +330,7 @@ function Game() {
                         <PlayerKnock
                             playersKnocked={game.playersKnocked}
                             playersTurn={game.player.playersTurn}
+                            playerHasKnocked={game.playersKnocked.includes(game.player.name)}
                             sendPositiveKnockFunction={sendPositiveKnockFeedback}
                             sendNegativeKnockFunction={sendNegativeKnockFeedback}
                         />

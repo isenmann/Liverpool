@@ -4,7 +4,7 @@ import DropAreaForDroppingCards from './DropAreaForDroppingCards';
 import DropArea from './DropArea';
 import { FormattedMessage } from 'react-intl';
 
-function Player({ player, knockFunction, myCards, handRef, isMobile }) {
+function Player({ player, knockFunction, knockDisabled, myCards, handRef, isMobile }) {
     const currCount = myCards?.length ?? 0;
     const prevCountRef = useRef(currCount);
 
@@ -54,11 +54,12 @@ function Player({ player, knockFunction, myCards, handRef, isMobile }) {
                                 <FormattedMessage id="game.you" />
                             </span>
                             <motion.button
-                                whileHover={{ scale: 1.05, y: -1 }}
-                                whileTap={{ scale: 0.97 }}
+                                whileHover={knockDisabled ? {} : { scale: 1.05, y: -1 }}
+                                whileTap={knockDisabled ? {} : { scale: 0.97 }}
                                 className="btn-casino"
-                                style={{ fontSize: '0.8rem', padding: '4px 14px', zIndex: 9999 }}
-                                onClick={knockFunction}
+                                style={{ fontSize: '0.8rem', padding: '4px 14px', zIndex: 9999, opacity: knockDisabled ? 0.45 : 1, cursor: knockDisabled ? 'not-allowed' : 'pointer' }}
+                                onClick={knockDisabled ? undefined : knockFunction}
+                                disabled={knockDisabled}
                             >
                                 <FormattedMessage id="game.knock" />
                             </motion.button>

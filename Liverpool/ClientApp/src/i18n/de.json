@@ -22,6 +22,7 @@
   "game.nextRound": "Nächste Runde",
   "game.knock": "Klopfen",
   "game.knocked": "Geklopft",
+  "game.knock.waiting": "Warte auf andere Spieler...",
   "game.name": "Name",
   "game.points": "Punkte",
   "game.requirement.round.1" : "2 Pässe",

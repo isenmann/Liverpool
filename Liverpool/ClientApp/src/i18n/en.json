@@ -22,6 +22,7 @@
   "game.nextRound": "Next round",
   "game.knock": "Knock",
   "game.knocked": "Knocked",
+  "game.knock.waiting": "Waiting for other players...",
   "game.name": "Name",
   "game.points": "Points",
   "game.requirement.round.1" : "2 Sets",

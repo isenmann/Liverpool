@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FormattedMessage } from 'react-intl';
 
-function PlayerKnock({ playersKnocked, playersTurn, sendPositiveKnockFunction, sendNegativeKnockFunction }) {
+function PlayerKnock({ playersKnocked, playersTurn, playerHasKnocked, sendPositiveKnockFunction, sendNegativeKnockFunction }) {
     return (
         <AnimatePresence>
             {playersKnocked.length > 0 && (
@@ -40,28 +40,40 @@ function PlayerKnock({ playersKnocked, playersTurn, sendPositiveKnockFunction, s
                             {player}
                         </div>
                     ))}
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 10 }}>
-                        <motion.button
-                            whileHover={{ scale: 1.05, y: -1 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="btn-casino"
-                            style={{ fontSize: '0.8rem', padding: '5px 14px', zIndex: 9999 }}
-                            onClick={sendPositiveKnockFunction}
-                        >
-                            <FormattedMessage id="game.allow" />
-                        </motion.button>
-                        {playersTurn === false && (
+                    {playerHasKnocked ? (
+                        <div style={{
+                            color: 'var(--text-secondary)',
+                            fontSize: '0.78rem',
+                            textAlign: 'center',
+                            marginTop: 10,
+                            fontStyle: 'italic',
+                        }}>
+                            <FormattedMessage id="game.knock.waiting" />
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 10 }}>
                             <motion.button
                                 whileHover={{ scale: 1.05, y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 className="btn-casino"
                                 style={{ fontSize: '0.8rem', padding: '5px 14px', zIndex: 9999 }}
-                                onClick={sendNegativeKnockFunction}
+                                onClick={sendPositiveKnockFunction}
                             >
-                                <FormattedMessage id="game.deny" />
+                                <FormattedMessage id="game.allow" />
                             </motion.button>
-                        )}
-                    </div>
+                            {playersTurn === false && (
+                                <motion.button
+                                    whileHover={{ scale: 1.05, y: -1 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    className="btn-casino"
+                                    style={{ fontSize: '0.8rem', padding: '5px 14px', zIndex: 9999 }}
+                                    onClick={sendNegativeKnockFunction}
+                                >
+                                    <FormattedMessage id="game.deny" />
+                                </motion.button>
+                            )}
+                        </div>
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>
