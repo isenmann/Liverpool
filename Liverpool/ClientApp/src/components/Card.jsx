@@ -25,17 +25,13 @@ function Card({ name, className, index, myKey, isDealing, animateIn, isInDropZon
                         style={{
                             ...provided.draggableProps.style,
                             transform,
-                            borderRadius: 'var(--card-radius)',
-                            display: 'inline-block',
+                            lineHeight: 0,
+                            boxShadow: 'none',
                             cursor: snapshot.isDragging ? 'grabbing' : 'grab',
-                            boxShadow: snapshot.isDragging
-                                ? '0 24px 48px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.6)'
-                                : 'var(--shadow-card)',
                             zIndex: snapshot.isDragging ? 9999 : undefined,
                         }}
                     >
-                        {/* motion.div is INSIDE the DnD div — transforms are independent */}
-                        <motion.div
+                        <motion.img
                             initial={animateIn ? { opacity: 0, y: -28, scale: 0.82 } : false}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{
@@ -43,16 +39,19 @@ function Card({ name, className, index, myKey, isDealing, animateIn, isInDropZon
                                 ease: [0.22, 1, 0.36, 1],
                                 delay: isDealing ? index * 0.06 : 0,
                             }}
-                            style={{ lineHeight: 0 }}
-                        >
-                            <img
-                                alt=""
-                                className={className}
-                                src={process.env.PUBLIC_URL + '/images/' + name + '.png'}
-                                draggable={false}
-                                style={{ display: 'block', borderRadius: 'var(--card-radius)' }}
-                            />
-                        </motion.div>
+                            alt=""
+                            className={className}
+                            src={process.env.PUBLIC_URL + '/images/' + name + '.png'}
+                            draggable={false}
+                            style={{
+                                display: 'block',
+                                borderRadius: 'var(--card-radius)',
+                                verticalAlign: 'top',
+                                boxShadow: snapshot.isDragging
+                                    ? '0 24px 48px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.6)'
+                                    : 'var(--shadow-card)',
+                            }}
+                        />
                     </div>
                 );
             }}

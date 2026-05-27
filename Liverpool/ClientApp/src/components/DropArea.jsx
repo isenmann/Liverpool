@@ -81,15 +81,16 @@ function DropArea({ id, cards, direction, disableDrop, isDealing, animateIn, zon
                                         wrapperClassName={i > 0 ? 'overlap-h-65' : undefined}
                                     />
                                 )))}
-                                {isHand && cards && cards.map((card) => (
+                                {isHand && cards && cards.map((card, i) => (
                                     <Cards
                                         myKey={id + card.displayName + card.index}
                                         key={id + card.displayName + card.index}
-                                        className="card overlap-h-20 d-block"
+                                        className="card d-block"
                                         name={card.displayName}
                                         index={card.index}
                                         isDealing={isDealing}
                                         animateIn={animateIn}
+                                        wrapperClassName={i > 0 ? 'overlap-h-20' : undefined}
                                     />
                                 ))}
                                 {!isDrawPile && !isKeepZone && !isDropZone && !isHand && cards && cards.map((card) => (
