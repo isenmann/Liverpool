@@ -4,12 +4,25 @@ class LiverpoolHubService {
     constructor() {
         this.userName = '';
         this.gameName = '';
+        this._gameUpdatedCallback = null;
+        this._pendingGameUpdate = null;
 
         const hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/liverpoolHub")
             .withAutomaticReconnect([500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, null])
             .configureLogging(signalR.LogLevel.Information)
             .build();
+
+        // Pre-register so GameUpdate is never dropped while React is still mounting
+        // after the GameStarted navigation (race condition on real mobile devices).
+        hubConnection.on('GameUpdate', (game) => {
+            if (this._gameUpdatedCallback) {
+                this._gameUpdatedCallback(game);
+            } else {
+                this._pendingGameUpdate = game;
+            }
+        });
+
         hubConnection.start().then(() => {
             if(this.userName === '') {
                 this.userName = hubConnection.connectionId;
@@ -148,9 +161,12 @@ class LiverpoolHubService {
     }
 
     registerGameUpdated(gameUpdated) {
-        this.connection.on('GameUpdate', (game) => {
-            gameUpdated(game);
-        });
+        this._gameUpdatedCallback = gameUpdated;
+        if (this._pendingGameUpdate) {
+            const pending = this._pendingGameUpdate;
+            this._pendingGameUpdate = null;
+            gameUpdated(pending);
+        }
     }
 
     registerCardMovedAnimation(callback) {
