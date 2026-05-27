@@ -1,35 +1,47 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import DropArea from './DropArea';
 
-function DropAreaForDroppingCards({direction, player}) {
-    var content = [];
-    var height = "";
-    let className = "d-flex col justify-content-center";
+function DropAreaForDroppingCards({ direction, player, dropZoneRefs }) {
+    const isVertical = direction === 'vertical';
 
-    if (direction === "vertical") {
-        if (player.droppedCards.length === 2) {
-            height = "h-50";
-        }
-        if (player.droppedCards.length === 3) {
-            height = "h-33";
-        }
-        if (player.droppedCards.length === 4) {
-            height = "h-25";
-        }
+    return (
+        <div style={{
+            display: 'flex',
+            flexDirection: isVertical ? 'column' : 'row',
+            height: isVertical ? '100%' : undefined,
+            width: isVertical ? undefined : '100%',
+        }}>
+            {player.droppedCards.map((cards, i) => {
+                const dropId = `${player.name}_card_dropped_${i}`;
+                const zoneKey = `${player.name}:${i}`;
 
-        className = height + " d-flex w-100 justify-content-center";
-    }
-
-    for (var i = 0; i < player.droppedCards.length; i++) {
-        var dropId = player.name + "_card_dropped_" + i;
-        content.push(
-            <div key={dropId + "Div"} className={className}>
-                <DropArea key={dropId} id={dropId} disableDrop={false} cards={player.droppedCards[i]} direction={direction} />
-            </div>
-        );
-    }
-
-    return <Fragment>{content}</Fragment>
+                return (
+                    <div key={dropId + 'Cell'} style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <DropArea
+                            id={dropId}
+                            disableDrop={false}
+                            cards={cards}
+                            direction={direction}
+                            zoneRef={dropZoneRefs
+                                ? el => {
+                                    if (!dropZoneRefs.current[zoneKey]) {
+                                        dropZoneRefs.current[zoneKey] = { current: null };
+                                    }
+                                    dropZoneRefs.current[zoneKey].current = el;
+                                }
+                                : undefined
+                            }
+                        />
+                    </div>
+                );
+            })}
+        </div>
+    );
 }
 
 export default DropAreaForDroppingCards;

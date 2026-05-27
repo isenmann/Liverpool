@@ -50,12 +50,12 @@ class LiverpoolHubService {
         this.connection.invoke("DiscardCard", gameName, cardName, cardIndex);
     }
 
-    drawCardFromDiscardPile(gameName, cardName) {
-        this.connection.invoke("DrawCardFromDiscardPile", gameName, cardName);
+    drawCardFromDiscardPile(gameName, cardName, insertIndex) {
+        this.connection.invoke("DrawCardFromDiscardPile", gameName, cardName, insertIndex);
     }
 
-    drawCardFromDrawPile(gameName) {
-        this.connection.invoke("DrawCardFromDrawPile", gameName);
+    drawCardFromDrawPile(gameName, insertIndex) {
+        this.connection.invoke("DrawCardFromDrawPile", gameName, insertIndex);
     }
 
     dropCards(gameName) {
@@ -150,6 +150,12 @@ class LiverpoolHubService {
     registerGameUpdated(gameUpdated) {
         this.connection.on('GameUpdate', (game) => {
             gameUpdated(game);
+        });
+    }
+
+    registerCardMovedAnimation(callback) {
+        this.connection.on('CardMovedAnimation', (dto) => {
+            callback(dto);
         });
     }
 }

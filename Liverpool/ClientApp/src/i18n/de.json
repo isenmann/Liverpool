@@ -1,6 +1,6 @@
 {
   "welcome": "Willkommen zu Liverpool!",
-  "welcome.start.1": "um ein Spiel zu spielen, klickt oben rechts auf \"Lobby\"",
+  "welcome.start.1": "um ein Spiel zu spielen, klickt oben links auf \"Lobby\"",
   "welcome.start.2": "danach Spielername eingeben",
   "welcome.start.3": "Spielname vergeben und ein \"Spiel erstellen\" anklicken",
   "welcome.start.4": "sollte schon ein Spiel erstellt worden sein, dann einfach dieses Spiel beitreten",
@@ -22,6 +22,7 @@
   "game.nextRound": "Nächste Runde",
   "game.knock": "Klopfen",
   "game.knocked": "Geklopft",
+  "game.knock.waiting": "Warte auf andere Spieler...",
   "game.name": "Name",
   "game.points": "Punkte",
   "game.requirement.round.1" : "2 Pässe",
@@ -32,5 +33,6 @@
   "game.requirement.round.6" : "1 Pass, 2 Straßen",
   "game.requirement.round.7" : "3 Straßen",
   "game.requirement.round.8" : "3 Pässe, 1 Straße",
-  "game.you": "Du"
+  "game.you": "Du",
+  "game.roundFinished": "Runde beendet!"
 }
