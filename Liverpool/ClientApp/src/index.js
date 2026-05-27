@@ -1,11 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.css';
+import './theme.css';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import { BrowserRouter as Router } from 'react-router-dom';
-import {IntlProvider} from "react-intl";
+import { IntlProvider } from 'react-intl';
 
-import {en, de} from './i18n/index';
+import { en, de } from './i18n/index';
 
 const locale = (navigator.languages && navigator.languages[0]) || navigator.language || 'en-US';
 const msg = {
@@ -17,13 +18,11 @@ const msg = {
 
 const message = (locale === 'en-US') ? en : Object.assign({}, en, msg[locale]);
 
-ReactDOM.render(
-  <React.StrictMode>
-    <IntlProvider locale={locale} messages={message}>
-      <Router>
-          <App />
-      </Router>
-    </IntlProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <IntlProvider locale={locale} messages={message}>
+    <Router>
+      <App />
+    </Router>
+  </IntlProvider>
 );

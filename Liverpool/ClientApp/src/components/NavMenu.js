@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import React from 'react';
 import { Link } from 'react-router-dom';
-
-import './NavMenu.css'
+import styles from './NavMenu.css';
 
 function NavMenu() {
-  const [collapsed, setCollapsed] = useState(true);
-
-  function toggleNavbar () {
-    setCollapsed(!collapsed);
-  }
-
-  return (
-    <header>
-      <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
-          <NavbarBrand tag={Link} to="/">Liverpool</NavbarBrand>
-          <NavbarToggler onClick={toggleNavbar} className="mr-2" />
-          <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-            <ul className="navbar-nav flex-grow">
-              <NavItem>
-                <NavLink tag={Link} className="text-dark" to="/Liverpool">Lobby</NavLink>
-              </NavItem>
-            </ul>
-          </Collapse>
-      </Navbar>
-    </header>
-  );
+    return (
+        <header>
+            <nav className={styles.navbar} style={{
+                background: 'linear-gradient(180deg, var(--rail-dark) 0%, var(--rail-mid) 60%, var(--rail-dark) 100%)',
+                borderBottom: '2px solid var(--gold-400)',
+                height: '56px',
+                padding: '0 24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '24px',
+            }}>
+                <Link to="/" style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: '1.4rem',
+                    fontWeight: 700,
+                    color: 'var(--gold-400)',
+                    textDecoration: 'none',
+                    letterSpacing: '0.05em',
+                }}>
+                    Liverpool
+                </Link>
+                <Link to="/Liverpool" style={{
+                    color: 'var(--text-primary)',
+                    fontFamily: "'Lato', sans-serif",
+                    textDecoration: 'none',
+                    opacity: 0.85,
+                }}>
+                    Lobby
+                </Link>
+            </nav>
+        </header>
+    );
 }
 
 export default NavMenu;
